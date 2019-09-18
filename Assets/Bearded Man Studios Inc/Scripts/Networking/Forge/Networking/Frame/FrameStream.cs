@@ -163,8 +163,8 @@ namespace BeardedManStudios.Forge.Networking.Frame
 		protected virtual void ReadFrame(byte[] frame, int payloadStart, byte receivers)
 		{
 			// The end of the frame payload is just before the unique id
-			var end = frame.Length - (sizeof(ulong) * 2);
-            var isStream = receivers == 255;
+			int end = frame.Length - (sizeof(ulong) * 2);
+            bool isStream = receivers == 255;
 
             // If the receivers is invalid, pull it from the data
             if (isStream)
@@ -211,12 +211,12 @@ namespace BeardedManStudios.Forge.Networking.Frame
 			UniqueId = UniqueMessageIdCounter++;
 
 			// Generate the frame identity
-			var frame = new byte[10];
+			byte[] frame = new byte[10];
 
 			// The first byte of the data is always the control byte, which dictates the message type
 			frame[0] = ControlByte;
 
-			var length = payload.Length;
+			int length = payload.Length;
 
 			if (isStream)
 				length += 21;  // Group id (4), receivers (1), time step (8), unique id (8)
@@ -227,7 +227,7 @@ namespace BeardedManStudios.Forge.Networking.Frame
 				length += 1;
 
 			// Determine the length of the payload
-			var dataStartIndex = 0;
+			int dataStartIndex = 0;
 			if (length <= 125)
 			{
 				frame[1] = (byte)(useMask ? length | 128 : length);
@@ -353,7 +353,7 @@ namespace BeardedManStudios.Forge.Networking.Frame
 			if (IsReliable)
 				return;
 
-			var currentIndex = StreamData.StartIndex();
+			int currentIndex = StreamData.StartIndex();
 			StreamData.MoveStartIndex((StreamData.Size - currentIndex - sizeof(ulong)));
 			UniqueReliableId = ObjectMapper.Instance.Map<ulong>(StreamData);
 			StreamData.MoveStartIndex(-StreamData.StartIndex() + currentIndex);

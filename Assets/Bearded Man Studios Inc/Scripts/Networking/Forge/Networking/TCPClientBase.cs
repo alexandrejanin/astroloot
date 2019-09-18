@@ -85,7 +85,7 @@ namespace BeardedManStudios.Forge.Networking
             headerHash = Websockets.HeaderHashKey();
 
             // This is a typical Websockets accept header to be validated
-            var connectionHeader = Websockets.ConnectionHeader(headerHash, port);
+            byte[] connectionHeader = Websockets.ConnectionHeader(headerHash, port);
 
             // Register the server as a NetworkingPlayer
             server = new NetworkingPlayer(0, host, true, client, this);
@@ -97,7 +97,7 @@ namespace BeardedManStudios.Forge.Networking
             // Set myself as a connected client
             server.Connected = true;
 
-            var token = new ReceiveToken
+            ReceiveToken token = new ReceiveToken
             {
                 internalBuffer = new ArraySegment<byte>(buffer, 0, buffer.Length),
                 player = server,
@@ -107,7 +107,7 @@ namespace BeardedManStudios.Forge.Networking
             };
 
             // Read from the server async
-            var e = new SocketAsyncEventArgs();
+            SocketAsyncEventArgs e = new SocketAsyncEventArgs();
             e.Completed += new EventHandler<SocketAsyncEventArgs>(ReceiveAsync_Completed);
             e.UserToken = token;
             e.SetBuffer(token.internalBuffer.Array, token.internalBuffer.Offset, token.internalBuffer.Count);
@@ -134,11 +134,11 @@ namespace BeardedManStudios.Forge.Networking
         {
             if (e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
             {
-                var bytesAlreadyProcessed = 0; // Count of the total freshly transferred bytes processed so far
-                var token = (ReceiveToken)e.UserToken;
+                int bytesAlreadyProcessed = 0; // Count of the total freshly transferred bytes processed so far
+                ReceiveToken token = (ReceiveToken)e.UserToken;
                 if (!headerExchanged)
                 {
-                    var header = HandleHttpHeader(e, ref bytesAlreadyProcessed);
+                    byte[] header = HandleHttpHeader(e, ref bytesAlreadyProcessed);
                     token = (ReceiveToken)e.UserToken;
                     if (header == null)
                     {
@@ -164,12 +164,12 @@ namespace BeardedManStudios.Forge.Networking
 
                 while (bytesAlreadyProcessed < e.BytesTransferred)
                 {
-                    var data = HandleData(e, true, ref bytesAlreadyProcessed);
+                    byte[] data = HandleData(e, true, ref bytesAlreadyProcessed);
                     if (data == null)
                     {
                         break;
                     }
-                    var frame = Factory.DecodeMessage(data, false, MessageGroupIds.TCP_FIND_GROUP_ID, Server);
+                    FrameStream frame = Factory.DecodeMessage(data, false, MessageGroupIds.TCP_FIND_GROUP_ID, Server);
 
                     FireRead(frame, Server);
 
@@ -205,7 +205,7 @@ namespace BeardedManStudios.Forge.Networking
             lock (client)
             {
                 // Get the raw bytes from the frame and send them
-                var data = frame.GetData();
+                byte[] data = frame.GetData();
                 RawWrite(data);
             }
         }
@@ -218,8 +218,8 @@ namespace BeardedManStudios.Forge.Networking
         /// <param name="objectsToSend">Array of vars to be sent, read them with Binary.StreamData.GetBasicType<typeOfObject>()</param>
         public virtual void Send(Receivers receivers, int messageGroupId, params object[] objectsToSend)
         {
-            var data = ObjectMapper.BMSByte(objectsToSend);
-            var sendFrame = new Binary(Time.Timestep, true, data, receivers, messageGroupId, true);
+            BMSByte data = ObjectMapper.BMSByte(objectsToSend);
+            Binary sendFrame = new Binary(Time.Timestep, true, data, receivers, messageGroupId, true);
             Send(sendFrame);
         }
 
@@ -247,7 +247,7 @@ namespace BeardedManStudios.Forge.Networking
                     else
                         OnForcedDisconnect();
 
-                    for (var i = 0; i < Players.Count; ++i)
+                    for (int i = 0; i < Players.Count; ++i)
                         OnPlayerDisconnected(Players[i]);
                 }
             }

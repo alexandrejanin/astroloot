@@ -32,7 +32,7 @@ namespace BeardedManStudios.Forge.Networking
 		public static byte[] ConnectionHeader(string headerHash, ushort port)
 		{
 			// This is a typical Websockets accept header to be validated
-			var connectHeader = Encoding.UTF8.GetBytes("GET / HTTP/1.1\r\n" +
+			byte[] connectHeader = Encoding.UTF8.GetBytes("GET / HTTP/1.1\r\n" +
 				"Host: http://developers.forgepowered.com:" + port.ToString() + "\r\n" +
 				"Upgrade: websocket\r\n" +
 				"Connection: Upgrade\r\n" +
@@ -46,8 +46,8 @@ namespace BeardedManStudios.Forge.Networking
 		public static bool ValidateResponseHeader(string headerHash, byte[] bytes)
 		{
 			// The first packet response from the server is going to be a string
-			var tmp = Encoding.UTF8.GetString(bytes);
-			var headers = tmp.Replace("\r", "").Split('\n');
+			string tmp = Encoding.UTF8.GetString(bytes);
+			string[] headers = tmp.Replace("\r", "").Split('\n');
 
 			// Improper header, so a disconnect is required
 			if (headers.Length < 4)
@@ -60,7 +60,7 @@ namespace BeardedManStudios.Forge.Networking
 				headers[2] == "Upgrade: websocket" &&
 				headers[3].StartsWith("Sec-WebSocket-Accept: "))
 			{
-				var hash = headers[3].Substring(headers[3].IndexOf(' ') + 1);
+				string hash = headers[3].Substring(headers[3].IndexOf(' ') + 1);
 				if (hash == HeaderHashKeyCheck(headerHash))
 					return true;
 			}
@@ -77,13 +77,13 @@ namespace BeardedManStudios.Forge.Networking
 		public static byte[] ValidateConnectionHeader(byte[] headers)
 		{
 			// The validation headers are always a string
-			var data = Encoding.UTF8.GetString(headers);
+			string data = Encoding.UTF8.GetString(headers);
 
 			// Make sure that it starts as a GET request
 			if (new Regex("^GET").IsMatch(data))
 			{
 				// Generate a response by hasing the provided random string key
-				var response = Encoding.UTF8.GetBytes("HTTP/1.1 101 Switching Protocols\r\n"
+				byte[] response = Encoding.UTF8.GetBytes("HTTP/1.1 101 Switching Protocols\r\n"
 					+ "Connection: Upgrade\r\n"
 					+ "Upgrade: websocket\r\n"
 					+ "Sec-WebSocket-Accept: " + Convert.ToBase64String((new SHA1CryptoServiceProvider()).ComputeHash(Encoding.UTF8.GetBytes(
@@ -104,12 +104,12 @@ namespace BeardedManStudios.Forge.Networking
 		/// <returns>The hash of a random string</returns>
 		public static string HeaderHashKey()
 		{
-			var headerHash = "";
-			var rand = new Random();
-			var availableChars = "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM".ToCharArray();
+			string headerHash = "";
+			Random rand = new Random();
+			char[] availableChars = "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM".ToCharArray();
 
 			// Generate a random string
-			for (var i = 0; i < 9; i++)
+			for (int i = 0; i < 9; i++)
 				headerHash += availableChars[rand.Next(0, availableChars.Length)];
 
 			// Hash the string

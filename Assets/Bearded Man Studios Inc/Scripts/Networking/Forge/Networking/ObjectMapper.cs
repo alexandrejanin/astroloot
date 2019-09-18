@@ -150,8 +150,8 @@ namespace BeardedManStudios.Forge.Networking
 		/// <returns>The array that was found</returns>
 		public object MapArray(Type type, BMSByte bytes)
 		{
-			var rank = type.GetArrayRank();
-			var targetType = type.GetElementType();
+			int rank = type.GetArrayRank();
+			Type targetType = type.GetElementType();
 
 			if (targetType != typeof(byte))
 				throw new Exception("Currently only byte arrays can be sent as arrays");
@@ -162,21 +162,21 @@ namespace BeardedManStudios.Forge.Networking
 			int i, j, k, l;
 
 			// Read each dimension length first
-			var lengths = new int[rank];
+			int[] lengths = new int[rank];
 			for (i = 0; i < rank; i++)
 				lengths[i] = bytes.GetBasicType<int>();
 
 			switch (rank)
 			{
 				case 1:
-					var arr1 = new byte[lengths[0]];
+					byte[] arr1 = new byte[lengths[0]];
 
 					for (i = 0; i < lengths[0]; i++)
 						arr1[i] = bytes.GetBasicType<byte>();
 
 					return arr1;
 				case 2:
-					var arr2 = new byte[lengths[0], lengths[1]];
+					byte[,] arr2 = new byte[lengths[0], lengths[1]];
 
 					for (i = 0; i < lengths[0]; i++)
 						for (j = 0; j < lengths[1]; j++)
@@ -184,7 +184,7 @@ namespace BeardedManStudios.Forge.Networking
 
 					return arr2;
 				case 3:
-					var arr3 = new byte[lengths[0], lengths[1], lengths[2]];
+					byte[,,] arr3 = new byte[lengths[0], lengths[1], lengths[2]];
 
 					for (i = 0; i < lengths[0]; i++)
 						for (j = 0; j < lengths[1]; j++)
@@ -193,7 +193,7 @@ namespace BeardedManStudios.Forge.Networking
 
 					return arr3;
 				case 4:
-					var arr4 = new byte[lengths[0], lengths[1], lengths[2], lengths[3]];
+					byte[,,,] arr4 = new byte[lengths[0], lengths[1], lengths[2], lengths[3]];
 
 					for (i = 0; i < lengths[0]; i++)
 						for (j = 0; j < lengths[1]; j++)
@@ -226,8 +226,8 @@ namespace BeardedManStudios.Forge.Networking
 		/// <returns>A byte[] of the mapped arguments</returns>
 		public BMSByte MapBytes(BMSByte bytes, params object[] args)
 		{
-			var bytesToMap = new byte[args.Length][];
-			for (var i = 0; i < args.Length; i++)
+			byte[][] bytesToMap = new byte[args.Length][];
+			for (int i = 0; i < args.Length; i++)
 			{
 				Type type = null;
 				if (args[i] != null)
@@ -258,7 +258,7 @@ namespace BeardedManStudios.Forge.Networking
 			}
 			else if (type == typeof(Vector))
 			{
-				var vec = (Vector)o;
+				Vector vec = (Vector)o;
 				bytes.Append(BitConverter.GetBytes(vec.x));
 				bytes.Append(BitConverter.GetBytes(vec.y));
 				bytes.Append(BitConverter.GetBytes(vec.z));
@@ -291,8 +291,8 @@ namespace BeardedManStudios.Forge.Networking
 				bytes.Append(BitConverter.GetBytes((double)o));
 			else if (type.IsArray)
 			{
-				var rank = type.GetArrayRank();
-				var targetType = type.GetElementType();
+				int rank = type.GetArrayRank();
+				Type targetType = type.GetElementType();
 
 				if (targetType != typeof(byte))
 					throw new Exception("Currently only byte arrays can be sent as arrays");
@@ -303,7 +303,7 @@ namespace BeardedManStudios.Forge.Networking
 				int i, j, k, l;
 
 				// Write each dimension length first
-				var lengths = new int[rank];
+				int[] lengths = new int[rank];
 				for (i = 0; i < rank; i++)
 				{
 					lengths[i] = ((Array)o).GetLength(i);
@@ -360,7 +360,7 @@ namespace BeardedManStudios.Forge.Networking
 			if (type == typeof(string))
 			{
 				var strBytes = Encoding.UTF8.GetBytes(o == null ? string.Empty : (string)o);
-				var bytes = new byte[strBytes.Length + sizeof(int)];
+				byte[] bytes = new byte[strBytes.Length + sizeof(int)];
 				// TODO:  Need to make custom string serialization to binary
 				Buffer.BlockCopy(BitConverter.GetBytes(strBytes.Length), 0, bytes, 0, sizeof(int));
 				if (strBytes.Length > 0)
@@ -369,8 +369,8 @@ namespace BeardedManStudios.Forge.Networking
 			}
 			else if (type == typeof(Vector))
 			{
-				var vec = (Vector)o;
-				var bytes = new byte[sizeof(float) * 3];
+				Vector vec = (Vector)o;
+				byte[] bytes = new byte[sizeof(float) * 3];
 				Buffer.BlockCopy(BitConverter.GetBytes(vec.x), 0, bytes, 0, sizeof(float));
 				Buffer.BlockCopy(BitConverter.GetBytes(vec.y), 0, bytes, sizeof(float), sizeof(float));
 				Buffer.BlockCopy(BitConverter.GetBytes(vec.z), 0, bytes, sizeof(float) * 2, sizeof(float));
@@ -406,12 +406,12 @@ namespace BeardedManStudios.Forge.Networking
 			{
 				byte[] bytes;
 
-				using (var stream = new MemoryStream())
+				using (MemoryStream stream = new MemoryStream())
 				{
-					using (var writer = new BinaryWriter(stream))
+					using (BinaryWriter writer = new BinaryWriter(stream))
 					{
-						var rank = type.GetArrayRank();
-						var targetType = type.GetElementType();
+						int rank = type.GetArrayRank();
+						Type targetType = type.GetElementType();
 
 						if (targetType != typeof(byte))
 							throw new Exception("Currently only byte arrays can be sent as arrays");
@@ -422,7 +422,7 @@ namespace BeardedManStudios.Forge.Networking
 						int i, j, k, l;
 
 						// Write each dimension length first
-						var lengths = new int[rank];
+						int[] lengths = new int[rank];
 						for (i = 0; i < rank; i++)
 						{
 							lengths[i] = ((Array)o).GetLength(i);
@@ -461,8 +461,8 @@ namespace BeardedManStudios.Forge.Networking
 			}
 			else if (type == typeof(BMSByte))
 			{
-				var bytesSize = BitConverter.GetBytes(((BMSByte)o).Size);
-				var bytes = new byte[bytesSize.Length + ((BMSByte)o).Size];
+				byte[] bytesSize = BitConverter.GetBytes(((BMSByte)o).Size);
+				byte[] bytes = new byte[bytesSize.Length + ((BMSByte)o).Size];
 				Buffer.BlockCopy(((BMSByte)o).byteArr, ((BMSByte)o).StartIndex(), bytes, bytesSize.Length, ((BMSByte)o).Size);
 				return bytes;
 			}
@@ -481,7 +481,7 @@ namespace BeardedManStudios.Forge.Networking
 		/// <param name="argsToMap">Objects to be mapped</param>
 		public static BMSByte BMSByte(params object[] argsToMap)
 		{
-			var data = new BMSByte();
+			BMSByte data = new BMSByte();
 			Instance.MapBytes(data, argsToMap);
 			return data;
 		}

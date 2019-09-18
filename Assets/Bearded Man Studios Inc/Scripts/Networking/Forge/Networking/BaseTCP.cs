@@ -27,13 +27,13 @@ namespace BeardedManStudios.Forge.Networking
             else if (bytesAlreadyProcessed >= e.BytesTransferred)
                 throw new ArgumentException("bytesAlreadyProcessed must be less than e.BytesTransferred.");
 
-            var token = (ReceiveToken)e.UserToken;
-            var totalBytes = token.bytesReceived + e.BytesTransferred - bytesAlreadyProcessed;
+            ReceiveToken token = (ReceiveToken)e.UserToken;
+            int totalBytes = token.bytesReceived + e.BytesTransferred - bytesAlreadyProcessed;
             if (totalBytes >= 4)
             {
-                var searchSpace = totalBytes - 3; // totalBytes - HEADER_DELIM.Length + 1
-                var data = token.internalBuffer.Array;
-                for (var i = 0; i < searchSpace; i++)
+                int searchSpace = totalBytes - 3; // totalBytes - HEADER_DELIM.Length + 1
+                byte[] data = token.internalBuffer.Array;
+                for (int i = 0; i < searchSpace; i++)
                 {
                     if (HEADER_DELIM[0] == data[token.internalBuffer.Offset + i])
                     {
@@ -41,7 +41,7 @@ namespace BeardedManStudios.Forge.Networking
                             HEADER_DELIM[2] == data[token.internalBuffer.Offset + i + 2] &&
                             HEADER_DELIM[3] == data[token.internalBuffer.Offset + i + 3])
                         {
-                            var header = new byte[i + 4];
+                            byte[] header = new byte[i + 4];
                             Buffer.BlockCopy(data, token.internalBuffer.Offset, header, 0, header.Length);
                             if (token.bytesReceived > 0)
                             {
@@ -80,9 +80,9 @@ namespace BeardedManStudios.Forge.Networking
             else if (bytesAlreadyProcessed >= e.BytesTransferred)
                 throw new ArgumentException("bytesAlreadyProcessed must be less than e.BytesTransferred.");
 
-            var token = (ReceiveToken)e.UserToken;
-            var socketOffset = token.internalBuffer.Offset;
-            var bytes = token.internalBuffer.Array;
+            ReceiveToken token = (ReceiveToken)e.UserToken;
+            int socketOffset = token.internalBuffer.Offset;
+            byte[] bytes = token.internalBuffer.Array;
             int totalBytes;
 
             #region ParseFrameHeader
@@ -97,8 +97,8 @@ namespace BeardedManStudios.Forge.Networking
                     e.UserToken = token;
                     return null;
                 }
-                var dataLength = bytes[socketOffset + 1] & 127;
-                var usingMask = bytes[socketOffset + 1] > 127; // same as bytes[socketOffset + 1] & 128 != 0
+                int dataLength = bytes[socketOffset + 1] & 127;
+                bool usingMask = bytes[socketOffset + 1] > 127; // same as bytes[socketOffset + 1] & 128 != 0
                 int payloadOffset;
                 if (dataLength == 126) // 126 means 125 < length < 65536
                 {
@@ -173,8 +173,8 @@ namespace BeardedManStudios.Forge.Networking
             }
             else
             {
-                var data = token.dataHolder;
-                var dataProcessed = (data.Length - token.bytesReceived);
+                byte[] data = token.dataHolder;
+                int dataProcessed = (data.Length - token.bytesReceived);
                 Buffer.BlockCopy(bytes, socketOffset, data, token.bytesReceived, dataProcessed);
 
 

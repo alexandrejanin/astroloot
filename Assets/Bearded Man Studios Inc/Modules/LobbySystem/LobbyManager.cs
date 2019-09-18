@@ -60,9 +60,9 @@ namespace BeardedManStudios.Forge.Networking.Unity.Lobby
 			}
 
 
-			for (var i = 0; i < NetworkObject.NetworkObjects.Count; ++i)
+			for (int i = 0; i < NetworkObject.NetworkObjects.Count; ++i)
 			{
-				var n = NetworkObject.NetworkObjects[i];
+				NetworkObject n = NetworkObject.NetworkObjects[i];
 				if (n is LobbyService.LobbyServiceNetworkObject)
 				{
 					SetupService(n);
@@ -110,7 +110,7 @@ namespace BeardedManStudios.Forge.Networking.Unity.Lobby
 
 		public void KickPlayer(LobbyPlayerItem item)
 		{
-			var playerKicked = item.AssociatedPlayer;
+			LobbyPlayer playerKicked = item.AssociatedPlayer;
 			LobbyService.Instance.KickPlayer(playerKicked.NetworkId);
 		}
 
@@ -126,7 +126,7 @@ namespace BeardedManStudios.Forge.Networking.Unity.Lobby
 
 		public void SendPlayersMessage()
 		{
-			var chatMessage = ChatInputBox.text;
+			string chatMessage = ChatInputBox.text;
 			if (string.IsNullOrEmpty(chatMessage))
 				return;
 
@@ -158,9 +158,9 @@ namespace BeardedManStudios.Forge.Networking.Unity.Lobby
 			else
 			{
 				//Generate more!
-				for (var i = 0; i < BUFFER_PLAYER_ITEMS - 1; ++i)
+				for (int i = 0; i < BUFFER_PLAYER_ITEMS - 1; ++i)
 				{
-					var item = CreateNewPlayerItem();
+					LobbyPlayerItem item = CreateNewPlayerItem();
 					item.ToggleObject(false);
 					item.SetParent(Grid);
 					_lobbyPlayersInactive.Add(item);
@@ -183,7 +183,7 @@ namespace BeardedManStudios.Forge.Networking.Unity.Lobby
 
 		private LobbyPlayerItem CreateNewPlayerItem()
 		{
-			var returnValue = Instantiate(PlayerItem).GetComponent<LobbyPlayerItem>();
+			LobbyPlayerItem returnValue = Instantiate(PlayerItem).GetComponent<LobbyPlayerItem>();
 			returnValue.Init(this);
 			return returnValue;
 		}
@@ -192,7 +192,7 @@ namespace BeardedManStudios.Forge.Networking.Unity.Lobby
 		{
 			LobbyPlayerItem returnValue = null;
 
-			for (var i = 0; i < _lobbyPlayersPool.Count; ++i)
+			for (int i = 0; i < _lobbyPlayersPool.Count; ++i)
 			{
 				if (_lobbyPlayersPool[i].AssociatedPlayer.NetworkId == player.NetworkId)
 				{
@@ -205,14 +205,14 @@ namespace BeardedManStudios.Forge.Networking.Unity.Lobby
 
 		private LobbyPlayer GrabPlayer(IClientMockPlayer player)
 		{
-			var returnValue = player as LobbyPlayer;
+			LobbyPlayer returnValue = player as LobbyPlayer;
 			if (returnValue == null)
 			{
-				for (var i = 0; i < LobbyPlayers.Count; ++i)
+				for (int i = 0; i < LobbyPlayers.Count; ++i)
 				{
 					if (LobbyPlayers[i].NetworkId == player.NetworkId)
 					{
-						var tPlayer = LobbyPlayers[i] as LobbyPlayer;
+						LobbyPlayer tPlayer = LobbyPlayers[i] as LobbyPlayer;
 						if (tPlayer == null)
 						{
 							tPlayer = new LobbyPlayer();
@@ -245,12 +245,12 @@ namespace BeardedManStudios.Forge.Networking.Unity.Lobby
 		#region Interface API
 		public void OnFNPlayerConnected(IClientMockPlayer player)
 		{
-			var convertedPlayer = GrabPlayer(player);
+			LobbyPlayer convertedPlayer = GrabPlayer(player);
 			if (convertedPlayer == _myself || _myself == null)
 				return; //Ignore re-adding ourselves
 
-            var playerCreated = false;
-            for (var i = 0; i < _lobbyPlayersPool.Count; ++i)
+            bool playerCreated = false;
+            for (int i = 0; i < _lobbyPlayersPool.Count; ++i)
             {
                 if (_lobbyPlayersPool[i].AssociatedPlayer.NetworkId == player.NetworkId)
                     playerCreated = true;
@@ -273,7 +273,7 @@ namespace BeardedManStudios.Forge.Networking.Unity.Lobby
 
             MainThreadManager.Run(() =>
             {
-                var item = GetNewPlayerItem();
+                LobbyPlayerItem item = GetNewPlayerItem();
                 item.Setup(convertedPlayer, false);
                 if (LobbyService.Instance.IsServer)
                     item.KickButton.SetActive(true);
@@ -283,7 +283,7 @@ namespace BeardedManStudios.Forge.Networking.Unity.Lobby
 
 		public void OnFNPlayerDisconnected(IClientMockPlayer player)
 		{
-			var convertedPlayer = GrabPlayer(player);
+			LobbyPlayer convertedPlayer = GrabPlayer(player);
 			MainThreadManager.Run(() =>
 			{
 				if (LobbyPlayers.Contains(convertedPlayer))
@@ -291,7 +291,7 @@ namespace BeardedManStudios.Forge.Networking.Unity.Lobby
 					_lobbyPlayers.Remove(convertedPlayer);
 					_lobbyPlayersMap.Remove(convertedPlayer.NetworkId);
 
-					var item = GrabLobbyPlayerItem(convertedPlayer);
+					LobbyPlayerItem item = GrabLobbyPlayerItem(convertedPlayer);
 					if (item != null)
 						PutBackToPool(item);
 				}
@@ -300,13 +300,13 @@ namespace BeardedManStudios.Forge.Networking.Unity.Lobby
 
 		public void OnFNPlayerNameChanged(IClientMockPlayer player)
 		{
-			var convertedPlayer = GrabPlayer(player);
+			LobbyPlayer convertedPlayer = GrabPlayer(player);
 			convertedPlayer.Name = player.Name;
 			if (_myself == convertedPlayer)
 				Myself.ChangeName(convertedPlayer.Name);
 			else
 			{
-				var item = GrabLobbyPlayerItem(convertedPlayer);
+				LobbyPlayerItem item = GrabLobbyPlayerItem(convertedPlayer);
                 if (item != null)
                     item.ChangeName(convertedPlayer.Name);
 			}
@@ -314,7 +314,7 @@ namespace BeardedManStudios.Forge.Networking.Unity.Lobby
 
 		public void OnFNTeamChanged(IClientMockPlayer player)
 		{
-            var newID = player.TeamID;
+            int newID = player.TeamID;
 			if (!LobbyTeams.ContainsKey(newID))
 				LobbyTeams.Add(newID, new List<IClientMockPlayer>());
 
@@ -325,7 +325,7 @@ namespace BeardedManStudios.Forge.Networking.Unity.Lobby
 			{
 				if (iter.Current != null)
 				{
-					var kv = (KeyValuePair<int, List<IClientMockPlayer>>)iter.Current;
+					KeyValuePair<int, List<IClientMockPlayer>> kv = (KeyValuePair<int, List<IClientMockPlayer>>)iter.Current;
 					if (kv.Value.Contains(player))
 					{
 						kv.Value.Remove(player);
@@ -339,14 +339,14 @@ namespace BeardedManStudios.Forge.Networking.Unity.Lobby
 			//We prevent the player being added twice to the same team
 			if (!LobbyTeams[newID].Contains(player))
 			{
-				var convertedPlayer = player as LobbyPlayer;
+				LobbyPlayer convertedPlayer = player as LobbyPlayer;
 				convertedPlayer.TeamID = newID;
 
 				if (_myself == convertedPlayer)
 					Myself.ChangeTeam(newID);
 				else
 				{
-					var item = GrabLobbyPlayerItem(convertedPlayer);
+					LobbyPlayerItem item = GrabLobbyPlayerItem(convertedPlayer);
 					if (item != null)
 						item.ChangeTeam(newID);
 				}
@@ -357,13 +357,13 @@ namespace BeardedManStudios.Forge.Networking.Unity.Lobby
 
 		public void OnFNAvatarIDChanged(IClientMockPlayer player)
 		{
-			var convertedPlayer = GrabPlayer(player);
+			LobbyPlayer convertedPlayer = GrabPlayer(player);
 			convertedPlayer.AvatarID = player.AvatarID;
 			if (_myself == convertedPlayer)
 				Myself.ChangeAvatarID(convertedPlayer.AvatarID);
 			else
 			{
-				var item = GrabLobbyPlayerItem(convertedPlayer);
+				LobbyPlayerItem item = GrabLobbyPlayerItem(convertedPlayer);
                 if (item != null)
                     item.ChangeAvatarID(convertedPlayer.AvatarID);
 			}
@@ -371,7 +371,7 @@ namespace BeardedManStudios.Forge.Networking.Unity.Lobby
 
 		public void OnFNLobbyPlayerMessageReceived(IClientMockPlayer player, string message)
 		{
-			var convertedPlayer = GrabPlayer(player);
+			LobbyPlayer convertedPlayer = GrabPlayer(player);
 			Chatbox.text += string.Format("{0}: {1}\n", convertedPlayer.Name, message);
 		}
 
@@ -387,9 +387,9 @@ namespace BeardedManStudios.Forge.Networking.Unity.Lobby
 			LobbyPlayers.Clear();
 			LobbyPlayersMap.Clear();
 			LobbyTeams.Clear();
-			for (var i = 0; i < previousLobbyMaster.LobbyPlayers.Count; ++i)
+			for (int i = 0; i < previousLobbyMaster.LobbyPlayers.Count; ++i)
 			{
-				var player = GrabPlayer(previousLobbyMaster.LobbyPlayers[i]);
+				LobbyPlayer player = GrabPlayer(previousLobbyMaster.LobbyPlayers[i]);
 				LobbyPlayers.Add(player);
 				LobbyPlayersMap.Add(player.NetworkId, player);
 			}
@@ -400,9 +400,9 @@ namespace BeardedManStudios.Forge.Networking.Unity.Lobby
 			{
 				if (iterTeams.Current != null)
 				{
-					var kv = (KeyValuePair<int, List<IClientMockPlayer>>)iterTeams.Current;
-					var players = new List<IClientMockPlayer>();
-					for (var i = 0; i < kv.Value.Count; ++i)
+					KeyValuePair<int, List<IClientMockPlayer>> kv = (KeyValuePair<int, List<IClientMockPlayer>>)iterTeams.Current;
+					List<IClientMockPlayer> players = new List<IClientMockPlayer>();
+					for (int i = 0; i < kv.Value.Count; ++i)
 					{
 						players.Add(GrabPlayer(kv.Value[i]));
 					}
@@ -418,7 +418,7 @@ namespace BeardedManStudios.Forge.Networking.Unity.Lobby
 			{
 				if (iterPlayersMap.Current != null)
 				{
-					var kv = (KeyValuePair<uint, IClientMockPlayer>)iterPlayersMap.Current;
+					KeyValuePair<uint, IClientMockPlayer> kv = (KeyValuePair<uint, IClientMockPlayer>)iterPlayersMap.Current;
 
 					if (LobbyPlayersMap.ContainsKey(kv.Key))
 						LobbyPlayersMap[kv.Key] = GrabPlayer(kv.Value);
@@ -436,7 +436,7 @@ namespace BeardedManStudios.Forge.Networking.Unity.Lobby
             LobbyService.Instance.Initialize(NetworkManager.Instance.Networker);
             
 			//If I am the host, then I should show the kick button for all players here
-			var item = GetNewPlayerItem(); //This will just auto generate the 10 items we need to start with
+			LobbyPlayerItem item = GetNewPlayerItem(); //This will just auto generate the 10 items we need to start with
 			item.SetParent(Grid);
 			PutBackToPool(item);
 
@@ -446,10 +446,10 @@ namespace BeardedManStudios.Forge.Networking.Unity.Lobby
 			Myself.Init(this);
 			Myself.Setup(_myself, true);
 
-			var currentPlayers = LobbyService.Instance.MasterLobby.LobbyPlayers;
-			for (var i = 0; i < currentPlayers.Count; ++i)
+			List<IClientMockPlayer> currentPlayers = LobbyService.Instance.MasterLobby.LobbyPlayers;
+			for (int i = 0; i < currentPlayers.Count; ++i)
 			{
-				var currentPlayer = currentPlayers[i];
+				IClientMockPlayer currentPlayer = currentPlayers[i];
 				if (currentPlayer == _myself)
 					continue;
 				OnFNPlayerConnected(currentPlayers[i]);

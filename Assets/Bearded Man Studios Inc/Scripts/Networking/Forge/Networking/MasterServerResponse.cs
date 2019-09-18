@@ -76,7 +76,7 @@ namespace BeardedManStudios.Forge.Networking
 			{
 				get
 				{
-					var returnValue = new JSONClass();
+					JSONClass returnValue = new JSONClass();
 
 					returnValue.Add("name", Name);
 					returnValue.Add("address", Address);
@@ -109,7 +109,7 @@ namespace BeardedManStudios.Forge.Networking
 			{
 				checked
 				{
-					var newServer = new Server(data);
+					Server newServer = new Server(data);
 					return newServer;
 				}
 			}
@@ -129,7 +129,7 @@ namespace BeardedManStudios.Forge.Networking
 		{
 			if (data != null)
 			{
-				for (var i = 0; i < data.Count; ++i)
+				for (int i = 0; i < data.Count; ++i)
 				{
 					serverResponse.Add((Server)data[i]);
 				}

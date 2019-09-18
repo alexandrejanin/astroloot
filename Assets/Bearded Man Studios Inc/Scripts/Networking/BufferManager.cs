@@ -34,7 +34,7 @@ namespace BeardedManStudios
             if (start == end)
                 return -1;
 
-            var midpoint = (end + start) / 2;
+            int midpoint = (end + start) / 2;
 
             // Not null, so no match
             if (array.GetValue(midpoint) != null)
@@ -57,11 +57,11 @@ namespace BeardedManStudios
                 {
                     return true;
                 }
-                var index = BinarySearchForFirstNull(PAGES, 0, PAGES.Length);
+                int index = BinarySearchForFirstNull(PAGES, 0, PAGES.Length);
                 if (index < 0)
                     return false; // PAGES is full
                 PAGES[index] = new byte[bufferSize * bufferPageSize];
-                for (var i = 0; i < bufferPageSize; i++)
+                for (int i = 0; i < bufferPageSize; i++)
                     POOLED_BUFFERS.Enqueue(new ArraySegment<byte>(PAGES[index], i * bufferSize, bufferSize));
             }
             

@@ -382,7 +382,7 @@ namespace BeardedManStudios.Forge.Networking
 							// Send all the packets that are pending
 							lock (reliableComposers)
 							{
-								for (var i = 0; i < reliableComposers.Count; i++)
+								for (int i = 0; i < reliableComposers.Count; i++)
 									reliableComposers[i].ResendPackets(Networker.Time.Timestep, ref counter);
 							}
 
@@ -396,7 +396,7 @@ namespace BeardedManStudios.Forge.Networking
 									// Remove 
 									lock (reliableComposers)
 									{
-										var id = reliableComposersToRemove.Dequeue();
+										ulong id = reliableComposersToRemove.Dequeue();
 										reliableComposers.Remove(reliableComposers.First(r => r.Frame.UniqueId == id));
 									}
 								}

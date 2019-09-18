@@ -12,9 +12,9 @@ namespace BeardedManStudios.Source.Forge.Networking
 		public static string GetLocalIPAddress()
         {
             IPHostEntry host;
-            var localIP = "";
+            string localIP = "";
             host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (var ip in host.AddressList)
+            foreach (IPAddress ip in host.AddressList)
             {
                 if (ip.AddressFamily == AddressFamily.InterNetwork && IsPrivateIP(ip)) // JM: check for all local ranges
                 {
@@ -30,7 +30,7 @@ namespace BeardedManStudios.Source.Forge.Networking
         {
             if (myIPAddress.AddressFamily == AddressFamily.InterNetwork)
             {
-                var ipBytes = myIPAddress.GetAddressBytes();
+                byte[] ipBytes = myIPAddress.GetAddressBytes();
 
                 // 10.0.0.0/24 
                 if (ipBytes[0] == 10)

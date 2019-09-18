@@ -55,14 +55,14 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 			if (ExactFilename == "NetworkManager")
 				return;
 
-			var _interpolationValues = new List<float>();
+			List<float> _interpolationValues = new List<float>();
 			JSONNode typeData = null;
 			JSONNode typeHelperData = null;
 			JSONNode interpolData = null;
-			var currentType = GetType("BeardedManStudios.Forge.Networking.Generated." + this.ExactFilename);
-			var aRPC = (GeneratedRPCAttribute)Attribute.GetCustomAttribute(currentType, typeof(GeneratedRPCAttribute));
-			var aNames = (GeneratedRPCVariableNamesAttribute)Attribute.GetCustomAttribute(currentType, typeof(GeneratedRPCVariableNamesAttribute));
-			var aInterpol = (GeneratedInterpolAttribute)Attribute.GetCustomAttribute(currentType, typeof(GeneratedInterpolAttribute));
+			Type currentType = GetType("BeardedManStudios.Forge.Networking.Generated." + this.ExactFilename);
+			GeneratedRPCAttribute aRPC = (GeneratedRPCAttribute)Attribute.GetCustomAttribute(currentType, typeof(GeneratedRPCAttribute));
+			GeneratedRPCVariableNamesAttribute aNames = (GeneratedRPCVariableNamesAttribute)Attribute.GetCustomAttribute(currentType, typeof(GeneratedRPCVariableNamesAttribute));
+			GeneratedInterpolAttribute aInterpol = (GeneratedInterpolAttribute)Attribute.GetCustomAttribute(currentType, typeof(GeneratedInterpolAttribute));
 
 			if (aRPC != null && !string.IsNullOrEmpty(aRPC.JsonData))
 				typeData = JSON.Parse(aRPC.JsonData);
@@ -83,17 +83,17 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 			string forgeClassDebug = "Loaded - " + this.ExactFilename + System.Environment.NewLine;
 #endif
 
-			var uniqueMethods = new List<MethodInfo>();
-			var uniqueProperties = new List<PropertyInfo>();
-			var uniqueFields = new List<FieldInfo>();
+			List<MethodInfo> uniqueMethods = new List<MethodInfo>();
+			List<PropertyInfo> uniqueProperties = new List<PropertyInfo>();
+			List<FieldInfo> uniqueFields = new List<FieldInfo>();
 
 			if (currentType == null)
 				throw new NullReferenceException("CANNOT PUT SOURCE CODE IN GENERATED FOLDER! PLEASE REMOVE NON GENERATED CODE!");
 
-			var methods = currentType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy)
+			MethodInfo[] methods = currentType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy)
 				.Where(m => m.GetParameters().Length == 1 && m.GetParameters()[0].ParameterType.FullName == "BeardedManStudios.Forge.Networking.RpcArgs").ToArray();
-			var properties = currentType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
-			var fields = currentType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy)
+			PropertyInfo[] properties = currentType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+			FieldInfo[] fields = currentType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy)
 				.Where(attr => attr.IsDefined(typeof(ForgeGeneratedFieldAttribute), false)).ToArray();
 
 			uniqueMethods.AddRange(methods);
@@ -103,10 +103,10 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 			//If we don't find any fields containing the attribute, the class is either empty, or using the old format. Try parsing old format
 			if (fields.Length == 0)
 			{
-				var legacyFields = currentType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+				FieldInfo[] legacyFields = currentType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 				uniqueFields.AddRange(legacyFields);
 
-				for (var i = 0; i < uniqueFields.Count; ++i)
+				for (int i = 0; i < uniqueFields.Count; ++i)
 				{
 					switch (uniqueFields[i].Name)
 					{
@@ -138,10 +138,10 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 
 			if (currentType.BaseType != null)
 			{
-				var baseType = currentType.BaseType;
-				var networkBehavior = currentType.GetInterface("INetworkBehavior");
-				var factoryInterface = currentType.GetInterface("INetworkObjectFactory");
-				var isMonobehavior = currentType.IsSubclassOf(typeof(MonoBehaviour));
+				Type baseType = currentType.BaseType;
+				Type networkBehavior = currentType.GetInterface("INetworkBehavior");
+				Type factoryInterface = currentType.GetInterface("INetworkObjectFactory");
+				bool isMonobehavior = currentType.IsSubclassOf(typeof(MonoBehaviour));
 
 				if (baseType.FullName == "BeardedManStudios.Forge.Networking.NetworkObject")
 				{
@@ -159,22 +159,22 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 				else
 					ObjectClassType = ForgeBaseClassType.Custom;
 
-				var baseMethods = baseType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
-				var baseProperties = baseType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
-				var baseFields = baseType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+				MethodInfo[] baseMethods = baseType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+				PropertyInfo[] baseProperties = baseType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+				FieldInfo[] baseFields = baseType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 
-				for (var i = 0; i < baseMethods.Length; ++i)
+				for (int i = 0; i < baseMethods.Length; ++i)
 				{
-					for (var x = 0; x < uniqueMethods.Count; ++x)
+					for (int x = 0; x < uniqueMethods.Count; ++x)
 					{
 						if (uniqueMethods[x].Name == baseMethods[i].Name
 						&& uniqueMethods[x].GetParameters().Length == baseMethods[i].GetParameters().Length)
 						{
 							var argsA = uniqueMethods[x].GetParameters();
 							var argsB = baseMethods[i].GetParameters();
-							var same = true;
+							bool same = true;
 
-							for (var j = 0; j < argsA.Length; j++)
+							for (int j = 0; j < argsA.Length; j++)
 							{
 								if (!argsA[j].Equals(argsB[j]))
 								{
@@ -191,9 +191,9 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 					}
 				}
 
-				for (var i = 0; i < baseProperties.Length; ++i)
+				for (int i = 0; i < baseProperties.Length; ++i)
 				{
-					for (var x = 0; x < uniqueProperties.Count; ++x)
+					for (int x = 0; x < uniqueProperties.Count; ++x)
 					{
 						if (uniqueProperties[x].Name == baseProperties[i].Name)
 						{
@@ -203,9 +203,9 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 					}
 				}
 
-				for (var i = 0; i < baseFields.Length; ++i)
+				for (int i = 0; i < baseFields.Length; ++i)
 				{
-					for (var x = 0; x < uniqueFields.Count; ++x)
+					for (int x = 0; x < uniqueFields.Count; ++x)
 					{
 						if (uniqueFields[x].Name == baseFields[i].Name)
 						{
@@ -230,28 +230,28 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 			{
 				if (interpolData != null)
 				{
-					var currentInterpolationVariables = interpolData["inter"].AsArray;
+					JSONArray currentInterpolationVariables = interpolData["inter"].AsArray;
 					if (currentInterpolationVariables != null)
 					{
-						for (var i = 0; i < currentInterpolationVariables.Count; ++i)
+						for (int i = 0; i < currentInterpolationVariables.Count; ++i)
 						{
-							var interPolVal = currentInterpolationVariables[i].AsFloat;
+							float interPolVal = currentInterpolationVariables[i].AsFloat;
 							_interpolationValues.Add(interPolVal);
 						}
 					}
 				}
 				else
 				{
-					for (var i = 0; i < uniqueFields.Count; ++i)
+					for (int i = 0; i < uniqueFields.Count; ++i)
 						_interpolationValues.Add(ForgeNetworkingEditor.DEFAULT_INTERPOLATE_TIME);
 				}
 
-				for (var i = 0; i < uniqueFields.Count; ++i)
+				for (int i = 0; i < uniqueFields.Count; ++i)
 				{
 					if (_interpolationValues.Count == 0)
 						break;
 
-					var val = ForgeClassFieldValue.GetClassField(uniqueFields[i], currentType, _interpolationValues[i] > 0, _interpolationValues[i]);
+					ForgeClassFieldValue val = ForgeClassFieldValue.GetClassField(uniqueFields[i], currentType, _interpolationValues[i] > 0, _interpolationValues[i]);
 					Fields.Add(val);
 #if FORGE_EDITOR_DEBUGGING
 					Debug.Log(val);
@@ -264,21 +264,21 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 
 			forgeClassDebug += "Methods:\n";
 #endif
-			var rpcSupportedTypes = new List<List<ForgeAcceptableRPCTypes>>();
+			List<List<ForgeAcceptableRPCTypes>> rpcSupportedTypes = new List<List<ForgeAcceptableRPCTypes>>();
 			if (typeData != null)
 			{
-				var currentRPCVariables = typeData["types"].AsArray;
+				JSONArray currentRPCVariables = typeData["types"].AsArray;
 				if (currentRPCVariables != null)
 				{
-					for (var i = 0; i < currentRPCVariables.Count; ++i)
+					for (int i = 0; i < currentRPCVariables.Count; ++i)
 					{
-						var singularArray = currentRPCVariables[i].AsArray;
+						JSONArray singularArray = currentRPCVariables[i].AsArray;
 						if (singularArray != null)
 						{
-							var singularSupportedTypes = new List<ForgeAcceptableRPCTypes>();
-							for (var x = 0; x < singularArray.Count; ++x)
+							List<ForgeAcceptableRPCTypes> singularSupportedTypes = new List<ForgeAcceptableRPCTypes>();
+							for (int x = 0; x < singularArray.Count; ++x)
 							{
-								var singularType = ForgeClassFieldRPCValue.GetTypeFromAcceptable(singularArray[x].Value);
+								ForgeAcceptableRPCTypes singularType = ForgeClassFieldRPCValue.GetTypeFromAcceptable(singularArray[x].Value);
 								singularSupportedTypes.Add(singularType);
 							}
 							rpcSupportedTypes.Add(singularSupportedTypes);
@@ -288,25 +288,25 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 			}
 			else
 			{
-				for (var i = 0; i < uniqueMethods.Count; ++i)
+				for (int i = 0; i < uniqueMethods.Count; ++i)
 					rpcSupportedTypes.Add(new List<ForgeAcceptableRPCTypes>());
 			}
 
-			var typeHelpers = new List<List<string>>();
+			List<List<string>> typeHelpers = new List<List<string>>();
 			if (typeHelperData != null)
 			{
-				var currentHelperRPCTypes = typeHelperData["types"].AsArray;
+				JSONArray currentHelperRPCTypes = typeHelperData["types"].AsArray;
 				if (currentHelperRPCTypes != null)
 				{
-					for (var i = 0; i < currentHelperRPCTypes.Count; ++i)
+					for (int i = 0; i < currentHelperRPCTypes.Count; ++i)
 					{
-						var singularHelperArray = currentHelperRPCTypes[i].AsArray;
+						JSONArray singularHelperArray = currentHelperRPCTypes[i].AsArray;
 						if (singularHelperArray != null)
 						{
-							var singularSupportedTypes = new List<string>(new string[Mathf.Max(singularHelperArray.Count, rpcSupportedTypes.Count)]);
-							for (var x = 0; x < singularHelperArray.Count; ++x)
+							List<string> singularSupportedTypes = new List<string>(new string[Mathf.Max(singularHelperArray.Count, rpcSupportedTypes.Count)]);
+							for (int x = 0; x < singularHelperArray.Count; ++x)
 							{
-								var singularHelperType = singularHelperArray[x].Value.Replace(" ", string.Empty);
+								string singularHelperType = singularHelperArray[x].Value.Replace(" ", string.Empty);
 								singularSupportedTypes[x] = singularHelperType;
 							}
 							typeHelpers.Add(singularSupportedTypes);
@@ -317,13 +317,13 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 			else
 			{
 				//This is missing the type helper data
-				for (var i = 0; i < rpcSupportedTypes.Count; ++i)
+				for (int i = 0; i < rpcSupportedTypes.Count; ++i)
 				{
 					typeHelpers.Add(new List<string>(new string[rpcSupportedTypes[i].Count]));
 				}
 			}
 
-			for (var i = 0; i < uniqueMethods.Count; ++i)
+			for (int i = 0; i < uniqueMethods.Count; ++i)
 			{
 				RPCS.Add(new ForgeClassRPCValue(uniqueMethods[i], rpcSupportedTypes[i], typeHelpers[i]));
 #if FORGE_EDITOR_DEBUGGING
@@ -349,9 +349,9 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 
 		public static bool HasFilename(List<ForgeClassObject> collection, string filename)
 		{
-			var returnValue = false;
+			bool returnValue = false;
 
-			foreach (var fo in collection)
+			foreach (ForgeClassObject fo in collection)
 			{
 				if (fo.Filename.ToLower() == filename.ToLower())
 				{
@@ -365,9 +365,9 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 
 		public static bool HasExactFilename(List<ForgeClassObject> collection, string filename)
 		{
-			var returnValue = false;
+			bool returnValue = false;
 			
-			foreach (var fo in collection)
+			foreach (ForgeClassObject fo in collection)
 			{
 				if (fo.ExactFilename.ToLower() == filename.ToLower())
 				{
@@ -383,7 +383,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 		{
 			ForgeClassObject returnValue = null;
 
-			foreach (var fo in collection)
+			foreach (ForgeClassObject fo in collection)
 			{
 				if (fo.Filename.ToLower() == filename.ToLower())
 				{
@@ -399,7 +399,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 		{
 			ForgeClassObject returnValue = null;
 
-			foreach (var fo in collection)
+			foreach (ForgeClassObject fo in collection)
 			{
 				if (fo.ExactFilename.ToLower() == filename.ToLower())
 				{

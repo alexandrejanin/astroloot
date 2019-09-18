@@ -64,7 +64,7 @@ namespace BeardedManStudios.Forge.Networking
 
 		public override void Send(FrameStream frame, bool reliable = false)
 		{
-			var composer = new UDPPacketComposer();
+			UDPPacketComposer composer = new UDPPacketComposer();
 
 			// If this message is reliable then make sure to keep a reference to the composer
 			// so that there are not any run-away threads
@@ -88,8 +88,8 @@ namespace BeardedManStudios.Forge.Networking
 		/// <param name="objectsToSend">Array of vars to be sent, read them with Binary.StreamData.GetBasicType<typeOfObject>()</param>
 		public virtual void Send(Receivers receivers = Receivers.Server, int messageGroupId = MessageGroupIds.START_OF_GENERIC_IDS, bool reliable = false , params object[] objectsToSend)
 		{
-			var data = ObjectMapper.BMSByte(objectsToSend);
-			var sendFrame = new Binary(Time.Timestep, false, data, receivers, messageGroupId, false);
+			BMSByte data = ObjectMapper.BMSByte(objectsToSend);
+			Binary sendFrame = new Binary(Time.Timestep, false, data, receivers, messageGroupId, false);
 			Send(sendFrame, reliable);
 		}
 
@@ -112,7 +112,7 @@ namespace BeardedManStudios.Forge.Networking
 
 			try
 			{
-				var clientPort = overrideBindingPort;
+				ushort clientPort = overrideBindingPort;
 
 				// Make sure not to listen on the same port as the server for local networks
 				if (clientPort == port)
@@ -145,7 +145,7 @@ namespace BeardedManStudios.Forge.Networking
 				headerHash = Websockets.HeaderHashKey();
 
 				// This is a typical Websockets accept header to be validated
-				var connectHeader = Websockets.ConnectionHeader(headerHash, port);
+				byte[] connectHeader = Websockets.ConnectionHeader(headerHash, port);
 
 				try
 				{
@@ -172,7 +172,7 @@ namespace BeardedManStudios.Forge.Networking
 				//Set the port
 				SetPort(clientPort);
 
-				var connectCounter = 0;
+				int connectCounter = 0;
 				Task.Queue(() =>
 				{
 					do
@@ -233,8 +233,8 @@ namespace BeardedManStudios.Forge.Networking
 		/// </summary>
 		private void ReadNetwork()
 		{
-			var groupEP = new IPEndPoint(IPAddress.Any, 0);
-			var incomingEndpoint = string.Empty;
+			IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, 0);
+			string incomingEndpoint = string.Empty;
 
 			try
 			{
@@ -306,7 +306,7 @@ namespace BeardedManStudios.Forge.Networking
 							// This happens if the server is not accepting connections or the max connection count has been reached
 							// We will get two messages. The first one is either a MAX_CONNECTIONS or NOT_ACCEPT_CONNECTIONS group message.
 							// The second one will be the DISCONNECT message
-							var formattedPacket = TranscodePacket(Server, packet);
+							UDPPacket formattedPacket = TranscodePacket(Server, packet);
 
 							if (formattedPacket.groupId == MessageGroupIds.MAX_CONNECTIONS) {
 								Logging.BMSLog.LogWarning("Max Players Reached On Server");
@@ -343,7 +343,7 @@ namespace BeardedManStudios.Forge.Networking
 							continue;
 
 						// Format the byte data into a UDPPacket struct
-						var formattedPacket = TranscodePacket(Server, packet);
+						UDPPacket formattedPacket = TranscodePacket(Server, packet);
 
 						// Check to see if this is a confirmation packet, which is just
 						// a packet to say that the reliable packet has been read
@@ -381,7 +381,7 @@ namespace BeardedManStudios.Forge.Networking
 		private void PacketSequenceComplete(BMSByte data, int groupId, byte receivers, bool isReliable)
 		{
 			// Pull the frame from the sent message
-			var frame = Factory.DecodeMessage(data.CompressBytes(), false, groupId, Server, receivers);
+			FrameStream frame = Factory.DecodeMessage(data.CompressBytes(), false, groupId, Server, receivers);
 
 			if (isReliable)
 			{

@@ -17,7 +17,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 				}
 			}
 			
-			var availableCallback = false;
+			bool availableCallback = false;
 			NetworkObject obj = null;
 			MainThreadManager.Run(() =>
 			{
@@ -39,13 +39,21 @@ namespace BeardedManStudios.Forge.Networking.Generated
 						availableCallback = true;
 						obj = new NetworkCameraNetworkObject(networker, id, frame);
 						break;
-					case TestNetworkObject.IDENTITY:
+					case PlayerCombatNetworkObject.IDENTITY:
 						availableCallback = true;
-						obj = new TestNetworkObject(networker, id, frame);
+						obj = new PlayerCombatNetworkObject(networker, id, frame);
+						break;
+					case PlayerMovementNetworkObject.IDENTITY:
+						availableCallback = true;
+						obj = new PlayerMovementNetworkObject(networker, id, frame);
 						break;
 					case PlayerNetworkObject.IDENTITY:
 						availableCallback = true;
 						obj = new PlayerNetworkObject(networker, id, frame);
+						break;
+					case TestNetworkObject.IDENTITY:
+						availableCallback = true;
+						obj = new TestNetworkObject(networker, id, frame);
 						break;
 				}
 

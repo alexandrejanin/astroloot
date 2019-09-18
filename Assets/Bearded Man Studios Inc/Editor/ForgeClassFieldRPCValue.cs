@@ -46,13 +46,13 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 
 		public static ForgeClassFieldRPCValue GetClassField(FieldInfo field, Type t, bool interpolate, float interpolateValue)
 		{
-			var name = field.Name.Replace("_", string.Empty);
+			string name = field.Name.Replace("_", string.Empty);
 			object value = null;
 			//if (!t.IsAbstract)
 			//    value = field.GetValue(t);
 
-			var type = ForgeAcceptableRPCTypes.BYTE;
-			var fieldType = field.FieldType;
+			ForgeAcceptableRPCTypes type = ForgeAcceptableRPCTypes.BYTE;
+			Type fieldType = field.FieldType;
 			if (fieldType == typeof(int))
 				type = ForgeAcceptableRPCTypes.INT;
 			else if (fieldType == typeof(uint))

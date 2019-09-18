@@ -22,8 +22,8 @@ public class ChatManager : ChatManagerBehavior
 
 	public override void SendMessage(RpcArgs args)
 	{
-		var username = args.GetNext<string>();
-		var message = args.GetNext<string>();
+		string username = args.GetNext<string>();
+		string message = args.GetNext<string>();
 
 		Text label = null;
 		if (messageLabels.Count == maxMessages)
@@ -41,11 +41,11 @@ public class ChatManager : ChatManagerBehavior
 
 	public void SendMessage()
 	{
-		var message = messageInput.text.Trim();
+		string message = messageInput.text.Trim();
 		if (string.IsNullOrEmpty(message))
 			return;
 
-		var name = networkObject.Networker.Me.Name;
+		string name = networkObject.Networker.Me.Name;
 
 		if (string.IsNullOrEmpty(name))
 			name = NetWorker.InstanceGuid.ToString().Substring(0, 5);

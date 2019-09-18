@@ -27,12 +27,12 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 		public ForgeClassRPCValue(MethodInfo method, List<ForgeAcceptableRPCTypes> args = null, List<string> helperTypes = null)
 		{
 			RPCName = method.Name;
-			var paramsInfo = method.GetParameters();
+			ParameterInfo[] paramsInfo = method.GetParameters();
 			if (args != null)
 				Arguments = args;
 			else
 			{
-				foreach (var info in paramsInfo)
+				foreach (ParameterInfo info in paramsInfo)
 					Arguments.Add(GetATypeFromPInfo(info));
 			}
 
@@ -40,15 +40,15 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 				HelperTypes = helperTypes;
 			else
 			{
-				for (var i = 0; i < Arguments.Count; ++i)
+				for (int i = 0; i < Arguments.Count; ++i)
 					HelperTypes.Add(string.Empty);
 			}
 		}
 
 		public static ForgeAcceptableRPCTypes GetATypeFromPInfo(ParameterInfo pInfo)
 		{
-			var type = ForgeAcceptableRPCTypes.STRING;
-			var fieldType = pInfo.ParameterType;
+			ForgeAcceptableRPCTypes type = ForgeAcceptableRPCTypes.STRING;
+			Type fieldType = pInfo.ParameterType;
 			if (fieldType == typeof(int))
 				type = ForgeAcceptableRPCTypes.INT;
 			else if (fieldType == typeof(uint))

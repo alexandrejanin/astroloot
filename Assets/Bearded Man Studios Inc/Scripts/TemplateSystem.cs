@@ -52,16 +52,16 @@ namespace BeardedManStudios.Templating
 
 		public string Parse()
 		{
-			var lines = new List<string>(targetTemplate.Replace("\r\n", "\n").Split('\n'));
+			List<string> lines = new List<string>(targetTemplate.Replace("\r\n", "\n").Split('\n'));
 
-			var finalLines = new List<string>(lines.Count);
+			List<string> finalLines = new List<string>(lines.Count);
 
-			var offset = 0;
-			var parsed = false;
-			var skipLine = false;
-			var foundState = State.None;
+			int offset = 0;
+			bool parsed = false;
+			bool skipLine = false;
+			State foundState = State.None;
 			StringBuilder sb;
-			for (var i = 0; i < lines.Count; i++)
+			for (int i = 0; i < lines.Count; i++)
 			{
 				parsed = false;
 				skipLine = false;
@@ -69,18 +69,18 @@ namespace BeardedManStudios.Templating
 
 				while (true)
 				{
-					var current = sb.ToString();
-					var parseStart = current.IndexOf(">:", offset);
+					string current = sb.ToString();
+					int parseStart = current.IndexOf(">:", offset);
 					if (parseStart < 0)
 						break;
 
 					parseStart += 2;
-					var parseEnd = current.IndexOf(":<", offset + parseStart);
+					int parseEnd = current.IndexOf(":<", offset + parseStart);
 
 					if (parseEnd < 0)
 						throw new Exception("There was a parse start but no end on line " + (i + 1));
 
-					var contents = current.Substring(parseStart, parseEnd - parseStart);
+					string contents = current.Substring(parseStart, parseEnd - parseStart);
 
 					sb.Remove(parseStart - 2, parseEnd - parseStart + 4);
 
@@ -119,7 +119,7 @@ namespace BeardedManStudios.Templating
 					parsed = true;
 				}
 
-				var built = sb.ToString();
+				string built = sb.ToString();
 
 				if (parsed && built.Trim().Length == 0)
 					lines.RemoveAt(i--);
@@ -155,7 +155,7 @@ namespace BeardedManStudios.Templating
 
 				state |= State.ForEach;
 
-				var iterateeName = contents.TrimStart("FOREACH ".ToCharArray());
+				string iterateeName = contents.TrimStart("FOREACH ".ToCharArray());
 
 				if (!replaces.ContainsKey(iterateeName))
 					throw new Exception("No variable with the name " + iterateeName + " could be located");
@@ -176,7 +176,7 @@ namespace BeardedManStudios.Templating
 
 				state |= State.ForEvery;
 
-				var iterateeName = contents.TrimStart("FOREVERY ".ToCharArray());
+				string iterateeName = contents.TrimStart("FOREVERY ".ToCharArray());
 
 				if (!replaces.ContainsKey(iterateeName))
 					throw new Exception("No variable with the name " + iterateeName + " could be located");
@@ -205,7 +205,7 @@ namespace BeardedManStudios.Templating
 				else
 				{
 					var idxStr = contents.TrimStart('[').TrimEnd(']');
-					var idx = -1;
+					int idx = -1;
 					if (int.TryParse(idxStr, out idx))
 						return FormatReturn(((object[])iteratee[currentIterateeIndex])[idx]);
 					else
@@ -232,7 +232,7 @@ namespace BeardedManStudios.Templating
 				return data.ToString().ToLower();
 			else if (data is float)
 			{
-				var fData = (float) data;
+				float fData = (float) data;
 				return fData.ToString(CultureInfo.InvariantCulture) + "f";
 			}
 			return data.ToString();

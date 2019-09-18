@@ -35,7 +35,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			if (!obj.IsOwner)
 			{
 				if (!skipAttachIds.ContainsKey(obj.NetworkId)){
-					var newId = obj.NetworkId + 1;
+					uint newId = obj.NetworkId + 1;
 					ProcessOthers(gameObject.transform, ref newId);
 				}
 				else
@@ -44,11 +44,11 @@ namespace BeardedManStudios.Forge.Networking.Generated
 
 			if (obj.Metadata != null)
 			{
-				var transformFlags = obj.Metadata[0];
+				byte transformFlags = obj.Metadata[0];
 
 				if (transformFlags != 0)
 				{
-					var metadataTransform = new BMSByte();
+					BMSByte metadataTransform = new BMSByte();
 					metadataTransform.Clone(obj.Metadata);
 					metadataTransform.MoveStartIndex(1);
 

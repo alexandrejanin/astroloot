@@ -31,7 +31,7 @@ namespace BeardedManStudios.Concurrency
 
         public bool TryDequeue(out T result)
         {
-            var lockTaken = false;
+            bool lockTaken = false;
             try
             {
                 @lock.Enter(ref lockTaken);
@@ -52,7 +52,7 @@ namespace BeardedManStudios.Concurrency
 
         public new void Enqueue(T item)
         {
-            var lockTaken = false;
+            bool lockTaken = false;
             try
             {
                 @lock.Enter(ref lockTaken);

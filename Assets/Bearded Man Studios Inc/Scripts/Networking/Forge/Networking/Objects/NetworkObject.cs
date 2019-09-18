@@ -312,13 +312,13 @@ namespace BeardedManStudios.Forge.Networking
 
 		public static void ClearNetworkObjects(NetWorker networker)
 		{
-			var targets = networkObjects.Where(n => n.Networker == networker).ToArray();
-			var pendingTargets = pendingCreates.Where(n => n.Networker == networker).ToArray();
+			NetworkObject[] targets = networkObjects.Where(n => n.Networker == networker).ToArray();
+			NetworkObject[] pendingTargets = pendingCreates.Where(n => n.Networker == networker).ToArray();
 
-			for (var i = 0; i < targets.Length; i++)
+			for (int i = 0; i < targets.Length; i++)
 				networkObjects.Remove(targets[i]);
 
-			for (var i = 0; i < pendingTargets.Length; i++)
+			for (int i = 0; i < pendingTargets.Length; i++)
 				pendingCreates.Remove(pendingTargets[i]);
 		}
 
@@ -376,7 +376,7 @@ namespace BeardedManStudios.Forge.Networking
 				Networker.objectCreateAttach += CreatedOnNetwork;
 				//TODO: MOVED HERE (#1)
 
-				var data = ObjectMapper.BMSByte(UniqueIdentity, hash, CreateCode);
+				BMSByte data = ObjectMapper.BMSByte(UniqueIdentity, hash, CreateCode);
 				WritePayload(data);
 
 				// Write if the object has metadata
@@ -384,8 +384,8 @@ namespace BeardedManStudios.Forge.Networking
 				if (Metadata != null)
 					ObjectMapper.Instance.MapBytes(data, Metadata);
 
-				var useMask = networker is TCPClient;
-				var createRequest = new Binary(CreateTimestep, useMask, data, Receivers.Server, MessageGroupIds.CREATE_NETWORK_OBJECT_REQUEST, networker is BaseTCP, RouterIds.NETWORK_OBJECT_ROUTER_ID);
+				bool useMask = networker is TCPClient;
+				Binary createRequest = new Binary(CreateTimestep, useMask, data, Receivers.Server, MessageGroupIds.CREATE_NETWORK_OBJECT_REQUEST, networker is BaseTCP, RouterIds.NETWORK_OBJECT_ROUTER_ID);
 
 				NetWorker.BaseNetworkEvent request = (NetWorker sender) =>
 				{
@@ -444,7 +444,7 @@ namespace BeardedManStudios.Forge.Networking
 
 				// Let all the clients know that a new object is being created
 				CreateObjectOnServer(frame.Sender);
-				var createObject = CreateObjectOnServer(frame.Sender, hash);
+				Binary createObject = CreateObjectOnServer(frame.Sender, hash);
 
                 // Send the message back to the sending client so that it can finish setting up the network object
 #if STEAMWORKS
@@ -468,9 +468,9 @@ namespace BeardedManStudios.Forge.Networking
 				if (frame.StreamData.GetBasicType<bool>())
 					Metadata = ObjectMapper.Instance.Map<byte[]>(frame.StreamData);
 
-				var createdByteData = ObjectMapper.BMSByte(serverId);
+				BMSByte createdByteData = ObjectMapper.BMSByte(serverId);
 
-				var createdFrame = new Binary(Networker.Time.Timestep, Networker is TCPClient, createdByteData, Receivers.Server, MessageGroupIds.GetId("NO_CREATED_" + NetworkId), Networker is BaseTCP, RouterIds.CREATED_OBJECT_ROUTER_ID);
+				Binary createdFrame = new Binary(Networker.Time.Timestep, Networker is TCPClient, createdByteData, Receivers.Server, MessageGroupIds.GetId("NO_CREATED_" + NetworkId), Networker is BaseTCP, RouterIds.CREATED_OBJECT_ROUTER_ID);
 
 				if (networker is UDPClient)
 					((UDPClient)networker).Send(createdFrame, true);
@@ -585,8 +585,8 @@ namespace BeardedManStudios.Forge.Networking
 			if (!IsServer && args.Info.SendingPlayer != Owner)
 				return;
 
-			var methodName = args.GetNext<string>();
-			var first = args.GetNext<bool>();
+			string methodName = args.GetNext<string>();
+			bool first = args.GetNext<bool>();
 
 			// TODO:  If this is the server it should warn about invalid id
 			byte rpcId;
@@ -595,7 +595,7 @@ namespace BeardedManStudios.Forge.Networking
 
 			lock (rpcBuffer)
 			{
-				for (var i = 0; i < rpcBuffer.Count; i++)
+				for (int i = 0; i < rpcBuffer.Count; i++)
 				{
 					if (rpcBuffer[i].methodId == rpcId)
 					{
@@ -628,7 +628,7 @@ namespace BeardedManStudios.Forge.Networking
 			}
 
 			// The data that is to be sent to all the clients who did not request this object to be created
-			var data = ObjectMapper.BMSByte(UniqueIdentity, targetHash, NetworkId, CreateCode);
+			BMSByte data = ObjectMapper.BMSByte(UniqueIdentity, targetHash, NetworkId, CreateCode);
 
 			// Write all of the most up to date data for this object
 			WritePayload(data);
@@ -638,7 +638,7 @@ namespace BeardedManStudios.Forge.Networking
 			if (Metadata != null)
 				ObjectMapper.Instance.MapBytes(data, Metadata);
 
-			var createObject = new Binary(CreateTimestep, false, data, Receivers.All, MessageGroupIds.CREATE_NETWORK_OBJECT_REQUEST, Networker is BaseTCP, RouterIds.NETWORK_OBJECT_ROUTER_ID);
+			Binary createObject = new Binary(CreateTimestep, false, data, Receivers.All, MessageGroupIds.CREATE_NETWORK_OBJECT_REQUEST, Networker is BaseTCP, RouterIds.NETWORK_OBJECT_ROUTER_ID);
 
 			if (targetHash != 0)
 				return createObject;
@@ -660,19 +660,19 @@ namespace BeardedManStudios.Forge.Networking
 
 		public static void PlayerAccepted(NetworkingPlayer player, NetworkObject[] networkObjects)
 		{
-			foreach (var obj in networkObjects)
+			foreach (NetworkObject obj in networkObjects)
 				obj.currentRpcBufferCounts.Add(player, obj.rpcBuffer.Count);
 
 			Task.Queue(() =>
 			{
 				lock (player)
 				{
-					var targetData = new BMSByte();
+					BMSByte targetData = new BMSByte();
 					ulong timestep = 0;
 					NetWorker networker = null;
-					var indexes = new List<int>();
+					List<int> indexes = new List<int>();
 
-					foreach (var obj in networkObjects)
+					foreach (NetworkObject obj in networkObjects)
 					{
 						if (obj.Owner == player)
 							continue;
@@ -693,15 +693,15 @@ namespace BeardedManStudios.Forge.Networking
 						networker = obj.Networker;
 					}
 
-					var indexBytes = ObjectMapper.BMSByte(indexes.Count);
-					for (var i = 0; i < indexes.Count; i++)
+					BMSByte indexBytes = ObjectMapper.BMSByte(indexes.Count);
+					for (int i = 0; i < indexes.Count; i++)
 						ObjectMapper.Instance.MapBytes(indexBytes, indexes[i]);
 
 					targetData.InsertRange(0, indexBytes);
 
 					if (targetData.Size > 0 && networker != null)
 					{
-						var targetCreateObject = new Binary(timestep, false, targetData, Receivers.Target, MessageGroupIds.CREATE_NETWORK_OBJECT_REQUEST, networker is BaseTCP, RouterIds.ACCEPT_MULTI_ROUTER_ID);
+						Binary targetCreateObject = new Binary(timestep, false, targetData, Receivers.Target, MessageGroupIds.CREATE_NETWORK_OBJECT_REQUEST, networker is BaseTCP, RouterIds.ACCEPT_MULTI_ROUTER_ID);
 
 #if STEAMWORKS
                         if (networker is SteamP2PServer)
@@ -776,7 +776,7 @@ namespace BeardedManStudios.Forge.Networking
 
                 pendingCreates = pendingCreates.OrderBy(obj => obj.NetworkId).ToList();
 
-				for (var i = 0; i < pendingCreates.Count; i++)
+				for (int i = 0; i < pendingCreates.Count; i++)
 				{
 					if (!target.ObjectCreatedRegistered)
 						continue;
@@ -861,7 +861,7 @@ namespace BeardedManStudios.Forge.Networking
 
 
 			// The id for this RPC is goign to be the next index in the dictionary
-			var id = (byte)Rpcs.Count;
+			byte id = (byte)Rpcs.Count;
 			Rpcs.Add(id, new Rpc(callback, argumentTypes));
 			rpcLookup.Add(methodName, id);
 			inverseRpcLookup.Add(id, methodName);
@@ -892,10 +892,10 @@ namespace BeardedManStudios.Forge.Networking
 
 		private void ClearClientPendingRPC()
 		{
-			foreach (var rpc in pendingClientRegisterRpc)
+			foreach (PendingRpc rpc in pendingClientRegisterRpc)
 				InvokeRpc(rpc.sender, rpc.timestep, rpc.data, rpc.receivers);
 
-            foreach (var rpc in pendingLocalRpcs)
+            foreach (PendingLocalRPC rpc in pendingLocalRpcs)
                 if (rpc.Reliable)
                     SendRpc(rpc.TargetPlayer, rpc.MethodId, rpc.Args);
                 else
@@ -928,23 +928,23 @@ namespace BeardedManStudios.Forge.Networking
 				}
 			}
 
-			var methodId = data.GetBasicType<byte>();
+			byte methodId = data.GetBasicType<byte>();
 
 			if (!Rpcs.ContainsKey(methodId))
 				throw new BaseNetworkException("The rpc " + methodId + " was not found on this network object");
 
-			var behaviorFlags = data.GetBasicType<byte>();
+			byte behaviorFlags = data.GetBasicType<byte>();
 
-			var overwriteExisting = (RPC_BEHAVIOR_OVERWRITE & behaviorFlags) != 0;
+			bool overwriteExisting = (RPC_BEHAVIOR_OVERWRITE & behaviorFlags) != 0;
 
-			var args = Rpcs[methodId].ReadArgs(data);
+			object[] args = Rpcs[methodId].ReadArgs(data);
 
-			var rpcArgs = new RpcArgs(args, new RPCInfo { SendingPlayer = sender, TimeStep = timestep });
+			RpcArgs rpcArgs = new RpcArgs(args, new RPCInfo { SendingPlayer = sender, TimeStep = timestep });
 
 			// If we are the server we need to determine if this RPC is okay to replicate
 			if (Networker is IServer && receivers != Receivers.Target)
 			{
-				var methodName = inverseRpcLookup[methodId];
+				string methodName = inverseRpcLookup[methodId];
 
 				// Validate the RPC call using the method name and the supplied arguments from the client
 				// then replicate to the correct receivers
@@ -1007,7 +1007,7 @@ namespace BeardedManStudios.Forge.Networking
 
 			lock (rpcBuffer)
 			{
-				for (var i = 0; i < count; i++)
+				for (int i = 0; i < count; i++)
 					FinalizeSendRpc(rpcBuffer[i].data, rpcBuffer[i].receivers, rpcBuffer[i].methodId, rpcBuffer[i].timestep, true, player);
 			}
 		}
@@ -1212,7 +1212,7 @@ namespace BeardedManStudios.Forge.Networking
 			// Make sure that the parameters that were passed match the desired arguments
 			Rpcs[methodId].ValidateParameters(args);
 
-			var timestep = Networker.Time.Timestep;
+			ulong timestep = Networker.Time.Timestep;
 
 			// The server should execute the RPC before it is sent out to the clients
 			if (Networker is IServer)
@@ -1236,7 +1236,7 @@ namespace BeardedManStudios.Forge.Networking
 			// Map the id of the object into the data so that the program knows what fire from
 			// Map the id of the Rpc as the second data into the byte array
 			// Map all of the data to bytes
-			var data = ObjectMapper.BMSByte(NetworkId, methodId, behaviorFlags);
+			BMSByte data = ObjectMapper.BMSByte(NetworkId, methodId, behaviorFlags);
 			ObjectMapper.Instance.MapBytes(data, args);
 
 			if (Networker is IServer)
@@ -1252,7 +1252,7 @@ namespace BeardedManStudios.Forge.Networking
 
 					lock (rpcBuffer)
 					{
-						var rpc = new BufferedRpc()
+						BufferedRpc rpc = new BufferedRpc()
 						{
 							data = new BMSByte().Clone(data),
 							receivers = receivers,
@@ -1260,10 +1260,10 @@ namespace BeardedManStudios.Forge.Networking
 							timestep = timestep
 						};
 
-						var replaced = false;
+						bool replaced = false;
 						if (replacePrevious)
 						{
-							for (var i = 0; i < rpcBuffer.Count; i++)
+							for (int i = 0; i < rpcBuffer.Count; i++)
 							{
 								if (rpcBuffer[i].methodId == methodId)
 								{
@@ -1310,7 +1310,7 @@ namespace BeardedManStudios.Forge.Networking
 		private void FinalizeSendRpc(BMSByte data, Receivers receivers, byte methodId, ulong timestep, bool reliable, NetworkingPlayer targetPlayer = null, NetworkingPlayer sender = null)
 		{
 			// Generate a binary frame with a router
-			var rpcFrame = new Binary(timestep, Networker is TCPClient, data, receivers, MessageGroupIds.GetId("NO_RPC_" + NetworkId + "_" + methodId), Networker is BaseTCP, RouterIds.RPC_ROUTER_ID);
+			Binary rpcFrame = new Binary(timestep, Networker is TCPClient, data, receivers, MessageGroupIds.GetId("NO_RPC_" + NetworkId + "_" + methodId), Networker is BaseTCP, RouterIds.RPC_ROUTER_ID);
 			rpcFrame.SetSender(sender);
 
 			if (targetPlayer != null && Networker is IServer)
@@ -1370,7 +1370,7 @@ namespace BeardedManStudios.Forge.Networking
 				sendBinaryData.Append(data);
 
 				// Generate a binary frame with a router
-				var frame = new Binary(Networker.Time.Timestep, Networker is TCPClient, sendBinaryData, receivers, MessageGroupIds.GetId("NO_BIN_DATA_" + NetworkId), Networker is BaseTCP, RouterIds.BINARY_DATA_ROUTER_ID);
+				Binary frame = new Binary(Networker.Time.Timestep, Networker is TCPClient, sendBinaryData, receivers, MessageGroupIds.GetId("NO_BIN_DATA_" + NetworkId), Networker is BaseTCP, RouterIds.BINARY_DATA_ROUTER_ID);
 
 #if STEAMWORKS
                 if (Networker is SteamP2PServer)
@@ -1399,7 +1399,7 @@ namespace BeardedManStudios.Forge.Networking
 		public void ReadBinaryData(FrameStream frame)
 		{
 			// Get the subrouter from the binary data
-			var subRouter = frame.StreamData.GetBasicType<byte>();
+			byte subRouter = frame.StreamData.GetBasicType<byte>();
 
 			switch (subRouter)
 			{
@@ -1412,7 +1412,7 @@ namespace BeardedManStudios.Forge.Networking
 						// Replicate the data to the other clients
 						if (Networker is IServer)
 						{
-							var data = new BMSByte().Clone(frame.StreamData);
+							BMSByte data = new BMSByte().Clone(frame.StreamData);
 
 							if (data != null)
 								SendBinaryData(data, ProximityBasedFields ? ProximityBasedFieldsMode : Receivers.All, DIRTY_FIELD_SUB_ROUTER_ID, false, true);
@@ -1456,7 +1456,7 @@ namespace BeardedManStudios.Forge.Networking
 
 			if (timeStep - lastUpdateTimestep > UpdateInterval)
 			{
-				var data = SerializeDirtyFields();
+				BMSByte data = SerializeDirtyFields();
 
                 if (data != null)
                 {
@@ -1511,7 +1511,7 @@ namespace BeardedManStudios.Forge.Networking
 		public static void CreateNetworkObject(NetWorker networker, NetworkingPlayer player, Binary frame)
 		{
 			// Get the identity so that the proper type / subtype can be selected
-			var identity = frame.StreamData.GetBasicType<int>();
+			int identity = frame.StreamData.GetBasicType<int>();
 
 			if (networker is IServer)
 			{
@@ -1526,10 +1526,10 @@ namespace BeardedManStudios.Forge.Networking
 			}
 			else if (networker is IClient)
 			{
-				var hash = frame.StreamData.GetBasicType<int>();
+				int hash = frame.StreamData.GetBasicType<int>();
 
 				// Get the server assigned id for this network object
-				var id = frame.StreamData.GetBasicType<uint>();
+				uint id = frame.StreamData.GetBasicType<uint>();
 
 				if (hash != 0)
 				{
@@ -1559,9 +1559,9 @@ namespace BeardedManStudios.Forge.Networking
 		public static void CreateMultiNetworkObject(NetWorker networker, NetworkingPlayer player, Binary frame)
 		{
 			int index, count = frame.StreamData.GetBasicType<int>();
-			var head = frame.StreamData.StartIndex();
+			int head = frame.StreamData.StartIndex();
 
-			for (var i = 0; i < count; i++)
+			for (int i = 0; i < count; i++)
 			{
 				// Return to the head and then move forward to the next index
 				frame.StreamData.MoveStartIndex(-frame.StreamData.StartIndex() + i * sizeof(int) + head);
@@ -1574,7 +1574,7 @@ namespace BeardedManStudios.Forge.Networking
 				frame.StreamData.MoveStartIndex(index);
 
 				// Create an isolated frame for this object
-				var subFrame = (Binary)frame.Clone();
+				Binary subFrame = (Binary)frame.Clone();
 				CreateNetworkObject(networker, player, subFrame);
 			}
 		}

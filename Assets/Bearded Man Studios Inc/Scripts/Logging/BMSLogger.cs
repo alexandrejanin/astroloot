@@ -39,7 +39,7 @@ public class BMSLogger : MonoBehaviour, IBMSLogger
 			return;
 
 #if !WINDOWS_UWP && !UNITY_IOS
-		var directory = Application.dataPath + "/" + SAVE_FILE_DIRECTORY_NAME;
+		string directory = Application.dataPath + "/" + SAVE_FILE_DIRECTORY_NAME;
 		filepath = directory + SAVE_FILE_NAME;
 		if (!System.IO.Directory.Exists(directory))
 			System.IO.Directory.CreateDirectory(directory);
@@ -52,10 +52,10 @@ public class BMSLogger : MonoBehaviour, IBMSLogger
 		}
 #endif
 
-		var prefab = Resources.Load<GameObject>("BMSLogger");
+		GameObject prefab = Resources.Load<GameObject>("BMSLogger");
 		if (prefab != null)
 		{
-			var comp = prefab.GetComponent<BMSLogger>();
+			BMSLogger comp = prefab.GetComponent<BMSLogger>();
 			_instance = new GameObject("BMSLogger", typeof(BMSLogger)).GetComponent<BMSLogger>();
 			_instance.LoggerVisible = comp.LoggerVisible;
 			_instance.LogToFile = comp.LogToFile;
@@ -87,7 +87,7 @@ public class BMSLogger : MonoBehaviour, IBMSLogger
 
 	public void LogFormat(string log, params object[] args)
 	{
-		var logInfo = string.Format(log, args);
+		string logInfo = string.Format(log, args);
 		PutLogInFile(BMSLog.Logtype.Info, logInfo);
 		BMSLogs += logInfo + System.Environment.NewLine;
 
@@ -99,7 +99,7 @@ public class BMSLogger : MonoBehaviour, IBMSLogger
 
 	public void LogWarning(string log)
 	{
-		var coloredWarning = string.Format("<color=yellow>{0}</color>", log);
+		string coloredWarning = string.Format("<color=yellow>{0}</color>", log);
 		PutLogInFile(BMSLog.Logtype.Warning, log);
 		BMSLogs += coloredWarning + System.Environment.NewLine;
 
@@ -111,8 +111,8 @@ public class BMSLogger : MonoBehaviour, IBMSLogger
 
 	public void LogWarningFormat(string log, params object[] args)
 	{
-		var logInfo = string.Format(log, args);
-		var coloredWarning = string.Format("<color=yellow>{0}</color>", logInfo);
+		string logInfo = string.Format(log, args);
+		string coloredWarning = string.Format("<color=yellow>{0}</color>", logInfo);
 		PutLogInFile(BMSLog.Logtype.Warning, logInfo);
 		BMSLogs += coloredWarning + System.Environment.NewLine;
 
@@ -124,7 +124,7 @@ public class BMSLogger : MonoBehaviour, IBMSLogger
 
 	public void LogException(string log)
 	{
-		var coloredError = string.Format("<color=red>{0}</color>", log);
+		string coloredError = string.Format("<color=red>{0}</color>", log);
 		Debug.LogError(log);
 		PutLogInFile(BMSLog.Logtype.Exception, log);
 		BMSLogs += coloredError + System.Environment.NewLine;
@@ -132,8 +132,8 @@ public class BMSLogger : MonoBehaviour, IBMSLogger
 
 	public void LogExceptionFormat(string log, params object[] args)
 	{
-		var logInfo = string.Format(log, args);
-		var coloredError = string.Format("<color=red>{0}</color>", logInfo);
+		string logInfo = string.Format(log, args);
+		string coloredError = string.Format("<color=red>{0}</color>", logInfo);
 		Debug.LogError(logInfo);
 		PutLogInFile(BMSLog.Logtype.Exception, logInfo);
 		BMSLogs += coloredError + System.Environment.NewLine;
@@ -188,13 +188,13 @@ public class BMSLogger : MonoBehaviour, IBMSLogger
 
 		lock (Mutex)
 		{
-			var read = string.Empty;
-			using (var sr = new System.IO.StreamReader(filepath))
+			string read = string.Empty;
+			using (System.IO.StreamReader sr = new System.IO.StreamReader(filepath))
 			{
 				read = sr.ReadToEnd();
 			}
 
-			var dlog = string.Format("[{0} - {1}] {2}", System.DateTime.Now.ToString(), type.ToString().ToUpper(), log);
+			string dlog = string.Format("[{0} - {1}] {2}", System.DateTime.Now.ToString(), type.ToString().ToUpper(), log);
 			if (type == BMSLog.Logtype.Exception)
 			{
 				dlog = string.Format("{0}{1}{2}",
@@ -203,9 +203,9 @@ public class BMSLogger : MonoBehaviour, IBMSLogger
 					System.Environment.StackTrace);
 
 			}
-			var finalLog = string.Format("{0}{1}", read, dlog);
+			string finalLog = string.Format("{0}{1}", read, dlog);
 
-			using (var sw = new System.IO.StreamWriter(filepath))
+			using (System.IO.StreamWriter sw = new System.IO.StreamWriter(filepath))
 			{
 				sw.WriteLine(finalLog);
 			}

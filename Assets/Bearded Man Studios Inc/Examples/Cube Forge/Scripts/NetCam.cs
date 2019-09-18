@@ -70,7 +70,7 @@ public class NetCam : NetworkCameraBehavior
 				if (primitive == null)
 					return;
 
-				var position = hit.transform.position;
+				Vector3 position = hit.transform.position;
 				position += hit.normal;
 
 				if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))

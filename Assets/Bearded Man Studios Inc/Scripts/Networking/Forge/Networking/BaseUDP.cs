@@ -57,7 +57,7 @@ namespace BeardedManStudios.Forge.Networking
 
 		private byte PullPacketMetadata(BMSByte packet)
 		{
-			var meta = packet.GetBasicType<byte>(packet.Size - sizeof(byte));
+			byte meta = packet.GetBasicType<byte>(packet.Size - sizeof(byte));
 			packet.SetSize(packet.Size - sizeof(byte));
 			return meta;
 		}
@@ -65,7 +65,7 @@ namespace BeardedManStudios.Forge.Networking
 		private int PullPacketOrderId(BMSByte packet)
 		{
 			// This assumes that packet metadata was pulled first
-			var orderId = packet.GetBasicType<int>(packet.Size - sizeof(int));
+			int orderId = packet.GetBasicType<int>(packet.Size - sizeof(int));
 			packet.SetSize(packet.Size - sizeof(int));
 			return orderId;
 		}
@@ -73,7 +73,7 @@ namespace BeardedManStudios.Forge.Networking
 		private int PullPacketGroupId(BMSByte packet)
 		{
 			// This assumes that packet order id was pulled first
-			var groupId = packet.GetBasicType<int>(packet.Size - sizeof(int));
+			int groupId = packet.GetBasicType<int>(packet.Size - sizeof(int));
 			packet.SetSize(packet.Size - sizeof(int));
 			return groupId;
 		}
@@ -81,7 +81,7 @@ namespace BeardedManStudios.Forge.Networking
 		private ulong PullPacketUniqueId(BMSByte packet, bool endPacket)
 		{
 			// This assumes that packet group id was pulled first
-			var uniqueId = packet.GetBasicType<ulong>(packet.Size - sizeof(ulong));
+			ulong uniqueId = packet.GetBasicType<ulong>(packet.Size - sizeof(ulong));
 
 			// Don't set the size like in the others unless it is the end packet 
 			// because the frame will consume this time step The frame expects
@@ -94,26 +94,26 @@ namespace BeardedManStudios.Forge.Networking
 
 		protected UDPPacket TranscodePacket(NetworkingPlayer sender, BMSByte packet)
 		{
-			var meta = PullPacketMetadata(packet);
+			byte meta = PullPacketMetadata(packet);
 
 			// If the last byte says it is reliable
-			var reliable = (0x1 & meta) != 0;
+			bool reliable = (0x1 & meta) != 0;
 
 			// If the last byte says that it is the last packet for this group
-			var endPacket = (0x2 & meta) != 0;
+			bool endPacket = (0x2 & meta) != 0;
 
 			// If the last byte says that it is a conformation packet
-			var confirmationPacket = (0x4 & meta) != 0;
+			bool confirmationPacket = (0x4 & meta) != 0;
 
 			// Get the receivers from the frist 4 bits
-			var receivers = (Receivers)(meta >> 4);
+			Receivers receivers = (Receivers)(meta >> 4);
 
 			// The group and order for this packet are assigned to the trailer of the packet, as
 			// the header is reserved for frame formation
-			var orderId = PullPacketOrderId(packet);
-			var groupId = PullPacketGroupId(packet);
+			int orderId = PullPacketOrderId(packet);
+			int groupId = PullPacketGroupId(packet);
 
-			var uniqueId = PullPacketUniqueId(packet, endPacket);
+			ulong uniqueId = PullPacketUniqueId(packet, endPacket);
 
 			// Check to see if this should respond to the sender that this packet has been received
 			if (reliable && !confirmationPacket)
@@ -122,7 +122,7 @@ namespace BeardedManStudios.Forge.Networking
 				Logging.BMSLog.Log($">>>>>>>>>>>>>>>>>>>>>>>>>>> SEND CONFIRM: {uniqueId}");
 #endif
 
-				var confirmation = new byte[sizeof(ulong) + sizeof(int) + sizeof(int) + sizeof(byte)];
+				byte[] confirmation = new byte[sizeof(ulong) + sizeof(int) + sizeof(int) + sizeof(byte)];
 				Buffer.BlockCopy(BitConverter.GetBytes(uniqueId), 0, confirmation, 0, sizeof(ulong));
 				Buffer.BlockCopy(BitConverter.GetBytes(groupId), 0, confirmation, sizeof(ulong), sizeof(int));
 				Buffer.BlockCopy(BitConverter.GetBytes(orderId), 0, confirmation, sizeof(ulong) + sizeof(int), sizeof(int));
@@ -134,7 +134,7 @@ namespace BeardedManStudios.Forge.Networking
 			}
 
 			// Create an instance of a packet struct to be sent off to the packet manager
-			var formattedPacket = new UDPPacket(reliable, endPacket, groupId, orderId, uniqueId, packet.CompressBytes(), confirmationPacket, receivers);
+			UDPPacket formattedPacket = new UDPPacket(reliable, endPacket, groupId, orderId, uniqueId, packet.CompressBytes(), confirmationPacket, receivers);
 
 			return formattedPacket;
 		}

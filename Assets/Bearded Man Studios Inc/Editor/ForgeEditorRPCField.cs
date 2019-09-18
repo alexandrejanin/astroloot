@@ -25,7 +25,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 
 		public ForgeEditorRPCField Clone()
 		{
-			var returnValue = new ForgeEditorRPCField();
+			ForgeEditorRPCField returnValue = new ForgeEditorRPCField();
 
 			returnValue.FieldName = this.FieldName;
 			returnValue.FieldTypes.AddRange(this.FieldTypes);
@@ -47,7 +47,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 
 			if (Dropdown)
 			{
-				for (var i = 0; i < FieldTypes.Count; ++i)
+				for (int i = 0; i < FieldTypes.Count; ++i)
 				{
 					GUILayout.BeginHorizontal();
 					FieldTypes[i].HelperName = EditorGUILayout.TextField(FieldTypes[i].HelperName);
@@ -58,7 +58,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 					//	FieldTypes[i].Type = AcceptableTypes.INT;
 					//}
 
-					var subtractBtn = EditorGUILayout.BeginVertical("Button", GUILayout.Width(75), GUILayout.Height(13));
+					Rect subtractBtn = EditorGUILayout.BeginVertical("Button", GUILayout.Width(75), GUILayout.Height(13));
 					GUI.color = Color.red;
 					if (GUI.Button(subtractBtn, GUIContent.none))
 					{
@@ -84,7 +84,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 					GUILayout.EndHorizontal();
 				}
 
-				var addBtn = EditorGUILayout.BeginVertical("Button", GUILayout.Width(75), GUILayout.Height(13));
+				Rect addBtn = EditorGUILayout.BeginVertical("Button", GUILayout.Width(75), GUILayout.Height(13));
 				GUI.color = Color.green;
 				if (GUI.Button(addBtn, GUIContent.none))
 				{
@@ -112,7 +112,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 
 			rect.y += 2;
 
-			var changingRect = new Rect(rect.x, rect.y, rect.width * 0.3f, EditorGUIUtility.singleLineHeight);
+			Rect changingRect = new Rect(rect.x, rect.y, rect.width * 0.3f, EditorGUIUtility.singleLineHeight);
 			FieldName = EditorGUI.TextField(changingRect, FieldName);
 			changingRect.x = rect.x + rect.width * 0.3f + 10;
 			changingRect.width = rect.width * 0.2f - 10;
@@ -120,7 +120,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 
 			if (Dropdown)
 			{
-				for (var i = 0; i < FieldTypes.Count; ++i)
+				for (int i = 0; i < FieldTypes.Count; ++i)
 				{
 					rect.height += EditorGUIUtility.singleLineHeight + 2;
 					changingRect.y += EditorGUIUtility.singleLineHeight + 2;
@@ -134,15 +134,15 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 						{
 							if (i - 1 >= 0)
 							{
-								var t1 = FieldTypes[i - 1];
-								var t2 = FieldTypes[i];
+								ForgeNRPCTypes t1 = FieldTypes[i - 1];
+								ForgeNRPCTypes t2 = FieldTypes[i];
 								FieldTypes[i - 1] = t2;
 								FieldTypes[i] = t1;
 							}
 							else
 							{
-								var t1 = FieldTypes[FieldTypes.Count - 1];
-								var t2 = FieldTypes[i];
+								ForgeNRPCTypes t1 = FieldTypes[FieldTypes.Count - 1];
+								ForgeNRPCTypes t2 = FieldTypes[i];
 								FieldTypes[FieldTypes.Count - 1] = t2;
 								FieldTypes[i] = t1;
 							}
@@ -157,15 +157,15 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 						{
 							if (i + 1 < FieldTypes.Count)
 							{
-								var t1 = FieldTypes[i + 1];
-								var t2 = FieldTypes[i];
+								ForgeNRPCTypes t1 = FieldTypes[i + 1];
+								ForgeNRPCTypes t2 = FieldTypes[i];
 								FieldTypes[i + 1] = t2;
 								FieldTypes[i] = t1;
 							}
 							else
 							{
-								var t1 = FieldTypes[0];
-								var t2 = FieldTypes[i];
+								ForgeNRPCTypes t1 = FieldTypes[0];
+								ForgeNRPCTypes t2 = FieldTypes[i];
 								FieldTypes[0] = t2;
 								FieldTypes[i] = t1;
 							}
@@ -223,7 +223,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 
 		public void AddRange(ForgeAcceptableRPCTypes[] types, string[] helperNames)
 		{
-			for (var i = 0; i < types.Length; ++i)
+			for (int i = 0; i < types.Length; ++i)
 			{
 				FieldTypes.Add(new ForgeNRPCTypes() { Type = types[i], HelperName = helperNames[i] });
 			}

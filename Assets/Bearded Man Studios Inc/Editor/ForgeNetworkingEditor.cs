@@ -217,8 +217,8 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 			if (!Directory.Exists(_userStoringPath))
 				Directory.CreateDirectory(_userStoringPath);
 
-			var files = Directory.GetFiles(_storingPath, "*.cs", SearchOption.TopDirectoryOnly);
-			var userFiles = Directory.GetFiles(_userStoringPath, "*.cs", SearchOption.TopDirectoryOnly);
+			string[] files = Directory.GetFiles(_storingPath, "*.cs", SearchOption.TopDirectoryOnly);
+			string[] userFiles = Directory.GetFiles(_userStoringPath, "*.cs", SearchOption.TopDirectoryOnly);
 
 			//if (File.Exists(Path.Combine(Application.persistentDataPath, FN_WIZARD_DATA))) //Check for our temp file, this will make it so that we can load this data from memory regaurdless of errors
 			//{
@@ -308,7 +308,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 
 			_modifyUndo = () =>
 			{
-				var isDirty = ActiveButton.IsDirty;
+				bool isDirty = ActiveButton.IsDirty;
 
 				if (isDirty)
 				{
@@ -331,14 +331,14 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 
 		private Texture2D FlipTexture(Texture2D asset)
 		{
-			var width = asset.width;
-			var height = asset.height;
+			int width = asset.width;
+			int height = asset.height;
 
-			var flippedTexture = new Texture2D(width, height);
+			Texture2D flippedTexture = new Texture2D(width, height);
 
-			for (var x = 0; x < width; x++)
+			for (int x = 0; x < width; x++)
 			{
-				for (var y = 0; y < height; y++)
+				for (int y = 0; y < height; y++)
 				{
 					flippedTexture.SetPixel(width - x - 1, y, asset.GetPixel(x, y));
 				}
@@ -372,7 +372,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 			EditorGUILayout.BeginHorizontal();
 			if (ProVersion)
 			{
-				var backBtn = EditorGUILayout.BeginVertical("Button", GUILayout.Width(40), GUILayout.Height(10));
+				Rect backBtn = EditorGUILayout.BeginVertical("Button", GUILayout.Width(40), GUILayout.Height(10));
 				GUI.color = _lightsOff ? LightBlue : DarkBlue;
 				if (GUI.Button(backBtn, GUIContent.none))
 				{
@@ -439,7 +439,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 			GUILayout.BeginHorizontal();
 			GUILayout.Label("Search", GUILayout.Width(50));
 			_searchField = GUILayout.TextField(_searchField);
-			var verticleButton = EditorGUILayout.BeginVertical("Button", GUILayout.Width(100), GUILayout.Height(15));
+			Rect verticleButton = EditorGUILayout.BeginVertical("Button", GUILayout.Width(100), GUILayout.Height(15));
 			if (ProVersion)
 				GUI.color = TealBlue;
 			if (GUI.Button(verticleButton, GUIContent.none))
@@ -459,7 +459,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 
 			_scrollView = GUILayout.BeginScrollView(_scrollView);
 
-			for (var i = 0; i < _editorButtons.Count; ++i)
+			for (int i = 0; i < _editorButtons.Count; ++i)
 			{
 				if (_editorButtons[i].IsNetworkBehavior)
 					continue;
@@ -474,10 +474,10 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 						if (_editorButtons[i].TiedObject.IsNetworkObject || _editorButtons[i].TiedObject.IsNetworkBehavior)
 						{
 							//Then we will need to remove this from the factory and destroy the other object as well
-							var searchName = _editorButtons[i].TiedObject.StrippedSearchName;
-							var folderPath = _editorButtons[i].TiedObject.FileLocation.Substring(0, _editorButtons[i].TiedObject.FileLocation.Length - _editorButtons[i].TiedObject.Filename.Length);
-							var filePathBehavior = Path.Combine(folderPath, searchName + "Behavior.cs");
-							var filePathNetworkedObj = Path.Combine(folderPath, searchName + "NetworkObject.cs");
+							string searchName = _editorButtons[i].TiedObject.StrippedSearchName;
+							string folderPath = _editorButtons[i].TiedObject.FileLocation.Substring(0, _editorButtons[i].TiedObject.FileLocation.Length - _editorButtons[i].TiedObject.Filename.Length);
+							string filePathBehavior = Path.Combine(folderPath, searchName + "Behavior.cs");
+							string filePathNetworkedObj = Path.Combine(folderPath, searchName + "NetworkObject.cs");
 
 							if (File.Exists(filePathBehavior)) //Delete the behavior
 								File.Delete(filePathBehavior);
@@ -485,14 +485,14 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 								File.Delete(filePathNetworkedObj);
 							_editorButtons.RemoveAt(i);
 
-							var factoryData = SourceCodeFactory();
-							using (var sw = File.CreateText(Path.Combine(_storingPath, "NetworkObjectFactory.cs")))
+							string factoryData = SourceCodeFactory();
+							using (StreamWriter sw = File.CreateText(Path.Combine(_storingPath, "NetworkObjectFactory.cs")))
 							{
 								sw.Write(factoryData);
 							}
 
-							var networkManagerData = SourceCodeNetworkManager();
-							using (var sw = File.CreateText(Path.Combine(_storingPath, "NetworkManager.cs")))
+							string networkManagerData = SourceCodeNetworkManager();
+							using (StreamWriter sw = File.CreateText(Path.Combine(_storingPath, "NetworkManager.cs")))
 							{
 								sw.Write(networkManagerData);
 							}
@@ -519,7 +519,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 
 			GUILayout.EndScrollView();
 
-			var backBtn = EditorGUILayout.BeginVertical("Button", GUILayout.Height(50));
+			Rect backBtn = EditorGUILayout.BeginVertical("Button", GUILayout.Height(50));
 			if (ProVersion)
 				GUI.color = ShadedBlue;
 			if (GUI.Button(backBtn, GUIContent.none))
@@ -533,7 +533,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 			EditorGUILayout.BeginHorizontal();
 			GUI.color = Color.white;
 			GUILayout.FlexibleSpace();
-			var boldStyle = new GUIStyle(GUI.skin.GetStyle("boldLabel"));
+			GUIStyle boldStyle = new GUIStyle(GUI.skin.GetStyle("boldLabel"));
 			boldStyle.alignment = TextAnchor.UpperCenter;
 			GUILayout.Label("Close", boldStyle);
 			GUILayout.FlexibleSpace();
@@ -557,14 +557,14 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 
 			EditorGUILayout.Space();
 			_scrollView = GUILayout.BeginScrollView(_scrollView);
-			var canBack = ActiveButton.TiedObject == null;
-			var renderedSuccessful = ActiveButton.RenderExposed(_createUndo);
+			bool canBack = ActiveButton.TiedObject == null;
+			bool renderedSuccessful = ActiveButton.RenderExposed(_createUndo);
 			GUILayout.EndScrollView();
 
 			if (!renderedSuccessful)
 				return;
 
-			var generatedMonobehavior = EditorGUILayout.Toggle("Generate MonoBehavior", ActiveButton.BaseType != ForgeBaseClassType.NetworkBehavior);
+			bool generatedMonobehavior = EditorGUILayout.Toggle("Generate MonoBehavior", ActiveButton.BaseType != ForgeBaseClassType.NetworkBehavior);
 
 			if (generatedMonobehavior)
 				ActiveButton.BaseType = ForgeBaseClassType.MonoBehavior;
@@ -574,7 +574,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 			GUILayout.BeginHorizontal();
 			if (canBack)
 			{
-				var backBtn = EditorGUILayout.BeginVertical("Button", GUILayout.Width(100), GUILayout.Height(50));
+				Rect backBtn = EditorGUILayout.BeginVertical("Button", GUILayout.Width(100), GUILayout.Height(50));
 				GUI.color = Color.red;
 				if (GUI.Button(backBtn, GUIContent.none))
 				{
@@ -585,7 +585,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 				EditorGUILayout.BeginHorizontal();
 				GUI.color = Color.white;
 				GUILayout.FlexibleSpace();
-				var boldStyle = new GUIStyle(GUI.skin.GetStyle("boldLabel"));
+				GUIStyle boldStyle = new GUIStyle(GUI.skin.GetStyle("boldLabel"));
 				boldStyle.alignment = TextAnchor.UpperCenter;
 				GUILayout.Label("Back", boldStyle);
 				GUILayout.FlexibleSpace();
@@ -594,7 +594,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 			}
 			EditorGUILayout.Space();
 
-			var verticleButton = EditorGUILayout.BeginVertical("Button", GUILayout.Width(100), GUILayout.Height(50));
+			Rect verticleButton = EditorGUILayout.BeginVertical("Button", GUILayout.Width(100), GUILayout.Height(50));
 			if (ProVersion)
 				GUI.color = TealBlue;
 			if (GUI.Button(verticleButton, GUIContent.none))
@@ -629,13 +629,13 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 			EditorGUILayout.Space();
 			_scrollView = GUILayout.BeginScrollView(_scrollView);
 
-			var renderSuccessful = ActiveButton.RenderExposed(_modifyUndo);
+			bool renderSuccessful = ActiveButton.RenderExposed(_modifyUndo);
 			GUILayout.EndScrollView();
 
 			if (!renderSuccessful)
 				return;
 
-			var generatedMonobehavior = EditorGUILayout.Toggle("Generate MonoBehavior", ActiveButton.BaseType != ForgeBaseClassType.NetworkBehavior);
+			bool generatedMonobehavior = EditorGUILayout.Toggle("Generate MonoBehavior", ActiveButton.BaseType != ForgeBaseClassType.NetworkBehavior);
 
 			if (generatedMonobehavior)
 				ActiveButton.BaseType = ForgeBaseClassType.MonoBehavior;
@@ -643,7 +643,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 				ActiveButton.BaseType = ForgeBaseClassType.NetworkBehavior;
 
 			GUILayout.BeginHorizontal();
-			var backBtn = EditorGUILayout.BeginVertical("Button", GUILayout.Width(100), GUILayout.Height(50));
+			Rect backBtn = EditorGUILayout.BeginVertical("Button", GUILayout.Width(100), GUILayout.Height(50));
 			GUI.color = Color.red;
 			if (GUI.Button(backBtn, GUIContent.none))
 			{
@@ -655,7 +655,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 			EditorGUILayout.BeginHorizontal();
 			GUI.color = Color.white;
 			GUILayout.FlexibleSpace();
-			var boldStyle = new GUIStyle(GUI.skin.GetStyle("boldLabel"));
+			GUIStyle boldStyle = new GUIStyle(GUI.skin.GetStyle("boldLabel"));
 			boldStyle.alignment = TextAnchor.UpperCenter;
 			GUILayout.Label("Back", boldStyle);
 			GUILayout.FlexibleSpace();
@@ -663,7 +663,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 			EditorGUILayout.EndVertical();
 			EditorGUILayout.Space();
 
-			var verticleButton = EditorGUILayout.BeginVertical("Button", GUILayout.Width(100), GUILayout.Height(50));
+			Rect verticleButton = EditorGUILayout.BeginVertical("Button", GUILayout.Width(100), GUILayout.Height(50));
 			if (ProVersion)
 				GUI.color = TealBlue;
 			if (GUI.Button(verticleButton, GUIContent.none))
@@ -690,9 +690,9 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 		/// </summary>
 		public void MakeForgeFactory()
 		{
-			var classGenerationFactory = SourceCodeFactory();
+			string classGenerationFactory = SourceCodeFactory();
 
-			using (var sw = File.CreateText(Path.Combine(_storingPath, "NetworkObjectFactory.cs")))
+			using (StreamWriter sw = File.CreateText(Path.Combine(_storingPath, "NetworkObjectFactory.cs")))
 			{
 				sw.Write(classGenerationFactory);
 			}
@@ -710,28 +710,28 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 		/// <returns>The generated string to save to a file</returns>
 		public string SourceCodeNetworkObject(ForgeClassObject cObj, ForgeEditorButton btn, int identity)
 		{
-			var asset = Resources.Load<TextAsset>(EDITOR_RESOURCES_DIR + "/NetworkObjectTemplate");
-			var template = new TemplateSystem(asset.text);
+			TextAsset asset = Resources.Load<TextAsset>(EDITOR_RESOURCES_DIR + "/NetworkObjectTemplate");
+			TemplateSystem template = new TemplateSystem(asset.text);
 
 			template.AddVariable("className", btn.StrippedSearchName + "NetworkObject");
 			template.AddVariable("identity", cObj == null ? identity : cObj.IdentityValue);
 			template.AddVariable("bitwiseSize", Math.Ceiling(btn.ClassVariables.Count / 8.0));
 
-			var variables = new List<object[]>();
-			var rewinds = new List<object[]>();
-			var interpolateValues = string.Empty;
+			List<object[]> variables = new List<object[]>();
+			List<object[]> rewinds = new List<object[]>();
+			string interpolateValues = string.Empty;
 
-			var interpolateType = string.Empty;
+			string interpolateType = string.Empty;
 			int i = 0, j = 0;
 			for (i = 0, j = 0; i < btn.ClassVariables.Count; ++i)
 			{
-				var t = ForgeClassFieldValue.GetTypeFromAcceptable(btn.ClassVariables[i].FieldType);
+				Type t = ForgeClassFieldValue.GetTypeFromAcceptable(btn.ClassVariables[i].FieldType);
 				interpolateType = ForgeClassFieldValue.GetInterpolateFromAcceptable(_referenceVariables[t.Name], btn.ClassVariables[i].FieldType);
 
 				if (i != 0 && i % 8 == 0)
 					j++;
 
-				var fieldData = new object[]
+				object[] fieldData = new object[]
 				{
 					_referenceVariables[t.Name],						// Data type
 					btn.ClassVariables[i].FieldName.Replace(" ", string.Empty),	// Field name
@@ -753,7 +753,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 			// TODO:  This should relate to the rewind variables
 			for (i = 0; i < 0; i++)
 			{
-				var rewindData = new object[]
+				object[] rewindData = new object[]
 				{
 					"Vector3",		// The data type for this rewind
 					"Position",		// The name except with the first letter uppercase
@@ -777,38 +777,38 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 		/// <returns>The generated string to save to a file</returns>
 		public string SourceCodeNetworkBehavior(ForgeClassObject cObj, ForgeEditorButton btn)
 		{
-			var behaviorPath = string.Empty;
+			string behaviorPath = string.Empty;
 
 			if (btn.BaseType == ForgeBaseClassType.NetworkBehavior)
 				behaviorPath = EDITOR_RESOURCES_DIR + "/StandAloneNetworkBehaviorTemplate";
 			else
 				behaviorPath = EDITOR_RESOURCES_DIR + "/NetworkBehaviorTemplate";
 
-			var asset = Resources.Load<TextAsset>(behaviorPath);
-			var template = new TemplateSystem(asset.text);
+			TextAsset asset = Resources.Load<TextAsset>(behaviorPath);
+			TemplateSystem template = new TemplateSystem(asset.text);
 
 			template.AddVariable("className", btn.StrippedSearchName + "Behavior");
 			template.AddVariable("networkObject", btn.StrippedSearchName + "NetworkObject");
-			var generatedJSON = new StringBuilder();
-			var generatedHelperTypesJSON = new StringBuilder();
+			StringBuilder generatedJSON = new StringBuilder();
+			StringBuilder generatedHelperTypesJSON = new StringBuilder();
 
-			var caps = "QWERTYUIOPASDFGHJKLZXCVBNM";
-			var rpcs = new List<object[]>();
-			var constRpcs = new List<object[]>();
+			string caps = "QWERTYUIOPASDFGHJKLZXCVBNM";
+			List<object[]> rpcs = new List<object[]>();
+			List<object[]> constRpcs = new List<object[]>();
 
-			for (var i = 0; i < btn.RPCVariables.Count; ++i)
+			for (int i = 0; i < btn.RPCVariables.Count; ++i)
 			{
-				var innerTypes = new StringBuilder();
-				var helperNames = new StringBuilder();
-				var innerJSON = new StringBuilder();
-				var innerHelperTypesJSON = new StringBuilder();
-				for (var x = 0; x < btn.RPCVariables[i].ArgumentCount; ++x)
+				StringBuilder innerTypes = new StringBuilder();
+				StringBuilder helperNames = new StringBuilder();
+				StringBuilder innerJSON = new StringBuilder();
+				StringBuilder innerHelperTypesJSON = new StringBuilder();
+				for (int x = 0; x < btn.RPCVariables[i].ArgumentCount; ++x)
 				{
-					var t = ForgeClassFieldRPCValue.GetTypeFromAcceptable(btn.RPCVariables[i].FieldTypes[x].Type);
+					Type t = ForgeClassFieldRPCValue.GetTypeFromAcceptable(btn.RPCVariables[i].FieldTypes[x].Type);
 
 					helperNames.AppendLine("\t\t/// " + _referenceVariables[t.Name] + " " + btn.RPCVariables[i].FieldTypes[x].HelperName);
 
-					var fieldHelper = btn.RPCVariables[i].FieldTypes[x].HelperName;
+					string fieldHelper = btn.RPCVariables[i].FieldTypes[x].HelperName;
 					if (x + 1 < btn.RPCVariables[i].ArgumentCount)
 					{
 						innerTypes.Append(", typeof(" + _referenceVariables[t.Name] + ")");
@@ -824,15 +824,15 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 					}
 				}
 
-				var rpcData = new object[]
+				object[] rpcData = new object[]
 				{
 					btn.RPCVariables[i].FieldName,				// The function name
 					innerTypes.ToString(),						// The list of types
 					helperNames.ToString().TrimEnd()
 				};
 
-				var constRpc = "";
-				for (var j = 0; j < btn.RPCVariables[i].FieldName.Length; j++)
+				string constRpc = "";
+				for (int j = 0; j < btn.RPCVariables[i].FieldName.Length; j++)
 				{
 					if (constRpc.Length > 0 && caps.Contains(btn.RPCVariables[i].FieldName[j]))
 						constRpc += "_";
@@ -841,7 +841,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 				}
 				constRpc = constRpc.Replace("R_P_C_", "");
 
-				var constRpcData = new object[]
+				object[] constRpcData = new object[]
 				{
 					constRpc,				                    // The function name
 					innerTypes.ToString(),						// The list of types
@@ -872,16 +872,16 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 		/// <returns>The string for the save file</returns>
 		public string SourceCodeFactory()
 		{
-			var asset = Resources.Load<TextAsset>(EDITOR_RESOURCES_DIR + "/NetworkObjectFactoryTemplate");
-			var template = new TemplateSystem(asset.text);
+			TextAsset asset = Resources.Load<TextAsset>(EDITOR_RESOURCES_DIR + "/NetworkObjectFactoryTemplate");
+			TemplateSystem template = new TemplateSystem(asset.text);
 
-			var networkObjects = new List<object>();
-			for (var i = 0; i < _editorButtons.Count; ++i)
+			List<object> networkObjects = new List<object>();
+			for (int i = 0; i < _editorButtons.Count; ++i)
 			{
 				if (!_editorButtons[i].IsNetworkObject)
 					continue;
 
-				var name = _editorButtons[i].StrippedSearchName + "NetworkObject";
+				string name = _editorButtons[i].StrippedSearchName + "NetworkObject";
 				if (networkObjects.Contains(name))
 					continue;
 
@@ -898,16 +898,16 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 		/// <returns>The string to save to a file</returns>
 		public string SourceCodeNetworkManager()
 		{
-			var asset = Resources.Load<TextAsset>(EDITOR_RESOURCES_DIR + "/NetworkManagerTemplate");
-			var template = new TemplateSystem(asset.text);
+			TextAsset asset = Resources.Load<TextAsset>(EDITOR_RESOURCES_DIR + "/NetworkManagerTemplate");
+			TemplateSystem template = new TemplateSystem(asset.text);
 
-			var networkObjects = new List<object>();
-			for (var i = 0; i < _editorButtons.Count; ++i)
+			List<object> networkObjects = new List<object>();
+			for (int i = 0; i < _editorButtons.Count; ++i)
 			{
 				if (!_editorButtons[i].IsNetworkObject || _editorButtons[i].BaseType == ForgeBaseClassType.NetworkBehavior)
 					continue;
 
-				var name = _editorButtons[i].StrippedSearchName;
+				string name = _editorButtons[i].StrippedSearchName;
 				if (networkObjects.Contains(name))
 					continue;
 
@@ -926,14 +926,14 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 		/// </summary>
 		private void ReloadScripts(string[] files, string[] userFiles)
 		{
-			var correctFiles = new List<ForgeClassObject>();
-			for (var i = 0; i < files.Length; ++i)
+			List<ForgeClassObject> correctFiles = new List<ForgeClassObject>();
+			for (int i = 0; i < files.Length; ++i)
 			{
 				if (!files[i].EndsWith(".meta")) //Ignore all meta files
 					correctFiles.Add(new ForgeClassObject(files[i]));
 			}
 
-			for (var i = 0; i < userFiles.Length; ++i)
+			for (int i = 0; i < userFiles.Length; ++i)
 			{
 				if (!userFiles[i].EndsWith(".meta")) //Ignore all meta files
 					correctFiles.Add(new ForgeClassObject(userFiles[i]));
@@ -942,7 +942,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 			if (!ForgeClassObject.HasExactFilename(correctFiles, "NetworkObjectFactory"))
 				MakeForgeFactory(); //We do not have the Forge Factory, we need to make this!
 
-			for (var i = 0; i < correctFiles.Count; ++i)
+			for (int i = 0; i < correctFiles.Count; ++i)
 			{
 				var btn = new ForgeEditorButton(correctFiles[i]);
 
@@ -970,14 +970,14 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 
 			EditorApplication.LockReloadAssemblies();
 
-			var identity = 1;
-			for (var i = 0; i < _editorButtons.Count; ++i)
+			int identity = 1;
+			for (int i = 0; i < _editorButtons.Count; ++i)
 			{
-				var btn = _editorButtons[i];
-				var validate = btn.ValidateSetup();
+				ForgeEditorButton btn = _editorButtons[i];
+				ValidationResult validate = btn.ValidateSetup();
 				if(!validate.Result)
 				{
-					foreach (var error in validate.errorMessages)
+					foreach (string error in validate.errorMessages)
 						Debug.LogError(error);
 					Debug.LogError(String.Format("Compilation of {0} failed. Please resolve any outputted errors and try again.", btn.ButtonName));
 					break;
@@ -986,22 +986,22 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 				if (_editorButtons[i].IsCreated)
 				{
 					//Brand new class being added!
-					var networkObjectData = SourceCodeNetworkObject(null, _editorButtons[i], identity);
-					var networkBehaviorData = SourceCodeNetworkBehavior(null, _editorButtons[i]);
+					string networkObjectData = SourceCodeNetworkObject(null, _editorButtons[i], identity);
+					string networkBehaviorData = SourceCodeNetworkBehavior(null, _editorButtons[i]);
 					if (!string.IsNullOrEmpty(networkObjectData))
 					{
-						using (var sw = File.CreateText(Path.Combine(_userStoringPath, string.Format("{0}{1}.cs", _editorButtons[i].StrippedSearchName, "NetworkObject"))))
+						using (StreamWriter sw = File.CreateText(Path.Combine(_userStoringPath, string.Format("{0}{1}.cs", _editorButtons[i].StrippedSearchName, "NetworkObject"))))
 						{
 							sw.Write(networkObjectData);
 						}
 
-						using (var sw = File.CreateText(Path.Combine(_userStoringPath, string.Format("{0}{1}.cs", _editorButtons[i].StrippedSearchName, "Behavior"))))
+						using (StreamWriter sw = File.CreateText(Path.Combine(_userStoringPath, string.Format("{0}{1}.cs", _editorButtons[i].StrippedSearchName, "Behavior"))))
 						{
 							sw.Write(networkBehaviorData);
 						}
 						identity++;
 
-						var strippedName = _editorButtons[i].StrippedSearchName;
+						string strippedName = _editorButtons[i].StrippedSearchName;
 						_editorButtons[i].ButtonName = strippedName + "NetworkObject";
 					}
 				}
@@ -1011,17 +1011,17 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 					{
 						if (_editorButtons[i].TiedObject.IsNetworkBehavior)
 						{
-							var networkBehaviorData = SourceCodeNetworkBehavior(null, _editorButtons[i]);
+							string networkBehaviorData = SourceCodeNetworkBehavior(null, _editorButtons[i]);
 
-							using (var sw = File.CreateText(Path.Combine(_userStoringPath, _editorButtons[i].TiedObject.Filename)))
+							using (StreamWriter sw = File.CreateText(Path.Combine(_userStoringPath, _editorButtons[i].TiedObject.Filename)))
 							{
 								sw.Write(networkBehaviorData);
 							}
 						}
 						else if (_editorButtons[i].TiedObject.IsNetworkObject)
 						{
-							var networkObjectData = SourceCodeNetworkObject(null, _editorButtons[i], identity);
-							using (var sw = File.CreateText(Path.Combine(_userStoringPath, _editorButtons[i].TiedObject.Filename)))
+							string networkObjectData = SourceCodeNetworkObject(null, _editorButtons[i], identity);
+							using (StreamWriter sw = File.CreateText(Path.Combine(_userStoringPath, _editorButtons[i].TiedObject.Filename)))
 							{
 								sw.Write(networkObjectData);
 							}
@@ -1031,14 +1031,14 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 				}
 			}
 
-			var factoryData = SourceCodeFactory();
-			using (var sw = File.CreateText(Path.Combine(_storingPath, "NetworkObjectFactory.cs")))
+			string factoryData = SourceCodeFactory();
+			using (StreamWriter sw = File.CreateText(Path.Combine(_storingPath, "NetworkObjectFactory.cs")))
 			{
 				sw.Write(factoryData);
 			}
 
-			var networkManagerData = SourceCodeNetworkManager();
-			using (var sw = File.CreateText(Path.Combine(_storingPath, "NetworkManager.cs")))
+			string networkManagerData = SourceCodeNetworkManager();
+			using (StreamWriter sw = File.CreateText(Path.Combine(_storingPath, "NetworkManager.cs")))
 			{
 				sw.Write(networkManagerData);
 			}

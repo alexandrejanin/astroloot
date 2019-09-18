@@ -55,7 +55,7 @@ namespace BeardedManStudios.Source.Logging
 
         private static void Log(string message)
         {
-            var filePath = Path.Combine(ForgeLog, DateTime.Now.ToString("yyyy-MM-dd") + ".log");
+            string filePath = Path.Combine(ForgeLog, DateTime.Now.ToString("yyyy-MM-dd") + ".log");
 
             if (!File.Exists(filePath))
             {
@@ -94,12 +94,12 @@ namespace BeardedManStudios.Source.Logging
 
         public static void Exception(string message, Exception e, bool echo = false)
         {
-            var fullMessage = new StringBuilder("Developer Message: " + message);
+            StringBuilder fullMessage = new StringBuilder("Developer Message: " + message);
             fullMessage.Append(Environment.NewLine);
             fullMessage.AppendLine("Exception Message: " + e.Message);
             fullMessage.AppendLine("Trace:");
             fullMessage.Append(Environment.NewLine + e.StackTrace.ToString());
-            var finalMessage = "---------" + Environment.NewLine + "EXCEPTION:" + Environment.NewLine + fullMessage.ToString() + Environment.NewLine + "---------";
+            string finalMessage = "---------" + Environment.NewLine + "EXCEPTION:" + Environment.NewLine + fullMessage.ToString() + Environment.NewLine + "---------";
 
             Log(finalMessage);
 

@@ -67,7 +67,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 
 			rect.y += 2;
 
-			var changingRect = new Rect(rect.x, rect.y, rect.width * 0.3f, EditorGUIUtility.singleLineHeight);
+			Rect changingRect = new Rect(rect.x, rect.y, rect.width * 0.3f, EditorGUIUtility.singleLineHeight);
 			FieldName = EditorGUI.TextField(changingRect, FieldName);
 			changingRect.x += rect.width * 0.3f + 5;
 			FieldType = (ForgeAcceptableFieldTypes)EditorGUI.EnumPopup(changingRect, FieldType);

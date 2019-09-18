@@ -123,7 +123,7 @@ namespace BeardedManStudios.Forge.Networking.Unity
 				actionRunnerDict.Add(updateType, new Queue<Action>());
 			}
 
-			var mainThreadActions = actionQueueDict[updateType];
+			Queue<Action> mainThreadActions = actionQueueDict[updateType];
 
 			// Make sure to lock the mutex so that we don't override
 			// other threads actions
@@ -144,8 +144,8 @@ namespace BeardedManStudios.Forge.Networking.Unity
 				actionRunnerDict.Add(updateType, new Queue<Action>());
 
 			}
-			var mainThreadActions = actionQueueDict[updateType];
-			var mainThreadActionsRunner = actionRunnerDict[updateType];
+			Queue<Action> mainThreadActions = actionQueueDict[updateType];
+			Queue<Action> mainThreadActionsRunner = actionRunnerDict[updateType];
 
 			lock (mainThreadActions)
 			{

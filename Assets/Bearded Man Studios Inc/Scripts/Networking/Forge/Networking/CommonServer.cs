@@ -86,7 +86,7 @@ namespace BeardedManStudios.Forge.Networking
 		private bool updateCountCheck(NetworkingPlayer sender, NetworkingPlayer player, float proximityModeUpdateFrequency)
 		{
 			// if player update counts are stored, increment or update and reset them, if not, store them starting with 0
-			var key = player.Ip + player.NetworkId.ToString();
+			string key = player.Ip + player.NetworkId.ToString();
 			if (sender.PlayersProximityUpdateCounters.ContainsKey(key))
 			{
 				if (sender.PlayersProximityUpdateCounters[key] < proximityModeUpdateFrequency)
@@ -109,7 +109,7 @@ namespace BeardedManStudios.Forge.Networking
 		/// </summary>
 		public void CheckClientTimeout(Action<NetworkingPlayer> timeoutDisconnect)
 		{
-			var timedoutPlayers = new List<NetworkingPlayer>();
+			List<NetworkingPlayer> timedoutPlayers = new List<NetworkingPlayer>();
 			while (server.IsBound)
 			{
 				server.IteratePlayers((player) =>
@@ -126,7 +126,7 @@ namespace BeardedManStudios.Forge.Networking
 
 				if (timedoutPlayers.Count > 0)
 				{
-					foreach (var player in timedoutPlayers)
+					foreach (NetworkingPlayer player in timedoutPlayers)
 						timeoutDisconnect(player);
 
 					timedoutPlayers.Clear();

@@ -90,7 +90,7 @@ namespace BeardedManStudios.Forge.Networking.DataStore
 
 		private void RemoveExpiredObjects()
 		{
-			foreach (var entry in memory)
+			foreach (KeyValuePair<string, CachedObject> entry in memory)
 				if (entry.Value.IsExpired())
 					memory.Remove(entry.Key);
 		}
@@ -107,19 +107,19 @@ namespace BeardedManStudios.Forge.Networking.DataStore
 
 			if (sender is IServer)
 			{
-				var type = ObjectMapper.Instance.Map<byte>(frame.StreamData);
-				var responseHookId = ObjectMapper.Instance.Map<int>(frame.StreamData);
-				var key = ObjectMapper.Instance.Map<string>(frame.StreamData);
+				byte type = ObjectMapper.Instance.Map<byte>(frame.StreamData);
+				int responseHookId = ObjectMapper.Instance.Map<int>(frame.StreamData);
+				string key = ObjectMapper.Instance.Map<string>(frame.StreamData);
 
-				var obj = Get(key);
+				object obj = Get(key);
 
 				// TODO:  Let the client know it is null
 				if (obj == null)
 					return;
 
-				var data = ObjectMapper.BMSByte(type, responseHookId, obj);
+				BMSByte data = ObjectMapper.BMSByte(type, responseHookId, obj);
 
-				var sendFrame = new Binary(sender.Time.Timestep, sender is TCPClient, data, Receivers.Target, MessageGroupIds.CACHE, sender is BaseTCP);
+				Binary sendFrame = new Binary(sender.Time.Timestep, sender is TCPClient, data, Receivers.Target, MessageGroupIds.CACHE, sender is BaseTCP);
 
 				if (sender is BaseTCP)
 					((TCPServer)sender).Send(player.TcpClientHandle, sendFrame);
@@ -128,8 +128,8 @@ namespace BeardedManStudios.Forge.Networking.DataStore
 			}
 			else
 			{
-				var type = ObjectMapper.Instance.Map<byte>(frame.StreamData);
-				var responseHookId = ObjectMapper.Instance.Map<int>(frame.StreamData);
+				byte type = ObjectMapper.Instance.Map<byte>(frame.StreamData);
+				int responseHookId = ObjectMapper.Instance.Map<int>(frame.StreamData);
 
 				object obj = null;
 
@@ -223,9 +223,9 @@ namespace BeardedManStudios.Forge.Networking.DataStore
 
 			responseHooks.Add(responseHookIncrementer, callback);
 
-			var targetType = byte.MaxValue;
+			byte targetType = byte.MaxValue;
 
-			foreach (var kv in typeMap)
+			foreach (KeyValuePair<byte, Type> kv in typeMap)
 			{
 				if (typeof(T) == kv.Value)
 				{
@@ -237,9 +237,9 @@ namespace BeardedManStudios.Forge.Networking.DataStore
 			if (targetType == byte.MaxValue)
 				throw new Exception("Invalid type specified");
 
-			var data = ObjectMapper.BMSByte(targetType, responseHookIncrementer, key);
+			BMSByte data = ObjectMapper.BMSByte(targetType, responseHookIncrementer, key);
 
-			var sendFrame = new Binary(Socket.Time.Timestep, Socket is TCPClient, data, Receivers.Server, MessageGroupIds.CACHE, Socket is BaseTCP);
+			Binary sendFrame = new Binary(Socket.Time.Timestep, Socket is TCPClient, data, Receivers.Server, MessageGroupIds.CACHE, Socket is BaseTCP);
 
 #if STEAMWORKS
             if (Socket is SteamP2PClient)

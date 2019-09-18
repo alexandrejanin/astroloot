@@ -11,7 +11,6 @@ public class CharacterController2D : RaycastController {
     private Vector2 moveAmountOld;
 
     private Vector2 playerInput;
-    public Vector2 PlayerInput => playerInput;
 
     private CollisionInfo collisions;
     public CollisionInfo Collisions => collisions;

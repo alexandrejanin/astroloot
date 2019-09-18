@@ -68,13 +68,13 @@ namespace BeardedManStudios.Forge.Networking.Nat
 			{
 				// Send the data to the nat server with the host address and port that this client
 				// is trying to connect to so that it can punch a hole in the network for this client
-				var sendJson = JSONNode.Parse("{}");
+				JSONNode sendJson = JSONNode.Parse("{}");
 				sendJson.Add("host", new JSONData(host));
 				sendJson.Add("port", new JSONData(port));
 				sendJson.Add("clientPort", new JSONData(clientPort));
 
 				// Send the message to the NAT server
-				var connect = Text.CreateFromString(Client.Time.Timestep, sendJson.ToString(), false, Receivers.Server, MessageGroupIds.NAT_SERVER_CONNECT, false);
+				Text connect = Text.CreateFromString(Client.Time.Timestep, sendJson.ToString(), false, Receivers.Server, MessageGroupIds.NAT_SERVER_CONNECT, false);
 				Client.Send(connect, true);
 				Client.messageConfirmed += (player, packet) => { if (packet.uniqueId == connect.UniqueId) { Client.Disconnect(false); } };
 			};
@@ -101,14 +101,14 @@ namespace BeardedManStudios.Forge.Networking.Nat
 			// When connected, request for this server to be registered to the NAT lookup for clients
 			NetWorker.BaseNetworkEvent accepted = (NetWorker sender) =>
 			{
-				var obj = JSONNode.Parse("{}");
+				JSONNode obj = JSONNode.Parse("{}");
 				obj.Add("port", new JSONData(currentPort));
 
-				var sendJson = new JSONClass();
+				JSONClass sendJson = new JSONClass();
 				sendJson.Add("register", obj);
 
 				// Send the message to the NAT server
-				var register = Text.CreateFromString(Client.Time.Timestep, sendJson.ToString(), false, Receivers.Target, MessageGroupIds.NAT_SERVER_REGISTER, false);
+				Text register = Text.CreateFromString(Client.Time.Timestep, sendJson.ToString(), false, Receivers.Target, MessageGroupIds.NAT_SERVER_REGISTER, false);
 				Client.Send(register, true);
 			};
 
@@ -142,7 +142,7 @@ namespace BeardedManStudios.Forge.Networking.Nat
 					if (json["nat"]["host"] != null && json["nat"]["port"] != null)
 					{
 						string host = json["nat"]["host"];
-						var port = json["nat"]["port"].AsUShort;
+						ushort port = json["nat"]["port"].AsUShort;
 						//Logging.BMSLog.Log($"HOST IS {host} AND PORT IS {port}");
 
 						// Fire the event that a client is trying to connect

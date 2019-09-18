@@ -56,7 +56,7 @@ namespace BeardedManStudios.Forge.Networking
 
 		public void Send(NetworkingPlayer player, FrameStream frame, bool reliable = false)
 		{
-			var composer = new UDPPacketComposer(this, player, frame, reliable);
+			UDPPacketComposer composer = new UDPPacketComposer(this, player, frame, reliable);
 
 			// If this message is reliable then make sure to keep a reference to the composer
 			// so that there are not any run-away threads
@@ -83,7 +83,7 @@ namespace BeardedManStudios.Forge.Networking
 
 			lock (Players)
 			{
-				foreach (var player in Players)
+				foreach (NetworkingPlayer player in Players)
 				{
 
 					if (!commonServerLogic.PlayerIsReceiver(player, frame, ProximityDistance, skipPlayer, ProximityModeUpdateFrequency))
@@ -110,7 +110,7 @@ namespace BeardedManStudios.Forge.Networking
 
 			lock (Players)
 			{
-				foreach (var player in Players)
+				foreach (NetworkingPlayer player in Players)
 				{
 					// check for distance here so the owner doesn't need to be sent in stream, used for NCW field proximity check
 					if (!commonServerLogic.PlayerIsDistanceReceiver(sender, player, frame, ProximityDistance, ProximityModeUpdateFrequency))
@@ -140,8 +140,8 @@ namespace BeardedManStudios.Forge.Networking
 		/// <param name="objectsToSend">Array of vars to be sent, read them with Binary.StreamData.GetBasicType<typeOfObject>()</param>
 		public virtual void Send(NetworkingPlayer player, int messageGroupId = MessageGroupIds.START_OF_GENERIC_IDS, bool reliable = false, params object[] objectsToSend)
 		{
-			var data = ObjectMapper.BMSByte(objectsToSend);
-			var sendFrame = new Binary(Time.Timestep, false, data, Receivers.Target, messageGroupId, false);
+			BMSByte data = ObjectMapper.BMSByte(objectsToSend);
+			Binary sendFrame = new Binary(Time.Timestep, false, data, Receivers.Target, messageGroupId, false);
 			Send(player, sendFrame, reliable);
 		}
 
@@ -155,8 +155,8 @@ namespace BeardedManStudios.Forge.Networking
 		/// <param name="objectsToSend">Array of vars to be sent, read them with Binary.StreamData.GetBasicType<typeOfObject>()</param>
 		public virtual void Send(Receivers receivers = Receivers.Target, NetworkingPlayer playerToIgnore = null, int messageGroupId = MessageGroupIds.START_OF_GENERIC_IDS, bool reliable = false, params object[] objectsToSend)
 		{
-			var data = ObjectMapper.BMSByte(objectsToSend);
-			var sendFrame = new Binary(Time.Timestep, false, data, receivers, messageGroupId, false);
+			BMSByte data = ObjectMapper.BMSByte(objectsToSend);
+			Binary sendFrame = new Binary(Time.Timestep, false, data, receivers, messageGroupId, false);
 			Send(sendFrame, reliable, playerToIgnore);
 		}
 
@@ -227,7 +227,7 @@ namespace BeardedManStudios.Forge.Networking
 			lock (Players)
 			{
 				// Go through all of the players and disconnect them
-				foreach (var player in Players)
+				foreach (NetworkingPlayer player in Players)
 				{
 					if (player != Me)
 						Disconnect(player, forced);
@@ -235,7 +235,7 @@ namespace BeardedManStudios.Forge.Networking
 
 				CleanupDisconnections();
 
-				var counter = 0;
+				int counter = 0;
 				for (; ; counter++)
 				{
 					if (counter >= 10 || Players.Count == 1)
@@ -320,8 +320,8 @@ namespace BeardedManStudios.Forge.Networking
 		/// </summary>
 		private void ReadClients()
 		{
-			var groupEP = new IPEndPoint(IPAddress.Any, 0);
-			var incomingEndpoint = string.Empty;
+			IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, 0);
+			string incomingEndpoint = string.Empty;
 
 			BMSByte packet = null;
 
@@ -373,7 +373,7 @@ namespace BeardedManStudios.Forge.Networking
 					{
 						// It is possible that the response validation was dropped so
 						// check if the client is resending for a response
-						var response = Websockets.ValidateConnectionHeader(packet.CompressBytes());
+						byte[] response = Websockets.ValidateConnectionHeader(packet.CompressBytes());
 
 						// The client has sent the connection request again
 						if (response != null)
@@ -436,13 +436,13 @@ namespace BeardedManStudios.Forge.Networking
 			}
 
 			// Validate that the connection headers are properly formatted
-			var response = Websockets.ValidateConnectionHeader(packet.CompressBytes());
+			byte[] response = Websockets.ValidateConnectionHeader(packet.CompressBytes());
 
 			// The response will be null if the header sent is invalid, if so then disconnect client as they are sending invalid headers
 			if (response == null)
 				return;
 
-			var player = new UDPNetworkingPlayer(ServerPlayerCounter++, incomingEndpoint, false, groupEP, this);
+			UDPNetworkingPlayer player = new UDPNetworkingPlayer(ServerPlayerCounter++, incomingEndpoint, false, groupEP, this);
 
 			// If all is in order then send the validated response to the client
 			Client.Send(response, response.Length, groupEP);
@@ -462,7 +462,7 @@ namespace BeardedManStudios.Forge.Networking
 			try
 			{
 				// Format the byte data into a UDPPacket struct
-				var formattedPacket = TranscodePacket(currentReadingPlayer, packet);
+				UDPPacket formattedPacket = TranscodePacket(currentReadingPlayer, packet);
 
 				if (formattedPacket.endPacket && !formattedPacket.isConfirmation)
 				{
@@ -507,7 +507,7 @@ namespace BeardedManStudios.Forge.Networking
 		private void PacketSequenceComplete(BMSByte data, int groupId, byte receivers, bool isReliable)
 		{
 			// Pull the frame from the sent message
-			var frame = Factory.DecodeMessage(data.CompressBytes(), false, groupId, currentReadingPlayer, receivers);
+			FrameStream frame = Factory.DecodeMessage(data.CompressBytes(), false, groupId, currentReadingPlayer, receivers);
 
 			if (isReliable)
 			{
@@ -638,7 +638,7 @@ namespace BeardedManStudios.Forge.Networking
 
 		private void SendBuffer(NetworkingPlayer player)
 		{
-			foreach (var frame in bufferedMessages)
+			foreach (FrameStream frame in bufferedMessages)
 				Send(player, frame, true);
 		}
 
@@ -669,7 +669,7 @@ namespace BeardedManStudios.Forge.Networking
 
 		public void BanPlayer(ulong networkId, int minutes)
 		{
-			var player = Players.FirstOrDefault(p => p.NetworkId == networkId);
+			NetworkingPlayer player = Players.FirstOrDefault(p => p.NetworkId == networkId);
 
 			if (player == null)
 				return;

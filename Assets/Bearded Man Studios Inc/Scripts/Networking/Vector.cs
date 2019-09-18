@@ -99,7 +99,7 @@ namespace BeardedManStudios
 			if (!(obj is Vector))
 				return false;
 
-			var other = (Vector)obj;
+			Vector other = (Vector)obj;
 			return x == other.x && y == other.y && z == other.z;
 		}
 

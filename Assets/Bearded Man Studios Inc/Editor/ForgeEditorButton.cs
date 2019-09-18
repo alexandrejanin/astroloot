@@ -105,7 +105,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 
 			if (IsNetworkObject)
 			{
-				for (var i = 0; i < ForgeNetworkingEditor.Instance._editorButtons.Count; ++i)
+				for (int i = 0; i < ForgeNetworkingEditor.Instance._editorButtons.Count; ++i)
 				{
 					if (ForgeNetworkingEditor.Instance._editorButtons[i].StrippedSearchName == StrippedSearchName &&
 						ForgeNetworkingEditor.Instance._editorButtons[i].IsNetworkBehavior)
@@ -138,7 +138,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 				return;
 
 			EditorGUILayout.BeginHorizontal();
-			var verticleButton = EditorGUILayout.BeginVertical("Button");
+			Rect verticleButton = EditorGUILayout.BeginVertical("Button");
 			if (ForgeNetworkingEditor.ProVersion)
 				GUI.color = ButtonColor;
 			if (GUI.Button(verticleButton, GUIContent.none))
@@ -158,7 +158,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 			GUILayout.Label(ForgeNetworkingEditor.SideArrow);
 			GUILayout.FlexibleSpace();
 			GUI.color = Color.white;
-			var boldStyle = new GUIStyle(GUI.skin.GetStyle("boldLabel"));
+			GUIStyle boldStyle = new GUIStyle(GUI.skin.GetStyle("boldLabel"));
 			boldStyle.alignment = TextAnchor.UpperCenter;
 			GUILayout.Label(ButtonName, boldStyle);
 			GUILayout.FlexibleSpace();
@@ -171,7 +171,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 			EditorGUILayout.EndVertical();
 			GUI.color = Color.white;
 
-			var deletionButton = EditorGUILayout.BeginVertical("Button", GUILayout.Width(50));
+			Rect deletionButton = EditorGUILayout.BeginVertical("Button", GUILayout.Width(50));
 			GUI.color = Color.red;
 			if (GUI.Button(deletionButton, GUIContent.none))
 			{
@@ -193,7 +193,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 
 		public bool RenderExposed(Action callback = null, bool ignoreButton = false)
 		{
-			var returnValue = true;
+			bool returnValue = true;
 			if (TiedObject == null)
 			{
 				EditorStyles.boldLabel.alignment = TextAnchor.MiddleLeft;
@@ -203,7 +203,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 			}
 			else if (!ignoreButton)
 			{
-				var verticleButton = EditorGUILayout.BeginVertical("Button");
+				Rect verticleButton = EditorGUILayout.BeginVertical("Button");
 				if (ForgeNetworkingEditor.ProVersion)
 					GUI.color = ButtonColor;
 				if (GUI.Button(verticleButton, GUIContent.none))
@@ -222,7 +222,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 				GUILayout.Label(ForgeNetworkingEditor.SideArrow);
 				GUI.color = Color.white;
 				GUILayout.FlexibleSpace();
-				var boldStyle = new GUIStyle(GUI.skin.GetStyle("boldLabel"));
+				GUIStyle boldStyle = new GUIStyle(GUI.skin.GetStyle("boldLabel"));
 				boldStyle.alignment = TextAnchor.UpperCenter;
 				GUILayout.Label(ButtonName, boldStyle);
 				GUILayout.FlexibleSpace();
@@ -246,7 +246,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 				_classOrderList.DoLayoutList();
 
 				//Do we still need this?
-				var addFieldBtn = EditorGUILayout.BeginVertical("Button", GUILayout.Width(75), GUILayout.Height(25));
+				Rect addFieldBtn = EditorGUILayout.BeginVertical("Button", GUILayout.Width(75), GUILayout.Height(25));
 				GUI.color = Color.green;
 				if (GUI.Button(addFieldBtn, GUIContent.none))
 					ClassVariables.Add(new ForgeEditorField());
@@ -254,7 +254,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 				EditorGUILayout.BeginHorizontal();
 				GUI.color = Color.white;
 				GUILayout.FlexibleSpace();
-				var boldStyle = new GUIStyle(GUI.skin.GetStyle("boldLabel"));
+				GUIStyle boldStyle = new GUIStyle(GUI.skin.GetStyle("boldLabel"));
 				boldStyle.alignment = TextAnchor.UpperCenter;
 				GUILayout.Label("Add Field", boldStyle);
 				GUILayout.FlexibleSpace();
@@ -275,7 +275,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 
 				_rpcOrderList.DoLayoutList();
 
-				var addRpcBtn = EditorGUILayout.BeginVertical("Button", GUILayout.Width(75), GUILayout.Height(25));
+				Rect addRpcBtn = EditorGUILayout.BeginVertical("Button", GUILayout.Width(75), GUILayout.Height(25));
 				GUI.color = Color.green;
 				if (GUI.Button(addRpcBtn, GUIContent.none))
 				{
@@ -286,7 +286,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 				EditorGUILayout.BeginHorizontal();
 				GUI.color = Color.white;
 				GUILayout.FlexibleSpace();
-				var boldStyle = new GUIStyle(GUI.skin.GetStyle("boldLabel"));
+				GUIStyle boldStyle = new GUIStyle(GUI.skin.GetStyle("boldLabel"));
 				boldStyle.alignment = TextAnchor.UpperCenter;
 				GUILayout.Label("Add RPC", boldStyle);
 				GUILayout.FlexibleSpace();
@@ -314,8 +314,8 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 
 		public ValidationResult ValidateSetup()
 		{
-			var result = new ValidationResult();
-			var variableNames = new List<string>();
+			ValidationResult result = new ValidationResult();
+			List<string> variableNames = new List<string>();
 
 			//Make sure the class name is valid, and that no fields/RPCs/Rewinds match the class name
 			if (ForgeNetworkingEditor.IsValidName(ButtonName))
@@ -323,9 +323,9 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 			else
 				result.ReportValidationError(String.Format("Class \"{0}\" has a non-valid name", ButtonName));
 
-			var checkedName = string.Empty;
+			string checkedName = string.Empty;
 			//Validate Fields
-			for (var i = 0; i < ClassVariables.Count; ++i)
+			for (int i = 0; i < ClassVariables.Count; ++i)
 			{
 				checkedName = ClassVariables[i].FieldName;
 				if (variableNames.Contains(checkedName))
@@ -344,7 +344,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 						break;
 				}
 
-				var duplicate = string.Empty;
+				string duplicate = string.Empty;
 				if (checkedName.EndsWith("Changed"))
 				{
 					duplicate = checkedName.Substring(0, checkedName.LastIndexOf("Changed"));
@@ -373,7 +373,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 			}
 
 			//Validate RPCs
-			for (var i = 0; i < RPCVariables.Count; ++i)
+			for (int i = 0; i < RPCVariables.Count; ++i)
 			{
 
 				checkedName = RPCVariables[i].FieldName;
@@ -407,7 +407,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 			}
 
 			//Validate Rewinds
-			for (var i = 0; i < RewindVariables.Count; ++i)
+			for (int i = 0; i < RewindVariables.Count; ++i)
 			{
 				checkedName = RewindVariables[i].FieldName;
 				if (variableNames.Contains(checkedName))
@@ -446,19 +446,19 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 
 			ButtonName = TiedObject.ExactFilename;
 			_defaultName = TiedObject.ExactFilename;
-			for (var i = 0; i < TiedObject.Fields.Count; ++i)
+			for (int i = 0; i < TiedObject.Fields.Count; ++i)
 			{
-				var canInterpolate = TiedObject.Fields[i].Interpolate;
-				var interpolateValue = TiedObject.Fields[i].InterpolateValue;
+				bool canInterpolate = TiedObject.Fields[i].Interpolate;
+				float interpolateValue = TiedObject.Fields[i].InterpolateValue;
 
 				ClassVariables.Add(new ForgeEditorField(TiedObject.Fields[i].FieldName, true, TiedObject.Fields[i].FieldType, canInterpolate, interpolateValue));
 			}
 
 			if (TiedObject != null)
 			{
-				for (var i = 0; i < TiedObject.RPCS.Count; ++i)
+				for (int i = 0; i < TiedObject.RPCS.Count; ++i)
 				{
-					var rpc = new ForgeEditorRPCField();
+					ForgeEditorRPCField rpc = new ForgeEditorRPCField();
 
 					rpc.FieldName = TiedObject.RPCS[i].RPCName;
 					rpc.AddRange(TiedObject.RPCS[i].Arguments.ToArray(), TiedObject.RPCS[i].HelperTypes.ToArray());
@@ -510,7 +510,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 				};
 				_rpcOrderList.elementHeightCallback = (int index) =>
 				{
-					var height = EditorGUIUtility.singleLineHeight + 4;
+					float height = EditorGUIUtility.singleLineHeight + 4;
 					if (RPCVariables[index].Dropdown)
 					{
 						height += RPCVariables[index].FieldTypes.Count * EditorGUIUtility.singleLineHeight * 1.2f;

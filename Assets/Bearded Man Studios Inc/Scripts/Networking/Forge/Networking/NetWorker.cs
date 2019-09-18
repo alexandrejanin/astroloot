@@ -57,8 +57,8 @@ namespace BeardedManStudios.Forge.Networking
 
 			if (!IPAddress.TryParse(host, out ipAddress))
 			{
-				var hostCheck = Dns.GetHostEntry(Dns.GetHostName());
-				foreach (var ip in hostCheck.AddressList)
+				IPHostEntry hostCheck = Dns.GetHostEntry(Dns.GetHostName());
+				foreach (IPAddress ip in hostCheck.AddressList)
 				{
 					if (ip.AddressFamily == AddressFamily.InterNetwork)
 					{
@@ -69,7 +69,7 @@ namespace BeardedManStudios.Forge.Networking
 
 				try
 				{
-					var ipHostInfo = Dns.GetHostEntry(host);
+					IPHostEntry ipHostInfo = Dns.GetHostEntry(host);
 					ipAddress = ipHostInfo.AddressList[0];
 				}
 				catch
@@ -487,10 +487,10 @@ namespace BeardedManStudios.Forge.Networking
 			{
 				while (IsBound)
 				{
-					var step = Time.Timestep;
+					ulong step = Time.Timestep;
 					lock (NetworkObjects)
 					{
-						foreach (var obj in NetworkObjects.Values)
+						foreach (NetworkObject obj in NetworkObjects.Values)
 						{
 							// Only do the heartbeat (update) on network objects that
 							// are owned by the current networker
@@ -539,7 +539,7 @@ namespace BeardedManStudios.Forge.Networking
 		{
 			lock (Players)
 			{
-				for (var i = 0; i < Players.Count; i++)
+				for (int i = 0; i < Players.Count; i++)
 					expression(Players[i]);
 			}
 		}
@@ -551,7 +551,7 @@ namespace BeardedManStudios.Forge.Networking
 		{
 			lock (NetworkObjectList)
 			{
-				for (var i = 0; i < NetworkObjectList.Count; i++)
+				for (int i = 0; i < NetworkObjectList.Count; i++)
 					expression(NetworkObjectList[i]);
 			}
 		}
@@ -567,7 +567,7 @@ namespace BeardedManStudios.Forge.Networking
 		{
 			lock (Players)
 			{
-				for (var i = 0; i < Players.Count; i++)
+				for (int i = 0; i < Players.Count; i++)
 				{
 					if (Players[i].NetworkId == id)
 						return Players[i];
@@ -606,7 +606,7 @@ namespace BeardedManStudios.Forge.Networking
 
 			lock (Players)
 			{
-				for (var i = 0; i < Players.Count; i++)
+				for (int i = 0; i < Players.Count; i++)
 				{
 					if (Players[i].Ip == other.Ip && Players[i].InstanceGuid == other.InstanceGuid)
 						return Players[i];
@@ -623,7 +623,7 @@ namespace BeardedManStudios.Forge.Networking
 		/// <returns><c>true</c> if the object was registered successfully, else <c>false</c> if it has already been registered</returns>
 		public bool RegisterNetworkObject(NetworkObject networkObject, uint forceId = 0)
 		{
-			var id = currentNetworkObjectId;
+			uint id = currentNetworkObjectId;
 
 			lock (NetworkObjects)
 			{
@@ -702,10 +702,10 @@ namespace BeardedManStudios.Forge.Networking
 
 			lock (Players)
 			{
-				for (var i = DisconnectingPlayers.Count - 1; i >= 0; --i)
+				for (int i = DisconnectingPlayers.Count - 1; i >= 0; --i)
 					disconnectMethod(DisconnectingPlayers[i], false);
 
-				for (var i = ForcedDisconnectingPlayers.Count - 1; i >= 0; --i)
+				for (int i = ForcedDisconnectingPlayers.Count - 1; i >= 0; --i)
 					disconnectMethod(ForcedDisconnectingPlayers[i], true);
 			}
 		}
@@ -877,9 +877,9 @@ namespace BeardedManStudios.Forge.Networking
 
 			if (frame.GroupId == MessageGroupIds.PING || frame.GroupId == MessageGroupIds.PONG)
 			{
-				var receivedTimestep = frame.StreamData.GetBasicType<long>();
-				var received = new DateTime(receivedTimestep);
-				var ms = DateTime.UtcNow - received;
+				long receivedTimestep = frame.StreamData.GetBasicType<long>();
+				DateTime received = new DateTime(receivedTimestep);
+				TimeSpan ms = DateTime.UtcNow - received;
 
 				if (frame.GroupId == MessageGroupIds.PING)
 					Pong(player, received);
@@ -891,10 +891,10 @@ namespace BeardedManStudios.Forge.Networking
 
 			if (frame is Binary)
 			{
-				var routerId = ((Binary)frame).RouterId;
+				byte routerId = ((Binary)frame).RouterId;
 				if (routerId == RouterIds.RPC_ROUTER_ID || routerId == RouterIds.BINARY_DATA_ROUTER_ID || routerId == RouterIds.CREATED_OBJECT_ROUTER_ID)
 				{
-					var id = frame.StreamData.GetBasicType<uint>();
+					uint id = frame.StreamData.GetBasicType<uint>();
 					NetworkObject targetObject = null;
 
 					lock (NetworkObjects)
@@ -1043,9 +1043,9 @@ namespace BeardedManStudios.Forge.Networking
 				{
 					//IPAddress ipAddress = Dns.GetHostEntry(Dns.GetHostName()).AddressList[0];
 					//IPEndPoint ipLocalEndPoint = new IPEndPoint(ipAddress, 15937);
-					var ipLocalEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
+					IPEndPoint ipLocalEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
 
-					var t = new TcpListener(ipLocalEndPoint);
+					TcpListener t = new TcpListener(ipLocalEndPoint);
 					t.Start();
 					t.Stop();
 				}
@@ -1071,16 +1071,16 @@ namespace BeardedManStudios.Forge.Networking
 
 		public Ping GeneratePing()
 		{
-			var payload = new BMSByte();
-			var ticks = DateTime.UtcNow.Ticks;
+			BMSByte payload = new BMSByte();
+			long ticks = DateTime.UtcNow.Ticks;
 			payload.BlockCopy<long>(ticks, sizeof(long));
 			return new Ping(Time.Timestep, this is TCPClient, payload, Receivers.Server, MessageGroupIds.PING, this is BaseTCP);
 		}
 
 		protected Pong GeneratePong(DateTime time)
 		{
-			var payload = new BMSByte();
-			var ticks = time.Ticks;
+			BMSByte payload = new BMSByte();
+			long ticks = time.Ticks;
 			payload.BlockCopy<long>(ticks, sizeof(long));
 			return new Pong(Time.Timestep, this is TCPClient, payload, Receivers.Target, MessageGroupIds.PONG, this is BaseTCP);
 		}
@@ -1096,7 +1096,7 @@ namespace BeardedManStudios.Forge.Networking
 		private static void CloseLocalListingsClient()
 		{
 			lock (localListingsClientList) {
-				foreach (var cachedUdpClient in localListingsClientList) {
+				foreach (CachedUdpClient cachedUdpClient in localListingsClientList) {
 					cachedUdpClient.Client.Close();
 				}
 				localListingsClientList.Clear();
@@ -1109,9 +1109,9 @@ namespace BeardedManStudios.Forge.Networking
 		/// </summary>
 		/// <returns>An array of local IPs for every active NIC</returns>
 		private static IPAddress[] GetLocalIPs() {
-			var ipList = new List<IPAddress>();
+			List<IPAddress> ipList = new List<IPAddress>();
 
-			foreach (var nic in NetworkInterface.GetAllNetworkInterfaces()) {
+			foreach (NetworkInterface nic in NetworkInterface.GetAllNetworkInterfaces()) {
 				switch (nic.NetworkInterfaceType) {
 					case NetworkInterfaceType.Wireless80211:
 					case NetworkInterfaceType.Ethernet:
@@ -1122,7 +1122,7 @@ namespace BeardedManStudios.Forge.Networking
 
 				if (nic.OperationalStatus != OperationalStatus.Up) continue;
 
-				foreach (var ip in nic.GetIPProperties().UnicastAddresses) {
+				foreach (UnicastIPAddressInformation ip in nic.GetIPProperties().UnicastAddresses) {
 					if (ip.Address.AddressFamily == AddressFamily.InterNetwork) {
 						ipList.Add(ip.Address);
 					}
@@ -1138,7 +1138,7 @@ namespace BeardedManStudios.Forge.Networking
 		public static void RefreshLocalUdpListings(ushort portNumber = DEFAULT_PORT, int responseBuffer = 1000)
 		{
 			lock (localListingsClientList) {
-				foreach (var cachedUdpClient in localListingsClientList) {
+				foreach (CachedUdpClient cachedUdpClient in localListingsClientList) {
 					cachedUdpClient.Client.Close();
 				}
 				localListingsClientList.Clear();
@@ -1154,10 +1154,10 @@ namespace BeardedManStudios.Forge.Networking
 				LocalEndpoints.Clear();
 			}
 
-			foreach (var ipAddress in GetLocalIPs())
+			foreach (IPAddress ipAddress in GetLocalIPs())
 			{
 				// Create a client to write on the network and discover other clients and servers
-				var localListingsClient = new CachedUdpClient(new IPEndPoint(ipAddress, 19375));
+				CachedUdpClient localListingsClient = new CachedUdpClient(new IPEndPoint(ipAddress, 19375));
 				localListingsClient.EnableBroadcast = true;
 				lock (localListingsClientList) {
 					localListingsClientList.Add(localListingsClient);
@@ -1166,8 +1166,8 @@ namespace BeardedManStudios.Forge.Networking
 
 				Task.Queue(() =>
 				{
-					var groupEp = default(IPEndPoint);
-					var endpoint = string.Empty;
+					IPEndPoint groupEp = default(IPEndPoint);
+					string endpoint = string.Empty;
 
 					localListingsClient.Send(new byte[] {BROADCAST_LISTING_REQUEST_1, BROADCAST_LISTING_REQUEST_2, BROADCAST_LISTING_REQUEST_3}, 3,
 						new IPEndPoint(IPAddress.Parse("255.255.255.255"), portNumber));
@@ -1181,9 +1181,9 @@ namespace BeardedManStudios.Forge.Networking
 							if (data.Size != 1)
 								continue;
 
-							var parts = endpoint.Split('+');
-							var address = parts[0];
-							var port = ushort.Parse(parts[1]);
+							string[] parts = endpoint.Split('+');
+							string address = parts[0];
+							ushort port = ushort.Parse(parts[1]);
 							if (data[0] == SERVER_BROADCAST_CODE)
 							{
 								var ep = new BroadcastEndpoints(address, port, true);

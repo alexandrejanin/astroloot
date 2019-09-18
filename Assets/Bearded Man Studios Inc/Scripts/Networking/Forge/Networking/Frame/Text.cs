@@ -57,7 +57,7 @@ namespace BeardedManStudios.Forge.Networking.Frame
 		/// <returns>The string representation of the data bytes for this frame</returns>
 		public override string ToString()
 		{
-			var stringData = Encoding.UTF8.GetString(StreamData.CompressBytes());
+			string stringData = Encoding.UTF8.GetString(StreamData.CompressBytes());
 
 			if (IsReliable)
 				return stringData.Remove(stringData.Length - sizeof(ulong));

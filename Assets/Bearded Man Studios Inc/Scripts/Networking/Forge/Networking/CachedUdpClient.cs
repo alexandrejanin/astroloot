@@ -74,7 +74,7 @@ namespace BeardedManStudios.Forge.Networking
 
 			this.family = AddressFamily.InterNetwork;
 
-			var localEP = new IPEndPoint(IPAddress.Any, port);
+			IPEndPoint localEP = new IPEndPoint(IPAddress.Any, port);
 			InitSocket(localEP);
 		}
 
@@ -202,8 +202,8 @@ namespace BeardedManStudios.Forge.Networking
 			if (port < IPEndPoint.MinPort || port > IPEndPoint.MaxPort)
 				throw new ArgumentOutOfRangeException("port");
 
-			var addresses = Dns.GetHostAddresses(hostname);
-			for (var i = 0; i < addresses.Length; i++)
+			IPAddress[] addresses = Dns.GetHostAddresses(hostname);
+			for (int i = 0; i < addresses.Length; i++)
 			{
 				try
 				{
@@ -337,7 +337,7 @@ namespace BeardedManStudios.Forge.Networking
 			if (endPoint == null)
 				endPoint = new IPEndPoint(IPAddress.Any, 0);
 
-			var dataRead = socket.ReceiveFrom(recBuffer.byteArr, ref endPoint);
+			int dataRead = socket.ReceiveFrom(recBuffer.byteArr, ref endPoint);
 
 			if (!connections.ContainsKey(endPoint))
 				connections.Add(endPoint, (((IPEndPoint)endPoint).Address.ToString() + HOST_PORT_CHARACTER_SEPARATOR + ((IPEndPoint)endPoint).Port.ToString()));
@@ -430,7 +430,7 @@ namespace BeardedManStudios.Forge.Networking
 
 		private byte[] CutArray(byte[] orig, int length)
 		{
-			var newArray = new byte[length];
+			byte[] newArray = new byte[length];
 			Buffer.BlockCopy(orig, 0, newArray, 0, length);
 
 			return newArray;
@@ -564,7 +564,7 @@ namespace BeardedManStudios.Forge.Networking
 				ep = new IPEndPoint(IPAddress.IPv6Any, 0);
 			}
 
-			var bytes = socket.EndReceiveFrom(asyncResult,
+			int bytes = socket.EndReceiveFrom(asyncResult,
 				ref ep);
 			remoteEP = (IPEndPoint)ep;
 
@@ -572,7 +572,7 @@ namespace BeardedManStudios.Forge.Networking
 			 * otherwise the returned array length is not
 			 * 'bytes'
 			 */
-			var buf = new byte[bytes];
+			byte[] buf = new byte[bytes];
 			Array.Copy(recvbuffer, buf, bytes);
 
 			return (buf);

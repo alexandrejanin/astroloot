@@ -55,7 +55,7 @@ namespace BeardedManStudios.Forge.Networking.Unity.Lobby
 		
 		public void RequestChangeTeam()
 		{
-			var nextID = AssociatedPlayer.TeamID + 1;
+			int nextID = AssociatedPlayer.TeamID + 1;
 			if (nextID >= TeamColors.Length)
 				nextID = 0;
 
@@ -64,7 +64,7 @@ namespace BeardedManStudios.Forge.Networking.Unity.Lobby
 
 		public void RequestChangeAvatarID()
 		{
-			var nextID = AssociatedPlayer.AvatarID + 1;
+			int nextID = AssociatedPlayer.AvatarID + 1;
 			if (nextID >= AvatarColors.Length)
 				nextID = 0;
 
@@ -78,7 +78,7 @@ namespace BeardedManStudios.Forge.Networking.Unity.Lobby
 
 		public void ChangeAvatarID(int id)
 		{
-			var avatarColor = Color.white;
+			Color avatarColor = Color.white;
 
 			//Note: This is just an example, you are free to make your own team colors and
 			// change this to however you see fit
@@ -101,7 +101,7 @@ namespace BeardedManStudios.Forge.Networking.Unity.Lobby
 
 		public void ToggleInteractables(bool value)
 		{
-            for (var i = 0; i < Buttons.Length; ++i)
+            for (int i = 0; i < Buttons.Length; ++i)
                 Buttons[i].interactable = value;
 
             AvatarBG.raycastTarget = value;

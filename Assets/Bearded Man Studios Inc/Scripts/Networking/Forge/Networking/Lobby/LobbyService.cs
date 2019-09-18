@@ -82,7 +82,7 @@ namespace BeardedManStudios.Forge.Networking.Lobby
 			{
 				if (_myself == null)
 				{
-					for (var i = 0; i < MasterLobby.LobbyPlayers.Count; ++i)
+					for (int i = 0; i < MasterLobby.LobbyPlayers.Count; ++i)
 					{
 						if (MasterLobby.LobbyPlayers[i].NetworkId == networkObject.MyPlayerId)
 						{
@@ -93,7 +93,7 @@ namespace BeardedManStudios.Forge.Networking.Lobby
 
 					if (_myself == null)
 					{
-						var dummyPlayer = new DummyPlayer(networkObject.MyPlayerId, string.Format("Player {0}", networkObject.MyPlayerId), 0, 0);
+						DummyPlayer dummyPlayer = new DummyPlayer(networkObject.MyPlayerId, string.Format("Player {0}", networkObject.MyPlayerId), 0, 0);
 						MasterLobby.LobbyPlayers.Add(dummyPlayer);
 						_myself = dummyPlayer;
 					}
@@ -193,7 +193,7 @@ namespace BeardedManStudios.Forge.Networking.Lobby
 
 			public DummyLobbyMaster()
 			{
-				var player = new DummyPlayer(0, "Server", 0, 0);
+				DummyPlayer player = new DummyPlayer(0, "Server", 0, 0);
 				LobbyPlayers.Add(player);
 				LobbyPlayersMap.Add(0, player);
 				LobbyTeams.Add(0, new List<IClientMockPlayer>() { player });
@@ -224,7 +224,7 @@ namespace BeardedManStudios.Forge.Networking.Lobby
 
 			public void OnFNTeamChanged(IClientMockPlayer player)
 			{
-				var newId = player.TeamID;
+				int newId = player.TeamID;
 
 				if (!LobbyTeams.ContainsKey(newId))
 					LobbyTeams.Add(newId, new List<IClientMockPlayer>());
@@ -236,7 +236,7 @@ namespace BeardedManStudios.Forge.Networking.Lobby
 				{
 					if (iter.Current != null)
 					{
-						var kv = (KeyValuePair<int, List<IClientMockPlayer>>)iter.Current;
+						KeyValuePair<int, List<IClientMockPlayer>> kv = (KeyValuePair<int, List<IClientMockPlayer>>)iter.Current;
 						if (kv.Value.Contains(player))
 						{
 							kv.Value.Remove(player);
@@ -267,9 +267,9 @@ namespace BeardedManStudios.Forge.Networking.Lobby
 				LobbyPlayers.Clear();
 				LobbyPlayersMap.Clear();
 				LobbyTeams.Clear();
-				for (var i = 0; i < previousLobbyMaster.LobbyPlayers.Count; ++i)
+				for (int i = 0; i < previousLobbyMaster.LobbyPlayers.Count; ++i)
 				{
-					var player = previousLobbyMaster.LobbyPlayers[i];
+					IClientMockPlayer player = previousLobbyMaster.LobbyPlayers[i];
 					LobbyPlayers.Add(player);
 					LobbyPlayersMap.Add(player.NetworkId, player);
 				}
@@ -280,13 +280,13 @@ namespace BeardedManStudios.Forge.Networking.Lobby
 				{
 					if (iter.Current != null)
 					{
-						var kv = (KeyValuePair<int, List<IClientMockPlayer>>)iter.Current;
+						KeyValuePair<int, List<IClientMockPlayer>> kv = (KeyValuePair<int, List<IClientMockPlayer>>)iter.Current;
 						LobbyTeams.Add(kv.Key, kv.Value);
 					}
 					else
 						break;
 				}
-				foreach (var kv in previousLobbyMaster.LobbyTeams)
+				foreach (KeyValuePair<int, List<IClientMockPlayer>> kv in previousLobbyMaster.LobbyTeams)
 				{
 					LobbyTeams.Add(kv.Key, kv.Value);
 				}
@@ -394,7 +394,7 @@ namespace BeardedManStudios.Forge.Networking.Lobby
 		/// <param name="newName">The next name you will be referred as</param>
 		public void SetName(string newName)
 		{
-			var player = GetClientMockPlayer(networkObject.MyPlayerId);
+			IClientMockPlayer player = GetClientMockPlayer(networkObject.MyPlayerId);
 			player.Name = newName;
 			networkObject.SendRpc(RPC_ASSIGN_NAME,
 				true,
@@ -409,7 +409,7 @@ namespace BeardedManStudios.Forge.Networking.Lobby
 		/// <param name="avatarID">Next avatar id</param>
 		public void SetAvatar(int avatarID)
 		{
-			var player = GetClientMockPlayer(networkObject.MyPlayerId);
+			IClientMockPlayer player = GetClientMockPlayer(networkObject.MyPlayerId);
 			player.AvatarID = avatarID;
 			networkObject.SendRpc(RPC_ASSIGN_AVATAR, Receivers.All, networkObject.MyPlayerId, avatarID);
 		}
@@ -420,7 +420,7 @@ namespace BeardedManStudios.Forge.Networking.Lobby
 		/// <param name="teamId">The new team id</param>
 		public void SetTeamId(int teamId)
 		{
-			var player = GetClientMockPlayer(networkObject.MyPlayerId);
+			IClientMockPlayer player = GetClientMockPlayer(networkObject.MyPlayerId);
 			player.TeamID = teamId;
 			// TODO:  When someone joins they need to get the current players selections
 			networkObject.SendRpc(RPC_ASSIGN_TEAM, Receivers.All, networkObject.MyPlayerId, teamId);
@@ -441,10 +441,10 @@ namespace BeardedManStudios.Forge.Networking.Lobby
 			if (networkObject.Networker.IsServer)
 			{
 				//TODO: I am the server, so disconnect the id passed in here!
-				var player = networkObject.Networker.FindPlayer(p => p.NetworkId == id);
+				NetworkingPlayer player = networkObject.Networker.FindPlayer(p => p.NetworkId == id);
 				if (player != null)
 				{
-					var serverSocket = (IServer)networkObject.Networker;
+					IServer serverSocket = (IServer)networkObject.Networker;
 					serverSocket.Disconnect(player, true);
 					serverSocket.CommitDisconnects();
 				}
@@ -508,8 +508,8 @@ namespace BeardedManStudios.Forge.Networking.Lobby
 		/// </summary>
 		private void AssignName(RpcArgs args)
 		{
-			var playerName = args.GetNext<string>();
-			var playerId = args.GetNext<uint>();
+			string playerName = args.GetNext<string>();
+			uint playerId = args.GetNext<uint>();
 			var player = GetClientMockPlayer(playerId);
 
 			if (player == null)
@@ -536,7 +536,7 @@ namespace BeardedManStudios.Forge.Networking.Lobby
 		/// </summary>
 		private void PlayerJoined(RpcArgs args)
 		{
-			var playerId = args.GetNext<uint>();
+			uint playerId = args.GetNext<uint>();
 			var player = CreateClientMockPlayer(playerId, "Player " + playerId);
 
 			MasterLobby.OnFNPlayerConnected(player);
@@ -547,7 +547,7 @@ namespace BeardedManStudios.Forge.Networking.Lobby
 		/// </summary>
 		private void PlayerLeft(RpcArgs args)
 		{
-			var playerId = args.GetNext<uint>();
+			uint playerId = args.GetNext<uint>();
 			var player = GetClientMockPlayer(playerId);
 
 			if (player == null)
@@ -562,8 +562,8 @@ namespace BeardedManStudios.Forge.Networking.Lobby
 		/// </summary>
 		private void AssignAvatar(RpcArgs args)
 		{
-			var playerId = args.GetNext<uint>();
-			var avatarId = args.GetNext<int>();
+			uint playerId = args.GetNext<uint>();
+			int avatarId = args.GetNext<int>();
 			var player = GetClientMockPlayer(playerId);
 
 			if (player == null)
@@ -579,8 +579,8 @@ namespace BeardedManStudios.Forge.Networking.Lobby
 		/// </summary>
 		private void AssignTeam(RpcArgs args)
 		{
-			var playerId = args.GetNext<uint>();
-			var teamId = args.GetNext<int>();
+			uint playerId = args.GetNext<uint>();
+			int teamId = args.GetNext<int>();
 			var player = GetClientMockPlayer(playerId);
 
 			if (player == null)
@@ -596,8 +596,8 @@ namespace BeardedManStudios.Forge.Networking.Lobby
 		/// </summary>
 		private void MessageReceived(RpcArgs args)
 		{
-			var playerId = args.GetNext<uint>();
-			var message = args.GetNext<string>();
+			uint playerId = args.GetNext<uint>();
+			string message = args.GetNext<string>();
 			var player = GetClientMockPlayer(playerId);
 
 			if (player == null)
@@ -614,10 +614,10 @@ namespace BeardedManStudios.Forge.Networking.Lobby
 		/// </summary>
 		private void SyncPlayer(RpcArgs args)
 		{
-			var playerId = args.GetNext<uint>();
-			var playerName = args.GetNext<string>();
-			var teamID = args.GetNext<int>();
-			var avatarID = args.GetNext<int>();
+			uint playerId = args.GetNext<uint>();
+			string playerName = args.GetNext<string>();
+			int teamID = args.GetNext<int>();
+			int avatarID = args.GetNext<int>();
 			var player = GetClientMockPlayer(playerId);
 
 			if (player == null)
@@ -643,7 +643,7 @@ namespace BeardedManStudios.Forge.Networking.Lobby
 			IClientMockPlayer targetPlayer = null;
 			if (MasterLobby != null)
 			{
-				for (var i = 0; i < MasterLobby.LobbyPlayers.Count; ++i)
+				for (int i = 0; i < MasterLobby.LobbyPlayers.Count; ++i)
 				{
 					if (MasterLobby.LobbyPlayers[i].NetworkId == playerId)
 					{
@@ -667,7 +667,7 @@ namespace BeardedManStudios.Forge.Networking.Lobby
 					return;
 
 				networkObject.SendRpc(player, RPC_PLAYER_JOINED, p.NetworkId);
-				var cPlayer = MasterLobby.LobbyPlayers.First(l => l.NetworkId == p.NetworkId);
+				IClientMockPlayer cPlayer = MasterLobby.LobbyPlayers.First(l => l.NetworkId == p.NetworkId);
 				networkObject.SendRpc(player, RPC_PLAYER_SYNC, p.NetworkId, cPlayer.Name, cPlayer.TeamID, cPlayer.AvatarID);
 			});
 		}

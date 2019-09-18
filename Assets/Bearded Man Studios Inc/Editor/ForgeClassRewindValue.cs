@@ -33,8 +33,8 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 
 		public static ForgeAcceptableRPCTypes GetATypeFromPInfo(ParameterInfo pInfo)
 		{
-			var type = ForgeAcceptableRPCTypes.STRING;
-			var fieldType = pInfo.ParameterType;
+			ForgeAcceptableRPCTypes type = ForgeAcceptableRPCTypes.STRING;
+			Type fieldType = pInfo.ParameterType;
 			if (fieldType == typeof(int))
 				type = ForgeAcceptableRPCTypes.INT;
 			else if (fieldType == typeof(uint))

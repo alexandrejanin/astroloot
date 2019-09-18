@@ -46,7 +46,7 @@ namespace BeardedManStudios.Forge.Networking
 
                 if (rewinds.Count > 0)
                 {
-                    for (var i = 0; i < keys.Count; i++)
+                    for (int i = 0; i < keys.Count; i++)
                     {
                         if (keys[i] < timestep - RewindTime && RewindTime < timestep)
                         {
@@ -80,7 +80,7 @@ namespace BeardedManStudios.Forge.Networking
                     return result;
 
                 ulong key = 0;
-                foreach (var k in keys)
+                foreach (ulong k in keys)
                 {
                     if (timestep < k)
                     {
@@ -126,7 +126,7 @@ namespace BeardedManStudios.Forge.Networking
                     return default(T);
                 }
 
-                foreach (var k in keys)
+                foreach (ulong k in keys)
                 {
                     if (timestep < k)
                     {
@@ -157,7 +157,7 @@ namespace BeardedManStudios.Forge.Networking
         {
             lock (rewinds)
             {
-                var found = new List<T>();
+                List<T> found = new List<T>();
 
                 if (rewinds.Count == 0)
                     return found;
@@ -171,7 +171,7 @@ namespace BeardedManStudios.Forge.Networking
                     return found;
                 }
 
-                foreach (var k in keys)
+                foreach (ulong k in keys)
                 {
                     if (timestep <= k)
                     {
@@ -204,7 +204,7 @@ namespace BeardedManStudios.Forge.Networking
         {
             lock (rewinds)
             {
-                var found = new List<T>();
+                List<T> found = new List<T>();
 
                 if (rewinds.Count == 0)
                     return found;
@@ -217,7 +217,7 @@ namespace BeardedManStudios.Forge.Networking
                     return found;
                 }
 
-                foreach (var k in keys)
+                foreach (ulong k in keys)
                 {
                     if (timestepMin <= k && timestepMax >= k)
                         found.Insert(0, rewinds[k]);

@@ -40,9 +40,9 @@ public class MultiplayerMenu : MonoBehaviour
 		ipAddress.text = "127.0.0.1";
 		portNumber.text = "15937";
 
-		for (var i = 0; i < ToggledButtons.Length; ++i)
+		for (int i = 0; i < ToggledButtons.Length; ++i)
 		{
-			var btn = ToggledButtons[i].GetComponent<Button>();
+			Button btn = ToggledButtons[i].GetComponent<Button>();
 			if (btn != null)
 				_uiButtons.Add(btn);
 		}
@@ -124,9 +124,9 @@ public class MultiplayerMenu : MonoBehaviour
 			// I just make it randomly pick a server... you can do whatever you please!
 			if (response != null && response.serverResponse.Count > 0)
 			{
-				var server = response.serverResponse[Random.Range(0, response.serverResponse.Count)];
+				MasterServerResponse.Server server = response.serverResponse[Random.Range(0, response.serverResponse.Count)];
 				//TCPClient client = new TCPClient();
-				var client = new UDPClient();
+				UDPClient client = new UDPClient();
 				client.Connect(server.Address, server.Port);
 				Connected(client);
 			}
@@ -199,11 +199,11 @@ public class MultiplayerMenu : MonoBehaviour
 		JSONNode masterServerData = null;
 		if (!string.IsNullOrEmpty(masterServerHost))
 		{
-			var serverId = "myGame";
-			var serverName = "Forge Game";
-			var type = "Deathmatch";
-			var mode = "Teams";
-			var comment = "Demo comment...";
+			string serverId = "myGame";
+			string serverName = "Forge Game";
+			string type = "Deathmatch";
+			string mode = "Teams";
+			string comment = "Demo comment...";
 
 			masterServerData = mgr.MasterServerRegisterData(networker, serverId, serverName, type, mode, comment, useElo, eloRequired);
 		}
@@ -231,7 +231,7 @@ public class MultiplayerMenu : MonoBehaviour
 
 	private void SetToggledButtons(bool value)
 	{
-		for (var i = 0; i < _uiButtons.Count; ++i)
+		for (int i = 0; i < _uiButtons.Count; ++i)
 			_uiButtons[i].interactable = value;
 	}
 

@@ -27,7 +27,7 @@ namespace BeardedManStudios.Forge.Networking.Frame
 	{
 		private static byte[] DecodeHead(byte[] bytes, bool useMask, out int indexFirstMask)
 		{
-			var dataLength = bytes[1] & 127;
+			int dataLength = bytes[1] & 127;
 			indexFirstMask = 2;
 			if (dataLength == 126)
 				indexFirstMask = 4;
@@ -43,7 +43,7 @@ namespace BeardedManStudios.Forge.Networking.Frame
 			}
 
 			// Go through and decode the bytes, if no mask is supplied then copy the remaining bytes after length
-			var decoded = new byte[bytes.Length - indexFirstMask];
+			byte[] decoded = new byte[bytes.Length - indexFirstMask];
 
 			if (useMask)
 				for (int i = indexFirstMask, j = 0; i < bytes.Length; i++, j++)
@@ -65,8 +65,8 @@ namespace BeardedManStudios.Forge.Networking.Frame
 		/// <returns>The frame that was found during decoding</returns>
 		public static FrameStream DecodeMessage(byte[] bytes, bool useMask, int groupId, NetworkingPlayer sender, byte receivers = 255)
 		{
-			var indexFirstMask = 0;
-			var decoded = DecodeHead(bytes, useMask, out indexFirstMask);
+			int indexFirstMask = 0;
+			byte[] decoded = DecodeHead(bytes, useMask, out indexFirstMask);
 			return ReadFrameStream(bytes[0], decoded, indexFirstMask, groupId, sender, receivers);
 		}
 

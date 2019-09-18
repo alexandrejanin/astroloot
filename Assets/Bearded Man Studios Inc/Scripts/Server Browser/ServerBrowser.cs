@@ -47,7 +47,7 @@ namespace BeardedManStudios.Forge.Networking.Unity
 		public void Refresh()
 		{
 			// Clear out all the currently listed servers
-			for (var i = content.childCount - 1; i >= 0; --i)
+			for (int i = content.childCount - 1; i >= 0; --i)
 				Destroy(content.GetChild(i).gameObject);
 
 			// The Master Server communicates over TCP
@@ -59,8 +59,8 @@ namespace BeardedManStudios.Forge.Networking.Unity
 				try
 				{
 					// Create the get request with the desired filters
-					var sendData = JSONNode.Parse("{}");
-					var getData = new JSONClass();
+					JSONNode sendData = JSONNode.Parse("{}");
+					JSONClass getData = new JSONClass();
 					getData.Add("id", gameId);
 					getData.Add("type", gameType);
 					getData.Add("mode", gameMode);
@@ -84,20 +84,20 @@ namespace BeardedManStudios.Forge.Networking.Unity
 				try
 				{
 					// Get the list of hosts to iterate through from the frame payload
-					var data = JSONNode.Parse(frame.ToString());
+					JSONNode data = JSONNode.Parse(frame.ToString());
 					if (data["hosts"] != null)
 					{
-						var response = new MasterServerResponse(data["hosts"].AsArray);
+						MasterServerResponse response = new MasterServerResponse(data["hosts"].AsArray);
 
 						if (response != null && response.serverResponse.Count > 0)
 						{
 							// Go through all of the available hosts and add them to the server browser
-							foreach (var server in response.serverResponse)
+							foreach (MasterServerResponse.Server server in response.serverResponse)
 							{
-								var protocol = server.Protocol;
-								var address = server.Address;
-								var port = server.Port;
-								var name = server.Name;
+								string protocol = server.Protocol;
+								string address = server.Address;
+								ushort port = server.Port;
+								string name = server.Name;
 
 								// name, address, port, comment, type, mode, players, maxPlayers, protocol
 								CreateServerOption(name, () =>
@@ -156,7 +156,7 @@ namespace BeardedManStudios.Forge.Networking.Unity
 			if (networkManager == null)
 			{
 				Debug.LogWarning("A network manager was not provided, generating a new one instead");
-				var obj = new GameObject("Network Manager");
+				GameObject obj = new GameObject("Network Manager");
 				obj.AddComponent<NetworkManager>().Initialize(networker);
 			}
 			else

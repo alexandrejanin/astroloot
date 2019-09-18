@@ -39,13 +39,13 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 
 		public static ForgeClassFieldValue GetClassField(FieldInfo field, Type t, bool interpolate, float interpolateValue)
 		{
-			var name = field.Name.Replace("_", string.Empty);
+			string name = field.Name.Replace("_", string.Empty);
 			object value = null;
 			//if (!t.IsAbstract)
 			//    value = field.GetValue(t);
 
-			var type = ForgeAcceptableFieldTypes.BYTE;
-			var fieldType = field.FieldType;
+			ForgeAcceptableFieldTypes type = ForgeAcceptableFieldTypes.BYTE;
+			Type fieldType = field.FieldType;
 			if (fieldType == typeof(int))
 				type = ForgeAcceptableFieldTypes.INT;
 			else if (fieldType == typeof(uint))
@@ -139,7 +139,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 
 		public static string GetInterpolateFromAcceptable(string baseTypeString, ForgeAcceptableFieldTypes type)
 		{
-			var returnValue = string.Empty;
+			string returnValue = string.Empty;
 
 			switch (type)
 			{
@@ -168,7 +168,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 
 		public static bool IsInterpolatable(ForgeAcceptableFieldTypes type)
 		{
-			var returnValue = false;
+			bool returnValue = false;
 
 			switch (type)
 			{

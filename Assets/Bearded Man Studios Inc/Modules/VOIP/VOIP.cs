@@ -190,8 +190,8 @@ namespace BeardedManStudios.Forge.Networking.Unity.Modules
 		private void ReadMic()
 		{
 			writeFlushTimer += Time.deltaTime;
-			var pos = Microphone.GetPosition(null);
-			var diff = pos - lastSample;
+			int pos = Microphone.GetPosition(null);
+			int diff = pos - lastSample;
 
 			if (diff > 0)
 			{
@@ -258,7 +258,7 @@ namespace BeardedManStudios.Forge.Networking.Unity.Modules
 						writeSamples.Clear();
 					}
 
-					var voice = new Binary(Socket.Time.Timestep, false, writeBuffer, Receivers.All, MessageGroupIds.VOIP, false);
+					Binary voice = new Binary(Socket.Time.Timestep, false, writeBuffer, Receivers.All, MessageGroupIds.VOIP, false);
 
 					((BaseUDP)Socket).Send(voice);
 				}
@@ -273,7 +273,7 @@ namespace BeardedManStudios.Forge.Networking.Unity.Modules
 			if (frame.GroupId != MessageGroupIds.VOIP)
 				return;
 
-			var tmp = ToFloatArray(frame.StreamData);
+			float[] tmp = ToFloatArray(frame.StreamData);
 
 			if (readSamples == null)
 				readSamples = new List<float>(tmp);
@@ -288,13 +288,13 @@ namespace BeardedManStudios.Forge.Networking.Unity.Modules
 
 		private byte[] ToByteArray(List<float> sampleList)
 		{
-			var len = sampleList.Count * 4;
-			var byteArray = new byte[len];
-			var pos = 0;
+			int len = sampleList.Count * 4;
+			byte[] byteArray = new byte[len];
+			int pos = 0;
 
-			for (var i = 0; i < sampleList.Count; i++)
+			for (int i = 0; i < sampleList.Count; i++)
 			{
-				var data = BitConverter.GetBytes(sampleList[i]);
+				byte[] data = BitConverter.GetBytes(sampleList[i]);
 				Array.Copy(data, 0, byteArray, pos, 4);
 				pos += 4;
 			}
@@ -304,10 +304,10 @@ namespace BeardedManStudios.Forge.Networking.Unity.Modules
 
 		private float[] ToFloatArray(BMSByte data)
 		{
-			var len = (data.Size - 1) / 4;
-			var floatArray = new float[len];
+			int len = (data.Size - 1) / 4;
+			float[] floatArray = new float[len];
 
-			for (var i = 0; i < data.Size - 1; i += 4)
+			for (int i = 0; i < data.Size - 1; i += 4)
 				floatArray[i / 4] = BitConverter.ToSingle(data.byteArr, i);
 
 			return floatArray;

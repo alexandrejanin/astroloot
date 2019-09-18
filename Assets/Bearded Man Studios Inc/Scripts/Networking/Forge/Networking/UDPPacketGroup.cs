@@ -72,7 +72,7 @@ namespace BeardedManStudios.Forge.Networking
 			}
 
 			// Cache the sequence so we don't repeatedly look it up
-			var sequence = packets[packet.uniqueId];
+			UDPPacketSequence sequence = packets[packet.uniqueId];
 
 			// Do not continue to add the packet if the sequence is already complete
 			if (sequence.Done)
@@ -103,7 +103,7 @@ namespace BeardedManStudios.Forge.Networking
 
 			lock (packets)
 			{
-				for (var i = 0; i < trackers.Count; i++)
+				for (int i = 0; i < trackers.Count; i++)
 				{
 					if (trackers[i].storeTime + MAX_ACCEPT_TIME_WINDOW <= time.Timestep)
 					{

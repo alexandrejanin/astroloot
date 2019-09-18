@@ -116,7 +116,7 @@ namespace BeardedManStudios.Forge.Networking
 				{
 					lock (PendingPackets)
 					{
-						foreach (var kv in PendingPackets)
+						foreach (KeyValuePair<int, UDPPacket> kv in PendingPackets)
 						{
 							Send(kv.Value.rawBytes);
 
@@ -154,11 +154,11 @@ namespace BeardedManStudios.Forge.Networking
 			PendingPackets = new Dictionary<int, UDPPacket>();
 
 			// Get all of the data that is available for this frame
-			var data = Frame.GetData(Reliable, Player);
+			byte[] data = Frame.GetData(Reliable, Player);
 
 			int byteIndex = 0, orderId = 0;
 
-			var trailer = new byte[9];
+			byte[] trailer = new byte[9];
 
 			Buffer.BlockCopy(BitConverter.GetBytes(Frame.GroupId), 0, trailer, 0, sizeof(int));
 
@@ -167,9 +167,9 @@ namespace BeardedManStudios.Forge.Networking
 
 			do
 			{
-				var remainingPacketSize = data.Length - byteIndex + trailer.Length;
-				var endPacket = remainingPacketSize <= PACKET_SIZE;
-				var length = 0;
+				int remainingPacketSize = data.Length - byteIndex + trailer.Length;
+				bool endPacket = remainingPacketSize <= PACKET_SIZE;
+				int length = 0;
 
 				// We need to add the time step to this packet if it is not the end
 				if (!endPacket)
@@ -180,7 +180,7 @@ namespace BeardedManStudios.Forge.Networking
 				}
 
 				// Create the packet space in memory and assign it to the correct length
-				var packet = new byte[Math.Min(PACKET_SIZE, remainingPacketSize)];
+				byte[] packet = new byte[Math.Min(PACKET_SIZE, remainingPacketSize)];
 
 				length += packet.Length - trailer.Length;
 

@@ -31,10 +31,10 @@ namespace BeardedManStudios
 		/// <returns>A dictionary of arguments with a key being the index or the flag starting with "-"</returns>
 		public static Dictionary<string, string> Parse(string[] args)
 		{
-			var parsedArgs = new Dictionary<string, string>();
+			Dictionary<string, string> parsedArgs = new Dictionary<string, string>();
 
-			var floatingArgIndex = 0;
-			for (var i = 0; i < args.Length; i++)
+			int floatingArgIndex = 0;
+			for (int i = 0; i < args.Length; i++)
 			{
 				if (args[i].StartsWith("--"))
 					parsedArgs.Add(args[i], args[i]);

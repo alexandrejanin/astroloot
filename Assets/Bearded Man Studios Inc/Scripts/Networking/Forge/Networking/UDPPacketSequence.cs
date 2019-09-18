@@ -95,7 +95,7 @@ namespace BeardedManStudios.Forge.Networking
 		{
 			networker.PacketSequenceData.Clear();
 
-			for (var i = 0; i < End; i++)
+			for (int i = 0; i < End; i++)
 				networker.PacketSequenceData.BlockCopy(packets[i].rawBytes, 0, packets[i].rawBytes.Length);
 
 			return networker.PacketSequenceData;

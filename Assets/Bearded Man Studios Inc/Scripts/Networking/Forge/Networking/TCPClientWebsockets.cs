@@ -78,7 +78,7 @@ namespace BeardedManStudios.Forge.Networking
 		public override void Send(FrameStream frame)
 		{
 			// Get the raw bytes from the frame and send them
-			var data = frame.GetData();
+			byte[] data = frame.GetData();
 
 			ForgeWrite(data, data.Length);
 		}
@@ -93,7 +93,7 @@ namespace BeardedManStudios.Forge.Networking
 			else
 				OnForcedDisconnect();
 
-			for (var i = 0; i < Players.Count; ++i)
+			for (int i = 0; i < Players.Count; ++i)
 				OnPlayerDisconnected(Players[i]);
 		}
 
@@ -105,12 +105,12 @@ namespace BeardedManStudios.Forge.Networking
 				return;
 			}
 
-			var length = ForgeContainsData();
+			int length = ForgeContainsData();
 			if (length == 0)
 				return;
 
-			var ptr = ForgeShiftDataRead();
-			var bytes = new byte[length];
+			IntPtr ptr = ForgeShiftDataRead();
+			byte[] bytes = new byte[length];
 			Marshal.Copy(ptr, bytes, 0, bytes.Length);
 
 			if (bytes.Length > 0)
@@ -119,7 +119,7 @@ namespace BeardedManStudios.Forge.Networking
 
 				// Get the frame that was sent by the server, the server
 				// does not send masked data, only the client so send false for mask
-				var frame = Factory.ReadFrameStream(messageType, bytes, 0, MessageGroupIds.TCP_FIND_GROUP_ID, Server);
+				FrameStream frame = Factory.ReadFrameStream(messageType, bytes, 0, MessageGroupIds.TCP_FIND_GROUP_ID, Server);
 
 				// A message has been successfully read from the network so relay that
 				// to all methods registered to the event

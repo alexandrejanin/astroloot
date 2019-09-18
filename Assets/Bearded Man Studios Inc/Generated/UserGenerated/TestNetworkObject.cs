@@ -8,7 +8,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 	[GeneratedInterpol("{\"inter\":[0,0,0,0,0,0,0,0,0.15,0,0,0]")]
 	public partial class TestNetworkObject : NetworkObject
 	{
-		public const int IDENTITY = 5;
+		public const int IDENTITY = 8;
 
 		private byte[] _dirtyFields = new byte[2];
 
@@ -513,7 +513,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _fieldDouble);
 
 			// Reset all the dirty fields
-			for (var i = 0; i < _dirtyFields.Length; i++)
+			for (int i = 0; i < _dirtyFields.Length; i++)
 				_dirtyFields[i] = 0;
 
 			return dirtyFieldsData;

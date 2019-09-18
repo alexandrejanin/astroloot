@@ -42,12 +42,12 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 			if (IgnoreEditorStartup)
 				return;
 
-			var lastDateScan = EditorPrefs.GetString(EDITOR_PREF_DATE, null);
+			string lastDateScan = EditorPrefs.GetString(EDITOR_PREF_DATE, null);
 			if (!string.IsNullOrEmpty(lastDateScan))
 			{
-				var lastCheck = long.Parse(lastDateScan);
-				var lastCheckDate = new System.DateTime(lastCheck);
-				var timespan = System.DateTime.Now - lastCheckDate;
+				long lastCheck = long.Parse(lastDateScan);
+				System.DateTime lastCheckDate = new System.DateTime(lastCheck);
+				System.TimeSpan timespan = System.DateTime.Now - lastCheckDate;
 				if (timespan.Days < 1)
 					return;
 			}
@@ -117,7 +117,7 @@ namespace BeardedManStudios.Forge.Networking.UnityEditor
 
 			GUILayout.FlexibleSpace();
 			GUILayout.BeginHorizontal();
-			var currentSetup = GUILayout.Toggle(IgnoreEditorStartup, "Don't Show On Start");
+			bool currentSetup = GUILayout.Toggle(IgnoreEditorStartup, "Don't Show On Start");
 			if (currentSetup != IgnoreEditorStartup)
 			{
 				IgnoreEditorStartup = currentSetup;

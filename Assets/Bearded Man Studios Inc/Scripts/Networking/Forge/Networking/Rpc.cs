@@ -43,8 +43,8 @@ namespace BeardedManStudios.Forge.Networking
 
 		public object[] ReadArgs(BMSByte data)
 		{
-			var arguments = new List<object>();
-			foreach (var t in argumentTypes)
+			List<object> arguments = new List<object>();
+			foreach (Type t in argumentTypes)
 				arguments.Add(ObjectMapper.Instance.Map(t, data));
 
 			return arguments.ToArray();
@@ -62,9 +62,9 @@ namespace BeardedManStudios.Forge.Networking
 		{
 			if (arguments.Length != argumentTypes.Length)
 			{
-				var argTypes = "";
+				string argTypes = "";
 
-				for (var i = 0; i < arguments.Length; i++)
+				for (int i = 0; i < arguments.Length; i++)
 				{
 					if (!string.IsNullOrEmpty(argTypes))
 					{
@@ -77,7 +77,7 @@ namespace BeardedManStudios.Forge.Networking
 				throw new BaseNetworkException("There are " + arguments.Length + " supplied arguments, but this Rpc expects " + argumentTypes.Length + ". Args: " + argTypes);
 			}
 
-			for (var i = 0; i < arguments.Length; i++)
+			for (int i = 0; i < arguments.Length; i++)
 			{
 				if (arguments[i].GetType() != argumentTypes[i])
 					throw new BaseNetworkException("The argument with index " + i + " was expected to be a " + argumentTypes[i] + " but got " + arguments[i].GetType() + " instead");

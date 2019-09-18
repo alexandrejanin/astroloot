@@ -135,7 +135,7 @@ namespace BeardedManStudios.Forge.Networking.Unity
 			string gameMode = "all")
 		{
 			// The Master Server communicates over TCP
-			var client = new TCPMasterClient();
+			TCPMasterClient client = new TCPMasterClient();
 
 			// Once this client has been accepted by the master server it should send it's get request
 			client.serverAccepted += (sender) =>
@@ -143,8 +143,8 @@ namespace BeardedManStudios.Forge.Networking.Unity
 				try
 				{
 					// Create the get request with the desired filters
-					var sendData = JSONNode.Parse("{}");
-					var getData = new JSONClass();
+					JSONNode sendData = JSONNode.Parse("{}");
+					JSONClass getData = new JSONClass();
 					getData.Add("id", gameId);
 					getData.Add("type", gameType);
 					getData.Add("mode", gameMode);
@@ -175,12 +175,12 @@ namespace BeardedManStudios.Forge.Networking.Unity
 				try
 				{
 					// Get the list of hosts to iterate through from the frame payload
-					var data = JSONNode.Parse(frame.ToString());
+					JSONNode data = JSONNode.Parse(frame.ToString());
 					MainThreadManager.Run(() =>
 					{
 						if (data["hosts"] != null)
 						{
-							var response = new MasterServerResponse(data["hosts"].AsArray);
+							MasterServerResponse response = new MasterServerResponse(data["hosts"].AsArray);
 							if (callback != null)
 								callback(response);
 						}
@@ -220,8 +220,8 @@ namespace BeardedManStudios.Forge.Networking.Unity
 		public virtual JSONNode MasterServerRegisterData(NetWorker server, string id, string serverName, string type, string mode, string comment = "", bool useElo = false, int eloRequired = 0)
 		{
 			// Create the get request with the desired filters
-			var sendData = JSONNode.Parse("{}");
-			var registerData = new JSONClass();
+			JSONNode sendData = JSONNode.Parse("{}");
+			JSONClass registerData = new JSONClass();
 			registerData.Add("id", id);
 			registerData.Add("name", serverName);
 			registerData.Add("port", new JSONData(server.Port));
@@ -241,14 +241,14 @@ namespace BeardedManStudios.Forge.Networking.Unity
 		protected virtual void RegisterOnMasterServer(JSONNode masterServerData)
 		{
 			// The Master Server communicates over TCP
-			var client = new TCPMasterClient();
+			TCPMasterClient client = new TCPMasterClient();
 
 			// Once this client has been accepted by the master server it should send it's get request
 			client.serverAccepted += (sender) =>
 			{
 				try
 				{
-					var temp = Text.CreateFromString(client.Time.Timestep, masterServerData.ToString(), true, Receivers.Server, MessageGroupIds.MASTER_SERVER_REGISTER, true);
+					Text temp = Text.CreateFromString(client.Time.Timestep, masterServerData.ToString(), true, Receivers.Server, MessageGroupIds.MASTER_SERVER_REGISTER, true);
 
 					//Debug.Log(temp.GetData().Length);
 					// Send the request to the server
@@ -283,8 +283,8 @@ namespace BeardedManStudios.Forge.Networking.Unity
 
 		public virtual void UpdateMasterServerListing(NetWorker server, string comment = null, string gameType = null, string mode = null)
 		{
-			var sendData = JSONNode.Parse("{}");
-			var registerData = new JSONClass();
+			JSONNode sendData = JSONNode.Parse("{}");
+			JSONClass registerData = new JSONClass();
 
 			registerData.Add("playerCount", new JSONData(server.Players.Count));
 			if (comment != null) registerData.Add("comment", comment);
@@ -310,14 +310,14 @@ namespace BeardedManStudios.Forge.Networking.Unity
 			}
 
 			// The Master Server communicates over TCP
-			var client = new TCPMasterClient();
+			TCPMasterClient client = new TCPMasterClient();
 
 			// Once this client has been accepted by the master server it should send it's update request
 			client.serverAccepted += (sender) =>
 			{
 				try
 				{
-					var temp = Text.CreateFromString(client.Time.Timestep, masterServerData.ToString(), true, Receivers.Server, MessageGroupIds.MASTER_SERVER_UPDATE, true);
+					Text temp = Text.CreateFromString(client.Time.Timestep, masterServerData.ToString(), true, Receivers.Server, MessageGroupIds.MASTER_SERVER_UPDATE, true);
 
 					// Send the request to the server
 					client.Send(temp);
@@ -367,7 +367,7 @@ namespace BeardedManStudios.Forge.Networking.Unity
 		{
 			if (Networker != null)
 			{
-				for (var i = 0; i < Networker.NetworkObjectList.Count; i++)
+				for (int i = 0; i < Networker.NetworkObjectList.Count; i++)
 					Networker.NetworkObjectList[i].InterpolateUpdate();
 			}
 		}
@@ -435,13 +435,13 @@ namespace BeardedManStudios.Forge.Networking.Unity
 		/// <param name="sender">The sending <see cref="NetWorker"/></param>
 		protected virtual void PlayerAcceptedSceneSetup(NetworkingPlayer player, NetWorker sender)
 		{
-			var data = ObjectMapper.BMSByte(loadedScenes.Count);
+			BMSByte data = ObjectMapper.BMSByte(loadedScenes.Count);
 
 			// Go through all the loaded scene indexes and send them to the connecting player
-			for (var i = 0; i < loadedScenes.Count; i++)
+			for (int i = 0; i < loadedScenes.Count; i++)
 				ObjectMapper.Instance.MapBytes(data, loadedScenes[i]);
 
-			var frame = new Binary(sender.Time.Timestep, false, data, Receivers.Target, MessageGroupIds.VIEW_INITIALIZE, sender is BaseTCP);
+			Binary frame = new Binary(sender.Time.Timestep, false, data, Receivers.Target, MessageGroupIds.VIEW_INITIALIZE, sender is BaseTCP);
 
 			SendFrame(sender, frame, player);
 		}
@@ -453,13 +453,13 @@ namespace BeardedManStudios.Forge.Networking.Unity
 				if (Networker is IServer)
 					return;
 
-				var count = frame.StreamData.GetBasicType<int>();
+				int count = frame.StreamData.GetBasicType<int>();
 
                 loadingScenes.Clear();
-				for (var i = 0; i < count; i++)
+				for (int i = 0; i < count; i++)
                     loadingScenes.Add(frame.StreamData.GetBasicType<int>());
 
-                var scenesToLoad = loadingScenes.ToArray();
+                int[] scenesToLoad = loadingScenes.ToArray();
 				MainThreadManager.Run(() =>
 				{
 					if (scenesToLoad.Length == 0)
@@ -467,7 +467,7 @@ namespace BeardedManStudios.Forge.Networking.Unity
 
 					SceneManager.LoadScene(scenesToLoad[0], LoadSceneMode.Single);
 
-					for (var i = 1; i < scenesToLoad.Length; i++)
+					for (int i = 1; i < scenesToLoad.Length; i++)
 						SceneManager.LoadSceneAsync(scenesToLoad[i], LoadSceneMode.Additive);
 				});
 
@@ -497,7 +497,7 @@ namespace BeardedManStudios.Forge.Networking.Unity
                 sceneIndex = frame.StreamData.GetBasicType<int>();
 
                 // Get the mode in which the server loaded the scene
-                var modeIndex = frame.StreamData.GetBasicType<int>();
+                int modeIndex = frame.StreamData.GetBasicType<int>();
 
                 // Convert the int mode to the enum mode
                 mode = (LoadSceneMode)modeIndex;
@@ -592,16 +592,16 @@ namespace BeardedManStudios.Forge.Networking.Unity
 			if (networkSceneLoaded != null)
 				networkSceneLoaded(scene, mode);
 
-			var data = ObjectMapper.BMSByte(scene.buildIndex, (int)mode);
+			BMSByte data = ObjectMapper.BMSByte(scene.buildIndex, (int)mode);
 
-			var frame = new Binary(Networker.Time.Timestep, false, data, Networker is IServer ? Receivers.All : Receivers.Server, MessageGroupIds.VIEW_CHANGE, Networker is BaseTCP);
+			Binary frame = new Binary(Networker.Time.Timestep, false, data, Networker is IServer ? Receivers.All : Receivers.Server, MessageGroupIds.VIEW_CHANGE, Networker is BaseTCP);
 
 			// Send the binary frame to either the server or the clients
 			SendFrame(Networker, frame);
 
 			// Go through all of the current NetworkBehaviors in the order that Unity finds them in
 			// and associate them with the id that the network will be giving them as a lookup
-			var currentAttachCode = 1;
+			int currentAttachCode = 1;
 			var behaviors = FindObjectsOfType<NetworkBehavior>().Where(b => !b.Initialized)
 				.OrderBy(b => b.GetType().ToString())
 				.OrderBy(b => b.name)
@@ -626,7 +626,7 @@ namespace BeardedManStudios.Forge.Networking.Unity
 				return;
 			}
 
-			foreach (var behavior in behaviors)
+			foreach (NetworkBehavior behavior in behaviors)
 			{
 				behavior.TempAttachCode = scene.buildIndex << 16;
 				behavior.TempAttachCode += currentAttachCode++;
@@ -640,7 +640,7 @@ namespace BeardedManStudios.Forge.Networking.Unity
                 if (mode == LoadSceneMode.Additive && pendingNetworkObjects.Count > 0)
                 {
                     NetworkObject foundNetworkObject;
-                    for (var i = 0; i < behaviors.Count; i++)
+                    for (int i = 0; i < behaviors.Count; i++)
                     {
                         if (pendingNetworkObjects.TryGetValue(behaviors[i].TempAttachCode, out foundNetworkObject))
                         {
@@ -651,7 +651,7 @@ namespace BeardedManStudios.Forge.Networking.Unity
                     }
                 }
 
-                foreach (var behavior in behaviors)
+                foreach (NetworkBehavior behavior in behaviors)
                     pendingObjects.Add(behavior.TempAttachCode, behavior);
 
                 NetworkObject.Flush(Networker, loadingScenes, CreatePendingObjects);

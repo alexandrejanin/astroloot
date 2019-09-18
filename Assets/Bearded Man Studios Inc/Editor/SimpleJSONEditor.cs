@@ -157,7 +157,7 @@ namespace SimpleJSONEditor
 		{
 			get
 			{
-				var v = 0;
+				int v = 0;
 				if (int.TryParse(Value, out v))
 					return v;
 				return 0;
@@ -173,7 +173,7 @@ namespace SimpleJSONEditor
 		{
 			get
 			{
-				var v = 0.0f;
+				float v = 0.0f;
 				if (float.TryParse(Value, out v))
 					return v;
 				return 0.0f;
@@ -189,7 +189,7 @@ namespace SimpleJSONEditor
 		{
 			get
 			{
-				var v = 0.0;
+				double v = 0.0;
 				if (double.TryParse(Value, out v))
 					return v;
 				return 0.0;
@@ -254,7 +254,7 @@ namespace SimpleJSONEditor
 		{
 			get
 			{
-				var v = false;
+				bool v = false;
 				if (bool.TryParse(Value, out v))
 					return v;
 				return !string.IsNullOrEmpty(Value);
@@ -325,8 +325,8 @@ namespace SimpleJSONEditor
 
 		internal static string Escape(string aText)
 		{
-			var result = "";
-			foreach (var c in aText)
+			string result = "";
+			foreach (char c in aText)
 			{
 				switch (c)
 				{
@@ -361,8 +361,8 @@ namespace SimpleJSONEditor
 
 		static JSONData Numberize(string token)
 		{
-			var flag = false;
-			var integer = 0;
+			bool flag = false;
+			int integer = 0;
 			double real = 0;
 
 			if (int.TryParse(token, out integer))
@@ -394,7 +394,7 @@ namespace SimpleJSONEditor
 			}
 			else
 			{
-				var number = Numberize(token);
+				JSONData number = Numberize(token);
 				if (ctx is JSONArray)
 					ctx.Add(number);
 				else
@@ -405,13 +405,13 @@ namespace SimpleJSONEditor
 
 		public static JSONNode Parse(string aJSON)
 		{
-			var stack = new Stack<JSONNode>();
+			Stack<JSONNode> stack = new Stack<JSONNode>();
 			JSONNode ctx = null;
-			var i = 0;
-			var Token = "";
-			var TokenName = "";
-			var QuoteMode = false;
-			var TokenIsString = false;
+			int i = 0;
+			string Token = "";
+			string TokenName = "";
+			bool QuoteMode = false;
+			bool TokenIsString = false;
 			while (i < aJSON.Length)
 			{
 				switch (aJSON[i])
@@ -541,7 +541,7 @@ namespace SimpleJSONEditor
 						++i;
 						if (QuoteMode)
 						{
-							var C = aJSON[i];
+							char C = aJSON[i];
 							switch (C)
 							{
 								case 't':
@@ -561,7 +561,7 @@ namespace SimpleJSONEditor
 									break;
 								case 'u':
 									{
-										var s = aJSON.Substring(i + 1, 4);
+										string s = aJSON.Substring(i + 1, 4);
 										Token += (char)int.Parse(
 											s,
 											System.Globalization.NumberStyles.AllowHexSpecifier);
@@ -648,24 +648,24 @@ namespace SimpleJSONEditor
 
 		public static JSONNode Deserialize(System.IO.BinaryReader aReader)
 		{
-			var type = (JSONBinaryTag)aReader.ReadByte();
+			JSONBinaryTag type = (JSONBinaryTag)aReader.ReadByte();
 			switch (type)
 			{
 				case JSONBinaryTag.Array:
 					{
-						var count = aReader.ReadInt32();
-						var tmp = new JSONArray();
-						for (var i = 0; i < count; i++)
+						int count = aReader.ReadInt32();
+						JSONArray tmp = new JSONArray();
+						for (int i = 0; i < count; i++)
 							tmp.Add(Deserialize(aReader));
 						return tmp;
 					}
 				case JSONBinaryTag.Class:
 					{
-						var count = aReader.ReadInt32();
-						var tmp = new JSONClass();
-						for (var i = 0; i < count; i++)
+						int count = aReader.ReadInt32();
+						JSONClass tmp = new JSONClass();
+						for (int i = 0; i < count; i++)
 						{
-							var key = aReader.ReadString();
+							string key = aReader.ReadString();
 							var val = Deserialize(aReader);
 							tmp.Add(key, val);
 						}
@@ -789,7 +789,7 @@ namespace SimpleJSONEditor
 		{
 			if (aIndex < 0 || aIndex >= m_List.Count)
 				return null;
-			var tmp = m_List[aIndex];
+			JSONNode tmp = m_List[aIndex];
 			m_List.RemoveAt(aIndex);
 			return tmp;
 		}
@@ -804,21 +804,21 @@ namespace SimpleJSONEditor
 		{
 			get
 			{
-				foreach (var N in m_List)
+				foreach (JSONNode N in m_List)
 					yield return N;
 			}
 		}
 
 		public IEnumerator GetEnumerator()
 		{
-			foreach (var N in m_List)
+			foreach (JSONNode N in m_List)
 				yield return N;
 		}
 
 		public override string ToString()
 		{
-			var result = "[";
-			foreach (var N in m_List)
+			string result = "[";
+			foreach (JSONNode N in m_List)
 			{
 				if (result.Length > 2)
 					result += ",";
@@ -831,8 +831,8 @@ namespace SimpleJSONEditor
 
 		public override string ToString(string aPrefix)
 		{
-			var result = "[ ";
-			foreach (var N in m_List)
+			string result = "[ ";
+			foreach (JSONNode N in m_List)
 			{
 				if (result.Length > 3)
 					result += ", ";
@@ -845,9 +845,9 @@ namespace SimpleJSONEditor
 
 		public override string ToJSON(int prefix)
 		{
-			var s = new string(' ', (prefix + 1) * 2);
-			var ret = "[ ";
-			foreach (var n in m_List)
+			string s = new string(' ', (prefix + 1) * 2);
+			string ret = "[ ";
+			foreach (JSONNode n in m_List)
 			{
 				if (ret.Length > 3)
 					ret += ", ";
@@ -863,7 +863,7 @@ namespace SimpleJSONEditor
 		{
 			aWriter.Write((byte)JSONBinaryTag.Array);
 			aWriter.Write(m_List.Count);
-			for (var i = 0; i < m_List.Count; i++)
+			for (int i = 0; i < m_List.Count; i++)
 			{
 				m_List[i].Serialize(aWriter);
 			}
@@ -905,7 +905,7 @@ namespace SimpleJSONEditor
 			{
 				if (aIndex < 0 || aIndex >= m_Dict.Count)
 					return;
-				var key = m_Dict.ElementAt(aIndex).Key;
+				string key = m_Dict.ElementAt(aIndex).Key;
 				m_Dict[key] = value;
 			}
 		}
@@ -933,7 +933,7 @@ namespace SimpleJSONEditor
 		{
 			if (!m_Dict.ContainsKey(aKey))
 				return null;
-			var tmp = m_Dict[aKey];
+			JSONNode tmp = m_Dict[aKey];
 			m_Dict.Remove(aKey);
 			return tmp;
 		}
@@ -965,21 +965,21 @@ namespace SimpleJSONEditor
 		{
 			get
 			{
-				foreach (var N in m_Dict)
+				foreach (KeyValuePair<string, JSONNode> N in m_Dict)
 					yield return N.Value;
 			}
 		}
 
 		public IEnumerator GetEnumerator()
 		{
-			foreach (var N in m_Dict)
+			foreach (KeyValuePair<string, JSONNode> N in m_Dict)
 				yield return N;
 		}
 
 		public override string ToString()
 		{
-			var result = "{";
-			foreach (var N in m_Dict)
+			string result = "{";
+			foreach (KeyValuePair<string, JSONNode> N in m_Dict)
 			{
 				if (result.Length > 2)
 					result += ", ";
@@ -991,8 +991,8 @@ namespace SimpleJSONEditor
 
 		public override string ToString(string aPrefix)
 		{
-			var result = "{ ";
-			foreach (var N in m_Dict)
+			string result = "{ ";
+			foreach (KeyValuePair<string, JSONNode> N in m_Dict)
 			{
 				if (result.Length > 3)
 					result += ", ";
@@ -1005,9 +1005,9 @@ namespace SimpleJSONEditor
 
 		public override string ToJSON(int prefix)
 		{
-			var s = string.Empty;
-			var ret = "{";
-			foreach (var n in m_Dict)
+			string s = string.Empty;
+			string ret = "{";
+			foreach (KeyValuePair<string, JSONNode> n in m_Dict)
 			{
 				if (ret.Length > 3)
 					ret += ",";
@@ -1024,7 +1024,7 @@ namespace SimpleJSONEditor
 		{
 			aWriter.Write((byte)JSONBinaryTag.Class);
 			aWriter.Write(m_Dict.Count);
-			foreach (var K in m_Dict.Keys)
+			foreach (string K in m_Dict.Keys)
 			{
 				aWriter.Write(K);
 				m_Dict[K].Serialize(aWriter);
@@ -1347,13 +1347,13 @@ namespace SimpleJSONEditor
 		{
 			get
 			{
-				var tmp = new JSONData(0);
+				JSONData tmp = new JSONData(0);
 				Set(tmp);
 				return 0;
 			}
 			set
 			{
-				var tmp = new JSONData(value);
+				JSONData tmp = new JSONData(value);
 				Set(tmp);
 			}
 		}
@@ -1362,13 +1362,13 @@ namespace SimpleJSONEditor
 		{
 			get
 			{
-				var tmp = new JSONData(0.0f);
+				JSONData tmp = new JSONData(0.0f);
 				Set(tmp);
 				return 0.0f;
 			}
 			set
 			{
-				var tmp = new JSONData(value);
+				JSONData tmp = new JSONData(value);
 				Set(tmp);
 			}
 		}
@@ -1377,13 +1377,13 @@ namespace SimpleJSONEditor
 		{
 			get
 			{
-				var tmp = new JSONData(0.0);
+				JSONData tmp = new JSONData(0.0);
 				Set(tmp);
 				return 0.0;
 			}
 			set
 			{
-				var tmp = new JSONData(value);
+				JSONData tmp = new JSONData(value);
 				Set(tmp);
 			}
 		}
@@ -1392,13 +1392,13 @@ namespace SimpleJSONEditor
 		{
 			get
 			{
-				var tmp = new JSONData((uint)0);
+				JSONData tmp = new JSONData((uint)0);
 				Set(tmp);
 				return 0;
 			}
 			set
 			{
-				var tmp = new JSONData(value);
+				JSONData tmp = new JSONData(value);
 				Set(tmp);
 			}
 		}
@@ -1407,13 +1407,13 @@ namespace SimpleJSONEditor
 		{
 			get
 			{
-				var tmp = new JSONData((short)0);
+				JSONData tmp = new JSONData((short)0);
 				Set(tmp);
 				return 0;
 			}
 			set
 			{
-				var tmp = new JSONData(value);
+				JSONData tmp = new JSONData(value);
 				Set(tmp);
 			}
 		}
@@ -1422,13 +1422,13 @@ namespace SimpleJSONEditor
 		{
 			get
 			{
-				var tmp = new JSONData((ushort)0);
+				JSONData tmp = new JSONData((ushort)0);
 				Set(tmp);
 				return 0;
 			}
 			set
 			{
-				var tmp = new JSONData(value);
+				JSONData tmp = new JSONData(value);
 				Set(tmp);
 			}
 		}
@@ -1437,13 +1437,13 @@ namespace SimpleJSONEditor
 		{
 			get
 			{
-				var tmp = new JSONData(false);
+				JSONData tmp = new JSONData(false);
 				Set(tmp);
 				return false;
 			}
 			set
 			{
-				var tmp = new JSONData(value);
+				JSONData tmp = new JSONData(value);
 				Set(tmp);
 			}
 		}
@@ -1452,7 +1452,7 @@ namespace SimpleJSONEditor
 		{
 			get
 			{
-				var tmp = new JSONArray();
+				JSONArray tmp = new JSONArray();
 				Set(tmp);
 				return tmp;
 			}
@@ -1462,7 +1462,7 @@ namespace SimpleJSONEditor
 		{
 			get
 			{
-				var tmp = new JSONClass();
+				JSONClass tmp = new JSONClass();
 				Set(tmp);
 				return tmp;
 			}

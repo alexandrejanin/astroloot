@@ -182,8 +182,8 @@ namespace BeardedManStudios
 		/// <param name="input">The bytes arrays to be appended to the end of the internal byte array</param>
 		public void Append(params byte[][] input)
 		{
-			var lengthSum = 0;
-			foreach (var array in input)
+			int lengthSum = 0;
+			foreach (byte[] array in input)
 			{
 				lengthSum += array.Length;
 			}
@@ -191,7 +191,7 @@ namespace BeardedManStudios
 			if (byteArr.Length <= index + lengthSum)
 				Array.Resize<byte>(ref byteArr, index + lengthSum + 1);
 
-			foreach (var array in input)
+			foreach (byte[] array in input)
 			{
 				Buffer.BlockCopy(array, 0, byteArr, index, array.Length);
 				Size += array.Length;
@@ -291,7 +291,7 @@ namespace BeardedManStudios
 			if (start + count > byteArr.Length)
 				throw new Exception("Can't remove more than what is in the array");
 
-			for (var i = 0; i < byteArr.Length - count - start - 1; i++)
+			for (int i = 0; i < byteArr.Length - count - start - 1; i++)
 				byteArr[start + i] = byteArr[start + count + i];
 
 			Size -= count;
@@ -308,7 +308,7 @@ namespace BeardedManStudios
 			if (StartPointer == 0)
 				return this;
 
-			for (var i = 0; i < byteArr.Length - StartPointer - 1; i++)
+			for (int i = 0; i < byteArr.Length - StartPointer - 1; i++)
 				byteArr[i] = byteArr[StartPointer + i];
 
 			StartPointer = 0;
@@ -322,7 +322,7 @@ namespace BeardedManStudios
 		/// <returns>The array of raw byte data</returns>
 		public byte[] CompressBytes()
 		{
-			var data = new byte[Size];
+			byte[] data = new byte[Size];
 			Buffer.BlockCopy(byteArr, StartPointer, data, 0, data.Length);
 			return data;
 		}
@@ -337,7 +337,7 @@ namespace BeardedManStudios
 			if (byteArr.Length <= Size + data.Length)
 				Array.Resize<byte>(ref byteArr, data.Length + Size);
 
-			for (var i = byteArr.Length - 1; i > start + data.Length - 1; i--)
+			for (int i = byteArr.Length - 1; i > start + data.Length - 1; i--)
 				byteArr[i] = byteArr[i - data.Length];
 
 			Size = index + data.Length - StartPointer;
@@ -358,7 +358,7 @@ namespace BeardedManStudios
 			if (byteArr.Length <= Size + data.Size)
 				Array.Resize<byte>(ref byteArr, data.Size + Size);
 
-			for (var i = byteArr.Length - 1; i > start + data.Size - 1; i--)
+			for (int i = byteArr.Length - 1; i > start + data.Size - 1; i--)
 				byteArr[i] = byteArr[i - data.Size];
 
 			Size = index + data.Size - StartPointer;
@@ -415,10 +415,10 @@ namespace BeardedManStudios
 		/// <returns>The updated array of data</returns>
 		private Array GetArray<T>(object o)
 		{
-			var type = typeof(T);
+			Type type = typeof(T);
 			if (allowedTypes.ContainsKey(type))
 			{
-				var array = (T[])allowedTypes[type];
+				T[] array = (T[])allowedTypes[type];
 				array[0] = (T)o;
 				return array;
 
@@ -474,7 +474,7 @@ namespace BeardedManStudios
 
 		public T GetBasicType<T>(bool moveIndex = true)
 		{
-			var obj = GetBasicType<T>(StartIndex(), moveIndex);
+			T obj = GetBasicType<T>(StartIndex(), moveIndex);
 			return obj;
 		}
 
@@ -576,8 +576,8 @@ namespace BeardedManStudios
 				return GetVector(start, moveIndex);
 			else if (type.IsArray)
 			{
-				var rank = type.GetArrayRank();
-				var targetType = type.GetElementType();
+				int rank = type.GetArrayRank();
+				Type targetType = type.GetElementType();
 
 				//int startingIndex = StartIndex();
 				MoveStartIndex(sizeof(int));
@@ -590,14 +590,14 @@ namespace BeardedManStudios
 				{
 					case 1:
 						x = GetBasicType<int>(StartIndex(), true);
-						var one = new object[x];
+						object[] one = new object[x];
 						for (i = 0; i < x; i++)
 							one[i] = GetBasicType(targetType, StartIndex(), true);
 						return one;
 					case 2:
 						x = GetBasicType<int>(StartIndex(), true);
 						y = GetBasicType<int>(StartIndex(), true);
-						var two = new object[x, y];
+						object[,] two = new object[x, y];
 						for (i = 0; i < x; i++)
 							for (j = 0; j < y; j++)
 								two[i, j] = GetBasicType(targetType, StartIndex(), true);
@@ -606,7 +606,7 @@ namespace BeardedManStudios
 						x = GetBasicType<int>(StartIndex(), true);
 						y = GetBasicType<int>(StartIndex(), true);
 						z = GetBasicType<int>(StartIndex(), true);
-						var three = new object[x, y, z];
+						object[,,] three = new object[x, y, z];
 						for (i = 0; i < x; i++)
 							for (j = 0; j < y; j++)
 								for (k = 0; k < z; k++)
@@ -617,7 +617,7 @@ namespace BeardedManStudios
 						y = GetBasicType<int>(StartIndex(), true);
 						z = GetBasicType<int>(StartIndex(), true);
 						w = GetBasicType<int>(StartIndex(), true);
-						var four = new object[x, y, z, w];
+						object[,,,] four = new object[x, y, z, w];
 						for (i = 0; i < x; i++)
 							for (j = 0; j < y; j++)
 								for (k = 0; k < z; k++)
@@ -645,7 +645,7 @@ namespace BeardedManStudios
 		/// <returns>The string value</returns>
 		public string GetString(int start, bool moveIndex = false)
 		{
-			var length = BitConverter.ToInt32(byteArr, start);
+			int length = BitConverter.ToInt32(byteArr, start);
 
 			if (moveIndex)
 				MoveStartIndex(sizeof(int));
@@ -661,7 +661,7 @@ namespace BeardedManStudios
 
 		public Vector GetVector(int start, bool moveIndex = false)
 		{
-			var vec = new Vector
+			Vector vec = new Vector
 			{
 				x = GetBasicType<float>(start, false),
 				y = GetBasicType<float>(start + sizeof(float), false),
@@ -682,7 +682,7 @@ namespace BeardedManStudios
 		/// <returns>The found byte array</returns>
 		public byte[] GetByteArray(int start, bool moveIndex = false)
 		{
-			var length = BitConverter.ToInt32(byteArr, start);
+			int length = BitConverter.ToInt32(byteArr, start);
 
 			if (moveIndex)
 				MoveStartIndex(sizeof(int));
@@ -693,7 +693,7 @@ namespace BeardedManStudios
 			if (moveIndex)
 				MoveStartIndex(length);
 
-			var data = new byte[length];
+			byte[] data = new byte[length];
 			Buffer.BlockCopy(byteArr, start + sizeof(int), data, 0, length);
 			return data;
 		}
@@ -726,7 +726,7 @@ namespace BeardedManStudios
 				if (Size != ((BMSByte)obj).Size)
 					return false;
 
-				for (var i = StartIndex(); i < Size; i++)
+				for (int i = StartIndex(); i < Size; i++)
 				{
 					if (byteArr[i] != ((BMSByte)obj)[i])
 						return false;

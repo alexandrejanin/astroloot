@@ -157,7 +157,7 @@ namespace BeardedManStudios.Forge.Networking
                 try
                 {
                     // Get the raw bytes from the frame and send them
-                    var data = frame.GetData();
+                    byte[] data = frame.GetData();
 
                     RawWrite(client, data);
                     return true;
@@ -180,8 +180,8 @@ namespace BeardedManStudios.Forge.Networking
         /// <param name="objectsToSend">Array of vars to be sent, read them with Binary.StreamData.GetBasicType<typeOfObject>()</param>
         public bool Send(TcpClient client, Receivers receivers = Receivers.Target, int messageGroupId = MessageGroupIds.START_OF_GENERIC_IDS, params object[] objectsToSend)
         {
-            var data = ObjectMapper.BMSByte(objectsToSend);
-            var sendFrame = new Binary(Time.Timestep, false, data, Receivers.Target, messageGroupId, false);
+            BMSByte data = ObjectMapper.BMSByte(objectsToSend);
+            Binary sendFrame = new Binary(Time.Timestep, false, data, Receivers.Target, messageGroupId, false);
 #if WINDOWS_UWP
 			public bool Send(StreamSocket client, FrameStream frame)
 #else
@@ -203,7 +203,7 @@ namespace BeardedManStudios.Forge.Networking
             {
                 if (Players.Contains(targetPlayer))
                 {
-                    var player = Players[Players.IndexOf(targetPlayer)];
+                    NetworkingPlayer player = Players[Players.IndexOf(targetPlayer)];
                     if (!player.Accepted && !player.PendingAccepted)
                         return;
 
@@ -256,8 +256,8 @@ namespace BeardedManStudios.Forge.Networking
         /// <param name="objectsToSend">Array of vars to be sent, read them with Binary.StreamData.GetBasicType<typeOfObject>()</param>
         public void SendToPlayer(NetworkingPlayer targetPlayer, Receivers receivers = Receivers.Target, int messageGroupId = MessageGroupIds.START_OF_GENERIC_IDS, params object[] objectsToSend)
         {
-            var data = ObjectMapper.BMSByte(objectsToSend);
-            var sendFrame = new Binary(Time.Timestep, false, data, receivers, messageGroupId, false);
+            BMSByte data = ObjectMapper.BMSByte(objectsToSend);
+            Binary sendFrame = new Binary(Time.Timestep, false, data, receivers, messageGroupId, false);
             SendToPlayer(sendFrame, targetPlayer);
         }
 
@@ -272,7 +272,7 @@ namespace BeardedManStudios.Forge.Networking
 
             lock (Players)
             {
-                foreach (var player in Players)
+                foreach (NetworkingPlayer player in Players)
                 {
                     if (!commonServerLogic.PlayerIsReceiver(player, frame, ProximityDistance, skipPlayer, ProximityModeUpdateFrequency))
                         continue;
@@ -296,7 +296,7 @@ namespace BeardedManStudios.Forge.Networking
                 bufferedMessages.Add(frame);
             lock (Players)
             {
-                foreach (var player in Players)
+                foreach (NetworkingPlayer player in Players)
                 {
                     // check for distance here so the owner doesn't need to be sent in stream, used for NCW field proximity check
                     if (!commonServerLogic.PlayerIsDistanceReceiver(sender, player, frame, ProximityDistance, ProximityModeUpdateFrequency))
@@ -323,8 +323,8 @@ namespace BeardedManStudios.Forge.Networking
         /// <param name="objectsToSend">Array of vars to be sent, read them with Binary.StreamData.GetBasicType<typeOfObject>()</param>
         public void SendAll(Receivers receivers = Receivers.All, int messageGroupId = MessageGroupIds.START_OF_GENERIC_IDS, NetworkingPlayer playerToIgnore = null, params object[] objectsToSend)
         {
-            var data = ObjectMapper.BMSByte(objectsToSend);
-            var sendFrame = new Binary(Time.Timestep, false, data, receivers, messageGroupId, true);
+            BMSByte data = ObjectMapper.BMSByte(objectsToSend);
+            Binary sendFrame = new Binary(Time.Timestep, false, data, receivers, messageGroupId, true);
             SendAll(sendFrame, playerToIgnore);
         }
 
@@ -418,7 +418,7 @@ namespace BeardedManStudios.Forge.Networking
         /// </summary>
         private void ListenForConnections(IAsyncResult obj)
         {
-            var asyncListener = (TcpListener)obj.AsyncState;
+            TcpListener asyncListener = (TcpListener)obj.AsyncState;
             TcpClient client = null;
 
             try
@@ -478,7 +478,7 @@ namespace BeardedManStudios.Forge.Networking
                 rawClients.Add(client);
 
                 // Create the identity wrapper for this player
-                var player = new NetworkingPlayer(ServerPlayerCounter++, ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString(), false, client, this);
+                NetworkingPlayer player = new NetworkingPlayer(ServerPlayerCounter++, ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString(), false, client, this);
 
                 // Generically add the player and fire off the events attached to player joining
                 OnPlayerConnected(player);
@@ -497,7 +497,7 @@ namespace BeardedManStudios.Forge.Networking
             if (rawClientConnected != null)
                 rawClientConnected(client);
 
-            var e = new SocketAsyncEventArgs();
+            SocketAsyncEventArgs e = new SocketAsyncEventArgs();
             e.Completed += new EventHandler<SocketAsyncEventArgs>(ReceiveAsync_Completed);
             e.UserToken = token;
             e.SetBuffer(token.internalBuffer.Array, token.internalBuffer.Offset, token.internalBuffer.Count);
@@ -516,7 +516,7 @@ namespace BeardedManStudios.Forge.Networking
                 return;
             }
 
-            var token = (ReceiveToken)e.UserToken;
+            ReceiveToken token = (ReceiveToken)e.UserToken;
             Socket playerSocket = null;
             try
             {
@@ -549,17 +549,17 @@ namespace BeardedManStudios.Forge.Networking
         {
             if (e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
             {
-                var bytesAlreadyProcessed = 0;
-                var token = (ReceiveToken)e.UserToken;
+                int bytesAlreadyProcessed = 0;
+                ReceiveToken token = (ReceiveToken)e.UserToken;
                 if (!token.player.Accepted && !token.player.Connected)
                 {
-                    var header = HandleHttpHeader(e, ref bytesAlreadyProcessed);
+                    byte[] header = HandleHttpHeader(e, ref bytesAlreadyProcessed);
                     if (header == null)
                     {
                         DoRead(e);
                         return;
                     }
-                    var response = Websockets.ValidateConnectionHeader(header);
+                    byte[] response = Websockets.ValidateConnectionHeader(header);
 
                     // The response will be null if the header sent is invalid, if so then disconnect client as they are sending invalid headers
                     if (response == null)
@@ -578,12 +578,12 @@ namespace BeardedManStudios.Forge.Networking
                 }
                 while (bytesAlreadyProcessed < e.BytesTransferred)
                 {
-                    var data = HandleData(e, true, ref bytesAlreadyProcessed);
+                    byte[] data = HandleData(e, true, ref bytesAlreadyProcessed);
                     if (data == null)
                     {
                         break;
                     }
-                    var frame = Factory.DecodeMessage(data, true, MessageGroupIds.TCP_FIND_GROUP_ID, token.player);
+                    FrameStream frame = Factory.DecodeMessage(data, true, MessageGroupIds.TCP_FIND_GROUP_ID, token.player);
                     if (!token.player.Accepted)
                     {
                         if (frame.GroupId == MessageGroupIds.NETWORK_ID_REQUEST)
@@ -639,7 +639,7 @@ namespace BeardedManStudios.Forge.Networking
         {
             if (e.UserToken != null)
             {
-                var token = (ReceiveToken)e.UserToken;
+                ReceiveToken token = (ReceiveToken)e.UserToken;
 				bufferManager.ReturnBuffer(token.internalBuffer);
 				token.internalBuffer = default(ArraySegment<byte>);
 				e.SetBuffer(new byte[0], 0, 0);
@@ -697,7 +697,7 @@ namespace BeardedManStudios.Forge.Networking
                 listener.Stop();
 
                 // Go through all of the players and disconnect them
-                foreach (var player in Players)
+                foreach (NetworkingPlayer player in Players)
                     Disconnect(player, true);
 
                 // Send signals to the methods registered to the disconnec events
@@ -792,7 +792,7 @@ namespace BeardedManStudios.Forge.Networking
 
         private void SendBuffer(NetworkingPlayer player)
         {
-            foreach (var frame in bufferedMessages)
+            foreach (FrameStream frame in bufferedMessages)
                 Send(player.TcpClientHandle, frame);
         }
 
@@ -823,7 +823,7 @@ namespace BeardedManStudios.Forge.Networking
 
         public void BanPlayer(ulong networkId, int minutes)
         {
-            var player = Players.FirstOrDefault(p => p.NetworkId == networkId);
+            NetworkingPlayer player = Players.FirstOrDefault(p => p.NetworkId == networkId);
 
             if (player == null)
                 return;

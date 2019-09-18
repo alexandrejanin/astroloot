@@ -242,24 +242,24 @@ public class CubeForgeGame : CubeForgeGameBehavior
 	private byte[] SerializeMap()
 	{
 		// Get the 3-dimensional lengths of the world
-		var width = (int)Mathf.Ceil((max.x - min.x)) + 1;
-		var height = (int)Mathf.Ceil((max.y - min.y)) + 1;
-		var depth = (int)Mathf.Ceil((max.z - min.z)) + 1;
+		int width = (int)Mathf.Ceil((max.x - min.x)) + 1;
+		int height = (int)Mathf.Ceil((max.y - min.y)) + 1;
+		int depth = (int)Mathf.Ceil((max.z - min.z)) + 1;
 
 		// Create a bit array to store the toggles for cubes
-		var bitmap = new BitArray(width * height * depth);
+		BitArray bitmap = new BitArray(width * height * depth);
 
 		// pack the cubes into the bit array
-		var idx = 0;
-		foreach (var obj in primitiveInstances.Values)
+		int idx = 0;
+		foreach (GameObject obj in primitiveInstances.Values)
 		{
-			var d = obj.transform.position - min;
+			Vector3 d = obj.transform.position - min;
 			idx = (int)((d.z * width * height) + (d.y * width) + d.x);
 			bitmap[idx] = true;
 		}
 
 		// Create a byte array to hold the packed bit data
-		var mapData = new byte[(int)Mathf.Ceil(bitmap.Length / 8.0f)];
+		byte[] mapData = new byte[(int)Mathf.Ceil(bitmap.Length / 8.0f)];
 
 		// Copy the bit mapped data into the above byte array
 		((ICollection)bitmap).CopyTo(mapData, 0);
@@ -280,14 +280,14 @@ public class CubeForgeGame : CubeForgeGameBehavior
 		max = maximum;
 
 		// Get the supplied 3-dimensional lengths of the world
-		var width = (int)Mathf.Ceil((max.x - min.x)) + 1;
-		var height = (int)Mathf.Ceil((max.y - min.y)) + 1;
+		int width = (int)Mathf.Ceil((max.x - min.x)) + 1;
+		int height = (int)Mathf.Ceil((max.y - min.y)) + 1;
 		//int depth = (int)Mathf.Ceil((max.z - min.z)) + 1;
 
 		// Unpack the byte array into a bit array and begin mapping the world
 		int idx, z, y, x;
-		var bitmap = new BitArray(data);
-		for (var i = 0; i < bitmap.Length; i++)
+		BitArray bitmap = new BitArray(data);
+		for (int i = 0; i < bitmap.Length; i++)
 		{
 			if (bitmap[i] == false)
 				continue;
@@ -299,7 +299,7 @@ public class CubeForgeGame : CubeForgeGameBehavior
 			y = idx / width;
 			x = idx % width;
 
-			var position = new Vector3(x + min.x, y + min.y, z + min.z);
+			Vector3 position = new Vector3(x + min.x, y + min.y, z + min.z);
 
 			var obj = Instantiate(primitives[0], position, Quaternion.identity) as GameObject;
 			primitiveInstances.Add(obj.transform.position, obj);
@@ -328,8 +328,8 @@ public class CubeForgeGame : CubeForgeGameBehavior
 	/// </param>
 	public override void CreatePrimitive(RpcArgs args)
 	{
-		var type = args.GetNext<byte>();
-		var position = args.GetNext<Vector3>();
+		byte type = args.GetNext<byte>();
+		Vector3 position = args.GetNext<Vector3>();
 
 		if (type >= primitives.Length)
 			return;
