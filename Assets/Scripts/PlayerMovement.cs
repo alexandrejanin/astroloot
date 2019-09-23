@@ -1,11 +1,10 @@
 ﻿using System;
-using BeardedManStudios.Forge.Networking.Generated;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerInput))]
 [RequireComponent(typeof(CharacterController2D))]
-public class PlayerMovement : PlayerMovementBehavior {
+public class PlayerMovement : MonoBehaviour {
     [SerializeField, MinValue(0)]
     private float runSpeed = 5f, wallSlideSpeed = 2f;
 
@@ -34,12 +33,14 @@ public class PlayerMovement : PlayerMovementBehavior {
     private bool wallSliding;
     private float wallDirX;
 
+    private Player player;
     private PlayerInput input;
 
     private CharacterController2D controller;
     public CharacterController2D Controller => controller;
 
     private void Awake() {
+        player = GetComponent<Player>();
         input = GetComponent<PlayerInput>();
         input.onJumpDown += OnJumpDown;
         input.onJumpUp += OnJumpUp;
@@ -47,25 +48,19 @@ public class PlayerMovement : PlayerMovementBehavior {
         controller = GetComponent<CharacterController2D>();
     }
 
-    protected override void NetworkStart() {
-        networkObject.UpdateInterval = 40;
-    }
-
     private void Update() {
-        if (networkObject != null) {
-            NetworkUpdate();
-        } else {
+        if (!player.IsOnline) {
             UpdateMovement();
+            return;
         }
-    }
 
-    private void NetworkUpdate() {
-        if (networkObject.IsOwner) {
-            UpdateMovement();
-            networkObject.position = transform.position;
-        } else {
-            transform.position = networkObject.position;
+        if (!player.IsLocalPlayer) {
+            transform.position = player.networkObject.position;
+            return;
         }
+
+        UpdateMovement();
+        player.networkObject.position = transform.position;
     }
 
     private void UpdateMovement() {

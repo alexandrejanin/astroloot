@@ -47,8 +47,9 @@ MonoBehaviour:
   CubeForgeGameNetworkObject: []
   ExampleProximityPlayerNetworkObject: []
   NetworkCameraNetworkObject: []
-  PlayerMovementNetworkObject: []
-  TestNetworkObject: []
   PlayerNetworkObject:
-  - {fileID: 2793840984185298222, guid: 8e324e0caebdefa469176aa19b87db2f, type: 3}
+  - {fileID: 1952331854964043736, guid: d52837f4c0d2be249b2e38110bafc0aa, type: 3}
+  TestNetworkObject: []
+  BasicCubeNetworkObject:
+  - {fileID: 4161377959395143314, guid: aa58e834b24aedc4f985b89c0356a8ca, type: 3}
   automaticScenes: 1

@@ -1,38 +1,34 @@
-﻿using BeardedManStudios.Forge.Networking.Generated;
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(PlayerInput))]
-public class PlayerCombat : PlayerCombatBehavior {
+public class PlayerCombat : MonoBehaviour {
     private new Camera camera;
+
+    private Player player;
     private PlayerInput input;
 
-    // The position the player is aiming at with their mouse, in world space.
+    // The position the player is aiming at, in world space.
     public Vector2 AimingPosition { get; private set; }
 
     private void Awake() {
         camera = Camera.main;
+        player = GetComponent<Player>();
         input = GetComponent<PlayerInput>();
     }
 
-    protected override void NetworkStart() {
-        networkObject.UpdateInterval = 50;
-    }
-
     private void Update() {
-        if (networkObject != null) {
-            NetworkUpdate();
-        } else {
+        if (!player.IsOnline) {
             UpdateCombat();
+            return;
         }
-    }
 
-    private void NetworkUpdate() {
-        if (networkObject.IsOwner) {
-            UpdateCombat();
-            networkObject.aimingPosition = AimingPosition;
-        } else {
-            AimingPosition = networkObject.aimingPosition;
+        if (!player.IsLocalPlayer) {
+            AimingPosition = player.networkObject.aimingPosition;
+            return;
         }
+
+        UpdateCombat();
+        player.networkObject.aimingPosition = AimingPosition;
     }
 
     private void UpdateCombat() {

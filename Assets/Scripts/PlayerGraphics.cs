@@ -4,7 +4,10 @@
 [RequireComponent(typeof(PlayerCombat))]
 public class PlayerGraphics : MonoBehaviour {
     [SerializeField]
-    private SpriteRenderer spriteRenderer;
+    private Transform body;
+
+    [SerializeField]
+    private Transform arm;
 
     private PlayerCombat playerCombat;
 
@@ -15,8 +18,17 @@ public class PlayerGraphics : MonoBehaviour {
     private void Update() {
         var facingLeft = playerCombat.AimingPosition.x < playerCombat.transform.position.x;
 
-        var rotation = spriteRenderer.transform.localRotation;
-        rotation.y = facingLeft ? 180 : 0;
-        spriteRenderer.transform.localRotation = rotation;
+        body.localEulerAngles = new Vector3(
+            body.localEulerAngles.x,
+            facingLeft ? 180 : 0,
+            body.localEulerAngles.z
+        );
+
+        var armAngle = Mathf.Rad2Deg * Mathf.Atan(-(arm.position.y - playerCombat.AimingPosition.y) / Mathf.Abs(arm.position.x - playerCombat.AimingPosition.x));
+        arm.eulerAngles = new Vector3(
+            arm.eulerAngles.x,
+            arm.eulerAngles.y,
+            armAngle
+        );
     }
 }

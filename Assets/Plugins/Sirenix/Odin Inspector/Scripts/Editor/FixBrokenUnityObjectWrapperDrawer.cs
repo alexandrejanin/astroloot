@@ -46,7 +46,7 @@ namespace Sirenix.OdinInspector.Editor.Drawers
             {
                 this.isBroken = false;
                 var count = this.ValueEntry.ValueCount;
-                for (var i = 0; i < count; i++)
+                for (int i = 0; i < count; i++)
                 {
                     var component = this.ValueEntry.Values[i];
 
@@ -61,7 +61,7 @@ namespace Sirenix.OdinInspector.Editor.Drawers
                 {
                     this.isBroken = false;
 
-                    for (var i = 0; i < this.ValueEntry.ValueCount; i++)
+                    for (int i = 0; i < this.ValueEntry.ValueCount; i++)
                     {
                         T fixedComponent = null;
                         if (ComponentIsBroken(this.ValueEntry.Values[i], ref fixedComponent) && fixedComponent)
@@ -171,7 +171,7 @@ namespace Sirenix.OdinInspector.Editor.Drawers
             [HorizontalGroup, Button(ButtonSizes.Large)]
             public void FixItThisTime()
             {
-                for (var i = 0; i < this.valueEntry.ValueCount; i++)
+                for (int i = 0; i < this.valueEntry.ValueCount; i++)
                 {
                     var localI = i;
                     T fixedComponent = null;

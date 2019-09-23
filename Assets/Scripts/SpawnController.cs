@@ -1,27 +1,30 @@
-﻿using BeardedManStudios.Forge.Networking.Unity;
+﻿using BeardedManStudios.Forge.Networking;
+using BeardedManStudios.Forge.Networking.Unity;
 using UnityEngine;
 
 public class SpawnController : MonoBehaviour {
     [SerializeField]
-    private GameObject playerPrefab;
-
-    public static GameObject LocalPlayerObject { get; private set; }
-
-    public delegate void OnPlayerObjectSpawned(GameObject localPlayerObject);
-
-    public static OnPlayerObjectSpawned onPlayerObjectSpawned;
-
-    [SerializeField]
     private Transform spawnPointsParent;
 
-    private void Start() {
-        var spawnPoint = GetRandomSpawnPoint();
+    private void Awake() {
+        if (NetworkManager.Instance.IsServer) {
+            NetworkManager.Instance.Networker.playerAccepted += (player, sender) => SpawnPlayer(player);
+            SpawnPlayer();
+        }
+    }
 
-        LocalPlayerObject = NetworkManager.Instance
-            ? NetworkManager.Instance.InstantiatePlayer(position: spawnPoint.position).gameObject
-            : Instantiate(playerPrefab, spawnPoint.position, playerPrefab.transform.rotation);
+    private void SpawnPlayer(NetworkingPlayer player = null) {
+        MainThreadManager.Run(() => {
+            var spawnPoint = GetRandomSpawnPoint();
+            var spawnedPlayer = (Player) NetworkManager.Instance.InstantiatePlayer(position: spawnPoint.position);
 
-        onPlayerObjectSpawned?.Invoke(LocalPlayerObject);
+            // player == null => host spawned
+            if (player == null) {
+                Player.onLocalPlayerSpawned?.Invoke(spawnedPlayer);
+            } else {
+                spawnedPlayer.SetOwner(player);
+            }
+        });
     }
 
     private Transform GetRandomSpawnPoint() => spawnPointsParent.GetChild(Random.Range(0, spawnPointsParent.childCount));

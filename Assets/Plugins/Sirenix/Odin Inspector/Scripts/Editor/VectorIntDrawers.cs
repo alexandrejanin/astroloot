@@ -47,7 +47,7 @@ namespace Sirenix.OdinInspector.Editor.Drawers
         /// </summary>
         public void PopulateGenericMenu(InspectorProperty property, GenericMenu genericMenu)
         {
-            var value = (Vector2Int)property.ValueEntry.WeakSmartValue;
+            Vector2Int value = (Vector2Int)property.ValueEntry.WeakSmartValue;
 
             if (genericMenu.GetItemCount() > 0)
             {
@@ -66,7 +66,7 @@ namespace Sirenix.OdinInspector.Editor.Drawers
         {
             property.Tree.DelayActionUntilRepaint(() =>
             {
-                for (var i = 0; i < property.ValueEntry.ValueCount; i++)
+                for (int i = 0; i < property.ValueEntry.ValueCount; i++)
                 {
                     property.ValueEntry.WeakValues[i] = value;
                 }
@@ -110,7 +110,7 @@ namespace Sirenix.OdinInspector.Editor.Drawers
         /// </summary>
         public void PopulateGenericMenu(InspectorProperty property, GenericMenu genericMenu)
         {
-            var value = (Vector3Int)property.ValueEntry.WeakSmartValue;
+            Vector3Int value = (Vector3Int)property.ValueEntry.WeakSmartValue;
 
             if (genericMenu.GetItemCount() > 0)
             {

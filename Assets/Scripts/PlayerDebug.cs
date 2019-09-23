@@ -8,11 +8,11 @@ public class PlayerDebug : MonoBehaviour {
     private PlayerMovement playerMovement;
 
     private void Awake() {
-        SpawnController.onPlayerObjectSpawned += o => playerMovement = o.GetComponent<PlayerMovement>();
+        Player.onLocalPlayerSpawned += player => playerMovement = player.GetComponent<PlayerMovement>();
     }
 
     private void Update() {
-        if (!playerMovement)
+        if (!playerMovement || !text)
             return;
 
         text.text = "";

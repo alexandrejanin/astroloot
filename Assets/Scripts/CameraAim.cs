@@ -18,7 +18,7 @@ public class CameraAim : MonoBehaviour {
 
     private void Awake() {
         camera = GetComponent<Camera>();
-        SpawnController.onPlayerObjectSpawned += o => target = o.GetComponent<PlayerCombat>();
+        Player.onLocalPlayerSpawned += player => target = player.GetComponent<PlayerCombat>();
     }
 
     private void Update() {

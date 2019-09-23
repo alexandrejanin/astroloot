@@ -41,7 +41,7 @@ namespace Sirenix.OdinInspector.Editor
             var aotAssemblies = new List<string>();
             var jitAssemblies = new List<string>();
             var paths = AssetDatabase.GetAllAssetPaths();
-            for (var i = 0; i < paths.Length; i++)
+            for (int i = 0; i < paths.Length; i++)
             {
                 var p = paths[i];
                 if (p.StartsWith(assemblyDir))
@@ -85,7 +85,7 @@ namespace Sirenix.OdinInspector.Editor
 
         private static void ApplyImportSettings(BuildTarget platform, string[] assemblyPaths, OdinAssemblyImportSettings importSettings)
         {
-            for (var i = 0; i < assemblyPaths.Length; i++)
+            for (int i = 0; i < assemblyPaths.Length; i++)
             {
                 AssemblyImportSettingsUtilities.SetAssemblyImportSettings(platform, assemblyPaths[i], importSettings);
             }

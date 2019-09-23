@@ -136,7 +136,7 @@ namespace Sirenix.OdinInspector.Editor.Drawers
             }
 
             EditorGUI.BeginChangeCheck();
-            var value = SirenixEditorFields.MinMaxSlider(label, (Vector2)this.ValueEntry.SmartValue, range, this.Attribute.ShowFields);
+            Vector2 value = SirenixEditorFields.MinMaxSlider(label, (Vector2)this.ValueEntry.SmartValue, range, this.Attribute.ShowFields);
             if (EditorGUI.EndChangeCheck())
             {
                 this.ValueEntry.SmartValue = new Vector2Int((int)value.x, (int)value.y);
