@@ -29,7 +29,6 @@ public class MultiplayerMenu : MonoBehaviour
 	private List<Button> _uiButtons = new List<Button>();
 	private bool _matchmaking = false;
 	public bool useMainThreadManagerForRPCs = true;
-	public bool useInlineChat = false;
 
 	public bool getLocalNetworkConnections = false;
 
@@ -210,9 +209,6 @@ public class MultiplayerMenu : MonoBehaviour
 
 		mgr.Initialize(networker, masterServerHost, masterServerPort, masterServerData);
 
-		if (useInlineChat && networker.IsServer)
-			SceneManager.sceneLoaded += CreateInlineChat;
-
 		if (networker is IServer)
 		{
 			if (!DontChangeSceneOnConnect)
@@ -220,13 +216,6 @@ public class MultiplayerMenu : MonoBehaviour
 			else
 				NetworkObject.Flush(networker); //Called because we are already in the correct scene!
 		}
-	}
-
-	private void CreateInlineChat(Scene arg0, LoadSceneMode arg1)
-	{
-		SceneManager.sceneLoaded -= CreateInlineChat;
-		var chat = NetworkManager.Instance.InstantiateChatManager();
-		DontDestroyOnLoad(chat.gameObject);
 	}
 
 	private void SetToggledButtons(bool value)

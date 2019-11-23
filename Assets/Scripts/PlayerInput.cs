@@ -6,6 +6,7 @@ public class PlayerInput : MonoBehaviour {
     public Vector2 MovementInput { get; private set; }
     public Vector2 MousePosition { get; private set; }
 
+    public Action onPrimaryFire;
     public Action onJumpDown, onJumpUp;
 
     private Player player;
@@ -21,6 +22,9 @@ public class PlayerInput : MonoBehaviour {
         MovementInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 
         MousePosition = Input.mousePosition;
+
+        if (Input.GetMouseButtonDown(0))
+            onPrimaryFire?.Invoke();
 
         if (Input.GetKeyDown(KeyCode.Space))
             onJumpDown?.Invoke();

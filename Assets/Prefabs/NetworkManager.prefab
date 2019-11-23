@@ -43,13 +43,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbe5b082a785e7641bf1a62b930a3f5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ChatManagerNetworkObject: []
-  CubeForgeGameNetworkObject: []
-  ExampleProximityPlayerNetworkObject: []
-  NetworkCameraNetworkObject: []
   PlayerNetworkObject:
   - {fileID: 1952331854964043736, guid: d52837f4c0d2be249b2e38110bafc0aa, type: 3}
-  TestNetworkObject: []
-  BasicCubeNetworkObject:
-  - {fileID: 4161377959395143314, guid: aa58e834b24aedc4f985b89c0356a8ca, type: 3}
+  BulletNetworkObject:
+  - {fileID: 4659933145509123644, guid: 51939188a94f42844b8273b356622f1c, type: 3}
   automaticScenes: 1

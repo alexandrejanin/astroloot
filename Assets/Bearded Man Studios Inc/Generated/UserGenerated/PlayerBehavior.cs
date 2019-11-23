@@ -4,11 +4,14 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedRPC("{\"types\":[[]]")]
-	[GeneratedRPCVariableNames("{\"types\":[[]]")]
+	[GeneratedRPC("{\"types\":[[][\"int\"][\"uint\", \"Vector2\", \"Vector2\"][\"uint\"]]")]
+	[GeneratedRPCVariableNames("{\"types\":[[][\"damage\"][\"bulletId\", \"position\", \"direction\"][\"bulletId\"]]")]
 	public abstract partial class PlayerBehavior : NetworkBehavior
 	{
 		public const byte RPC_LOCAL_PLAYER_SPAWNED = 0 + 5;
+		public const byte RPC_DAMAGE = 1 + 5;
+		public const byte RPC_SHOOT = 2 + 5;
+		public const byte RPC_DESTROY_BULLET = 3 + 5;
 		
 		public PlayerNetworkObject networkObject = null;
 
@@ -23,6 +26,9 @@ namespace BeardedManStudios.Forge.Networking.Generated
 
 			base.SetupHelperRpcs(networkObject);
 			networkObject.RegisterRpc("LocalPlayerSpawned", LocalPlayerSpawned);
+			networkObject.RegisterRpc("Damage", Damage, typeof(int));
+			networkObject.RegisterRpc("Shoot", Shoot, typeof(uint), typeof(Vector2), typeof(Vector2));
+			networkObject.RegisterRpc("DestroyBullet", DestroyBullet, typeof(uint));
 
 			networkObject.onDestroy += DestroyGameObject;
 
@@ -103,6 +109,18 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		/// Arguments:
 		/// </summary>
 		public abstract void LocalPlayerSpawned(RpcArgs args);
+		/// <summary>
+		/// Arguments:
+		/// </summary>
+		public abstract void Damage(RpcArgs args);
+		/// <summary>
+		/// Arguments:
+		/// </summary>
+		public abstract void Shoot(RpcArgs args);
+		/// <summary>
+		/// Arguments:
+		/// </summary>
+		public abstract void DestroyBullet(RpcArgs args);
 
 		// DO NOT TOUCH, THIS GETS GENERATED PLEASE EXTEND THIS CLASS IF YOU WISH TO HAVE CUSTOM CODE ADDITIONS
 	}

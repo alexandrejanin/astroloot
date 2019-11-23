@@ -1,5 +1,35 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1712898972905712115
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7278345936472060724}
+  m_Layer: 8
+  m_Name: BulletOriginPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7278345936472060724
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1712898972905712115}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.725, y: 0.125, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1952331853360689423}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1952331853360689422
 GameObject:
   m_ObjectHideFlags: 0
@@ -27,7 +57,8 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.225, y: -0.06, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 7278345936472060724}
   m_Father: {fileID: 1952331854221461702}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -174,6 +205,7 @@ GameObject:
   - component: {fileID: 1952331854964043744}
   - component: {fileID: 1952331854964043750}
   - component: {fileID: 1952331854964043749}
+  - component: {fileID: 2358547435511345331}
   - component: {fileID: 1952331854964043739}
   - component: {fileID: 1952331854964043738}
   - component: {fileID: 1952331854964043748}
@@ -196,6 +228,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1952331854221461702}
+  - {fileID: 463585914813047807}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -211,6 +244,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 990da99df3372c04fbaf2f7eb3a43926, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  healthBarPrefab: {fileID: 2285395079199993204, guid: f4783ed62666ece4fb7c6b9fe4e8157b,
+    type: 3}
+  healthBarTransform: {fileID: 463585914813047807}
 --- !u!114 &1952331854964043744
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -249,6 +285,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc96a9dfcade99741bcc03e2b042332d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  arm: {fileID: 1952331853360689423}
+  bulletOriginPoint: {fileID: 7278345936472060724}
+  bulletPrefab: {fileID: 4659933145509123645, guid: 51939188a94f42844b8273b356622f1c,
+    type: 3}
+--- !u!114 &2358547435511345331
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1952331854964043736}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eebabbef705662f4f8c316f2991cab58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
 --- !u!114 &1952331854964043739
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -279,7 +332,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7292155e4285c5b479348b885e7ddc37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  runSpeed: 6
+  runSpeed: 5
   wallSlideSpeed: 1.5
   accelerationTimeGrounded: 0.1
   accelerationTimeAirborne: 0.2
@@ -316,3 +369,33 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.667, y: 1.667}
   m_EdgeRadius: 0
+--- !u!1 &3961563247510404920
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 463585914813047807}
+  m_Layer: 8
+  m_Name: HealthBar
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &463585914813047807
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3961563247510404920}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.9, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1952331854964043737}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

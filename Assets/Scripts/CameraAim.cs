@@ -25,11 +25,11 @@ public class CameraAim : MonoBehaviour {
         if (!target)
             return;
 
-        var aimingOffset = new Vector3(-1, -1) + 2 * camera.WorldToViewportPoint(target.AimingPosition);
+        var aimingOffset = new Vector3(-1, -1) + 2 * camera.WorldToViewportPoint(target.TargetPosition);
         aimingOffset.z = 0;
         transform.position = target.transform.position + zOffset * Vector3.forward + aimingOffset * maxOffset;
 
-        cursor.position = camera.WorldToScreenPoint(target.AimingPosition);
+        cursor.position = camera.WorldToScreenPoint(target.TargetPosition);
         Cursor.visible = false;
     }
 }

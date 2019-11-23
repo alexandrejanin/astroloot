@@ -16,7 +16,7 @@ public class PlayerGraphics : MonoBehaviour {
     }
 
     private void Update() {
-        var facingLeft = playerCombat.AimingPosition.x < playerCombat.transform.position.x;
+        var facingLeft = playerCombat.TargetPosition.x < playerCombat.transform.position.x;
 
         body.localEulerAngles = new Vector3(
             body.localEulerAngles.x,
@@ -24,7 +24,7 @@ public class PlayerGraphics : MonoBehaviour {
             body.localEulerAngles.z
         );
 
-        var armAngle = Mathf.Rad2Deg * Mathf.Atan(-(arm.position.y - playerCombat.AimingPosition.y) / Mathf.Abs(arm.position.x - playerCombat.AimingPosition.x));
+        var armAngle = Mathf.Rad2Deg * Mathf.Atan(-(arm.position.y - playerCombat.TargetPosition.y) / Mathf.Abs(arm.position.x - playerCombat.TargetPosition.x));
         arm.eulerAngles = new Vector3(
             arm.eulerAngles.x,
             arm.eulerAngles.y,
