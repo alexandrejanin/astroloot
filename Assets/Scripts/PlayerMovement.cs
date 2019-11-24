@@ -42,10 +42,16 @@ public class PlayerMovement : MonoBehaviour {
     private void Awake() {
         player = GetComponent<Player>();
         input = GetComponent<PlayerInput>();
+        controller = GetComponent<CharacterController2D>();
+
         input.onJumpDown += OnJumpDown;
         input.onJumpUp += OnJumpUp;
 
-        controller = GetComponent<CharacterController2D>();
+        player.onDeath += () => velocity = Vector3.zero;
+        player.onRespawn += () => {
+            var spawnPoint = FindObjectOfType<SpawnController>().GetSpawnPoint();
+            transform.position = spawnPoint.position;
+        };
     }
 
     private void Update() {
@@ -58,6 +64,9 @@ public class PlayerMovement : MonoBehaviour {
             transform.position = player.networkObject.position;
             return;
         }
+
+        if (!player.IsAlive)
+            return;
 
         UpdateMovement();
         player.networkObject.position = transform.position;

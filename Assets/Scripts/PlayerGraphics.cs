@@ -9,10 +9,15 @@ public class PlayerGraphics : MonoBehaviour {
     [SerializeField]
     private Transform arm;
 
+    private Player player;
     private PlayerCombat playerCombat;
 
     private void Awake() {
+        player = GetComponent<Player>();
         playerCombat = GetComponent<PlayerCombat>();
+
+        player.onDeath += () => body.gameObject.SetActive(false);
+        player.onRespawn += () => body.gameObject.SetActive(true);
     }
 
     private void Update() {
@@ -25,6 +30,7 @@ public class PlayerGraphics : MonoBehaviour {
         );
 
         var armAngle = Mathf.Rad2Deg * Mathf.Atan(-(arm.position.y - playerCombat.TargetPosition.y) / Mathf.Abs(arm.position.x - playerCombat.TargetPosition.x));
+
         arm.eulerAngles = new Vector3(
             arm.eulerAngles.x,
             arm.eulerAngles.y,

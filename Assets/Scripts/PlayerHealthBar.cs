@@ -10,16 +10,17 @@ public class PlayerHealthBar : MonoBehaviour {
 
     private new Camera camera;
 
-
     private void Awake() {
         camera = Camera.main;
     }
 
     private void Update() {
-        if (PlayerHealth != null)
-            text.text = $"{PlayerHealth.Health}/{PlayerHealth.MaxHealth}";
+        if (!PlayerHealth.IsAlive) {
+            text.text = "";
+            return;
+        }
 
-        if (TargetTransform != null)
-            transform.position = camera.WorldToScreenPoint(TargetTransform.position);
+        text.text = $"{PlayerHealth.Health}/{PlayerHealth.MaxHealth}";
+        transform.position = camera.WorldToScreenPoint(TargetTransform.position);
     }
 }

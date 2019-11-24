@@ -51,6 +51,9 @@ public class PlayerCombat : MonoBehaviour {
     }
 
     public void OnPrimaryFire() {
+        if (!player.IsAlive)
+            return;
+
         player.Shoot(bulletId, OriginPosition, TargetPosition - OriginPosition);
 
         bulletId++;

@@ -15,7 +15,6 @@ public class Player : PlayerBehavior {
     [SerializeField]
     private Transform healthBarTransform;
 
-    public static Action<Player> onLocalPlayerSpawned;
 
     public PlayerInput PlayerInput { get; private set; }
     public PlayerCombat PlayerCombat { get; private set; }
@@ -24,6 +23,12 @@ public class Player : PlayerBehavior {
 
     public bool IsOnline => networkObject != null;
     public bool IsLocalPlayer => networkObject.IsOwner;
+    public bool IsAlive => PlayerHealth.IsAlive;
+
+    public Action onDeath;
+    public Action onRespawn;
+
+    public static Action<Player> onLocalPlayerSpawned;
 
     private void Awake() {
         PlayerInput = GetComponent<PlayerInput>();
@@ -91,5 +96,21 @@ public class Player : PlayerBehavior {
         MainThreadManager.Run(() =>
             PlayerCombat.DestroyBullet(bulletId)
         );
+    }
+
+    public void OnDeath() {
+        networkObject.SendRpc(RPC_ON_DEATH, Receivers.All);
+    }
+
+    public override void OnDeath(RpcArgs args) {
+        MainThreadManager.Run(() => onDeath?.Invoke());
+    }
+
+    public void OnRespawn() {
+        networkObject.SendRpc(RPC_ON_RESPAWN, Receivers.All);
+    }
+
+    public override void OnRespawn(RpcArgs args) {
+        MainThreadManager.Run(() => onRespawn?.Invoke());
     }
 }

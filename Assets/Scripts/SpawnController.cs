@@ -15,7 +15,7 @@ public class SpawnController : MonoBehaviour {
 
     private void SpawnPlayer(NetworkingPlayer player = null) {
         MainThreadManager.Run(() => {
-            var spawnPoint = GetRandomSpawnPoint();
+            var spawnPoint = GetSpawnPoint();
             var spawnedPlayer = (Player) NetworkManager.Instance.InstantiatePlayer(position: spawnPoint.position);
 
             // player == null => host spawned
@@ -27,5 +27,5 @@ public class SpawnController : MonoBehaviour {
         });
     }
 
-    private Transform GetRandomSpawnPoint() => spawnPointsParent.GetChild(Random.Range(0, spawnPointsParent.childCount));
+    public Transform GetSpawnPoint() => spawnPointsParent.GetChild(Random.Range(0, spawnPointsParent.childCount));
 }
