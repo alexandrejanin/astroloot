@@ -9,6 +9,9 @@ public class PlayerGraphics : MonoBehaviour {
     [SerializeField]
     private Transform arm;
 
+    [SerializeField]
+    private SpriteRenderer weaponRenderer;
+
     private Player player;
     private PlayerCombat playerCombat;
 
@@ -36,5 +39,12 @@ public class PlayerGraphics : MonoBehaviour {
             arm.eulerAngles.y,
             armAngle
         );
+
+        var weapon = playerCombat.Weapon;
+        if (weapon == null) {
+            weaponRenderer.sprite = null;
+        } else {
+            weaponRenderer.sprite = weapon.Sprite;
+        }
     }
 }

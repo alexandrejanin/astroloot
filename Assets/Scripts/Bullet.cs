@@ -5,10 +5,9 @@ public class Bullet : MonoBehaviour {
     private float speed = 20;
 
     [SerializeField]
-    private int damage = 10;
-
-    [SerializeField]
     private float rayLength = 0.3f;
+
+    public int Damage { set; private get; }
 
     public Player Player { set; private get; }
 
@@ -25,7 +24,7 @@ public class Bullet : MonoBehaviour {
                 var player = hit.transform.GetComponent<Player>();
                 if (player) {
                     if (!player.IsLocalPlayer) {
-                        player.Damage(damage);
+                        player.Damage(Damage);
                         SendDestroyRequest();
                     }
                 } else {

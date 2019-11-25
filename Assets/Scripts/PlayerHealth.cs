@@ -17,17 +17,17 @@ public class PlayerHealth : MonoBehaviour {
         player = GetComponent<Player>();
     }
 
+    public void Reset() {
+        player.networkObject.alive = true;
+        player.networkObject.health = maxHealth;
+    }
+
     private void Update() {
         if (!player.IsLocalPlayer || !IsAlive)
             return;
 
         if (transform.position.y < -20)
             StartCoroutine(Die());
-    }
-
-    public void Reset() {
-        player.networkObject.alive = true;
-        player.networkObject.health = maxHealth;
     }
 
     public void Damage(int damage) {

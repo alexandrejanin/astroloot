@@ -36,13 +36,12 @@ public class PlayerMovement : MonoBehaviour {
     private Player player;
     private PlayerInput input;
 
-    private CharacterController2D controller;
-    public CharacterController2D Controller => controller;
+    public CharacterController2D Controller { get; private set; }
 
     private void Awake() {
         player = GetComponent<Player>();
         input = GetComponent<PlayerInput>();
-        controller = GetComponent<CharacterController2D>();
+        Controller = GetComponent<CharacterController2D>();
 
         input.onJumpDown += OnJumpDown;
         input.onJumpUp += OnJumpUp;
@@ -79,11 +78,11 @@ public class PlayerMovement : MonoBehaviour {
         UpdateVelocity();
         UpdateWallSliding();
 
-        controller.Move(velocity * Time.deltaTime, input.MovementInput);
+        Controller.Move(velocity * Time.deltaTime, input.MovementInput);
 
-        if (controller.Collisions.above || controller.Collisions.below) {
-            if (controller.Collisions.slidingDownSlope) {
-                velocity.y += controller.Collisions.slopeNormal.y * -gravity * Time.deltaTime;
+        if (Controller.Collisions.above || Controller.Collisions.below) {
+            if (Controller.Collisions.slidingDownSlope) {
+                velocity.y += Controller.Collisions.slopeNormal.y * -gravity * Time.deltaTime;
             } else {
                 velocity.y = 0;
             }
@@ -105,15 +104,15 @@ public class PlayerMovement : MonoBehaviour {
             velocity.x,
             input.MovementInput.x * runSpeed,
             ref speedSmoothing,
-            controller.Collisions.below ? accelerationTimeGrounded : accelerationTimeAirborne
+            Controller.Collisions.below ? accelerationTimeGrounded : accelerationTimeAirborne
         );
     }
 
     private void UpdateWallSliding() {
-        wallDirX = controller.Collisions.left ? -1 : 1;
+        wallDirX = Controller.Collisions.left ? -1 : 1;
         wallSliding = false;
 
-        if ((controller.Collisions.left || controller.Collisions.right) && !controller.Collisions.below && velocity.y < 0) {
+        if ((Controller.Collisions.left || Controller.Collisions.right) && !Controller.Collisions.below && velocity.y < 0) {
             wallSliding = true;
 
             if (input.MovementInput.x == wallDirX || timeToWallUnstick > 0) {
@@ -147,7 +146,7 @@ public class PlayerMovement : MonoBehaviour {
             }
         }
 
-        if (controller.Collisions.below)
+        if (Controller.Collisions.below)
             velocity.y = maxJumpVelocity;
     }
 

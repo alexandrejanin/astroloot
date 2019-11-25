@@ -6,8 +6,7 @@ public class PlayerCombat : MonoBehaviour {
     [SerializeField]
     private Transform bulletOriginPoint;
 
-    [SerializeField]
-    private Bullet bulletPrefab;
+    public Weapon Weapon => weaponManager.GetWeapon(player.networkObject.weaponIndex);
 
     // The position the bullets are shooting from
     public Vector2 OriginPosition => bulletOriginPoint.position;
@@ -16,19 +15,31 @@ public class PlayerCombat : MonoBehaviour {
     public Vector2 TargetPosition { get; private set; }
 
     private new Camera camera;
+    private WeaponManager weaponManager;
 
     private Player player;
     private PlayerInput playerInput;
 
     private readonly Dictionary<uint, Bullet> bullets = new Dictionary<uint, Bullet>();
-    private uint bulletId;
+    private uint nextBulletId;
+
+    private float timeSinceLastShot;
 
     private void Awake() {
         camera = Camera.main;
+        weaponManager = FindObjectOfType<WeaponManager>();
+
         player = GetComponent<Player>();
         playerInput = GetComponent<PlayerInput>();
 
-        playerInput.onPrimaryFire += OnPrimaryFire;
+        player.onRespawn += Reset;
+
+        playerInput.onPrimaryFireDown += OnPrimaryFireDown;
+        playerInput.onPrimaryFireHeld += OnPrimaryFireHeld;
+    }
+
+    public void Reset() {
+        player.networkObject.weaponIndex = -1;
     }
 
     private void Update() {
@@ -47,21 +58,37 @@ public class PlayerCombat : MonoBehaviour {
     }
 
     private void UpdateCombat() {
+        timeSinceLastShot += Time.deltaTime;
         TargetPosition = camera.ScreenToWorldPoint(playerInput.MousePosition);
     }
 
-    public void OnPrimaryFire() {
+    public void OnPrimaryFireDown() {
+        if (Weapon && !Weapon.FullAuto)
+            Fire();
+    }
+
+    public void OnPrimaryFireHeld() {
+        if (Weapon && Weapon.FullAuto)
+            Fire();
+    }
+
+    private void Fire() {
         if (!player.IsAlive)
             return;
 
-        player.Shoot(bulletId, OriginPosition, TargetPosition - OriginPosition);
+        if (timeSinceLastShot < 1f / Weapon.RateOfFire)
+            return;
 
-        bulletId++;
+        player.Shoot(nextBulletId, OriginPosition, TargetPosition - OriginPosition);
+        timeSinceLastShot = 0f;
+
+        nextBulletId++;
     }
 
     // Runs on all clients when this player shoots
     public void Shoot(uint bulletId, Vector2 position, Vector2 direction) {
-        var bullet = Instantiate(bulletPrefab, position, Quaternion.FromToRotation(Vector2.right, direction));
+        var bullet = Instantiate(Weapon.Bullet, position, Quaternion.FromToRotation(Vector2.right, direction));
+        bullet.Damage = Weapon.Damage;
         bullet.Player = player;
         bullet.BulletId = bulletId;
         bullets.Add(bulletId, bullet);

@@ -47,6 +47,7 @@ public class Player : PlayerBehavior {
         networkObject.UpdateInterval = 40;
 
         PlayerHealth.Reset();
+        PlayerCombat.Reset();
     }
 
     // Called on the server when the player spawns
@@ -112,5 +113,14 @@ public class Player : PlayerBehavior {
 
     public override void OnRespawn(RpcArgs args) {
         MainThreadManager.Run(() => onRespawn?.Invoke());
+    }
+
+    public void SetWeaponIndex(int index) {
+        networkObject.SendRpc(networkObject.Owner, RPC_SET_WEAPON_INDEX, index);
+    }
+
+    public override void SetWeaponIndex(RpcArgs args) {
+        var index = args.GetNext<int>();
+        networkObject.weaponIndex = index;
     }
 }

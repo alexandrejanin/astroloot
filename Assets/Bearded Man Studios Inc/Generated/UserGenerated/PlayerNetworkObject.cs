@@ -5,16 +5,47 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedInterpol("{\"inter\":[0.25,0.25,0,0]")]
+	[GeneratedInterpol("{\"inter\":[0,0.25,0.25,0,0]")]
 	public partial class PlayerNetworkObject : NetworkObject
 	{
-		public const int IDENTITY = 2;
+		public const int IDENTITY = 3;
 
 		private byte[] _dirtyFields = new byte[1];
 
 		#pragma warning disable 0067
 		public event FieldChangedEvent fieldAltered;
 		#pragma warning restore 0067
+		[ForgeGeneratedField]
+		private bool _alive;
+		public event FieldEvent<bool> aliveChanged;
+		public Interpolated<bool> aliveInterpolation = new Interpolated<bool>() { LerpT = 0f, Enabled = false };
+		public bool alive
+		{
+			get { return _alive; }
+			set
+			{
+				// Don't do anything if the value is the same
+				if (_alive == value)
+					return;
+
+				// Mark the field as dirty for the network to transmit
+				_dirtyFields[0] |= 0x1;
+				_alive = value;
+				hasDirtyFields = true;
+			}
+		}
+
+		public void SetaliveDirty()
+		{
+			_dirtyFields[0] |= 0x1;
+			hasDirtyFields = true;
+		}
+
+		private void RunChange_alive(ulong timestep)
+		{
+			if (aliveChanged != null) aliveChanged(_alive, timestep);
+			if (fieldAltered != null) fieldAltered("alive", _alive, timestep);
+		}
 		[ForgeGeneratedField]
 		private Vector2 _position;
 		public event FieldEvent<Vector2> positionChanged;
@@ -29,7 +60,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 					return;
 
 				// Mark the field as dirty for the network to transmit
-				_dirtyFields[0] |= 0x1;
+				_dirtyFields[0] |= 0x2;
 				_position = value;
 				hasDirtyFields = true;
 			}
@@ -37,7 +68,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 
 		public void SetpositionDirty()
 		{
-			_dirtyFields[0] |= 0x1;
+			_dirtyFields[0] |= 0x2;
 			hasDirtyFields = true;
 		}
 
@@ -60,7 +91,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 					return;
 
 				// Mark the field as dirty for the network to transmit
-				_dirtyFields[0] |= 0x2;
+				_dirtyFields[0] |= 0x4;
 				_aimingPosition = value;
 				hasDirtyFields = true;
 			}
@@ -68,7 +99,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 
 		public void SetaimingPositionDirty()
 		{
-			_dirtyFields[0] |= 0x2;
+			_dirtyFields[0] |= 0x4;
 			hasDirtyFields = true;
 		}
 
@@ -91,7 +122,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 					return;
 
 				// Mark the field as dirty for the network to transmit
-				_dirtyFields[0] |= 0x4;
+				_dirtyFields[0] |= 0x8;
 				_health = value;
 				hasDirtyFields = true;
 			}
@@ -99,7 +130,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 
 		public void SethealthDirty()
 		{
-			_dirtyFields[0] |= 0x4;
+			_dirtyFields[0] |= 0x8;
 			hasDirtyFields = true;
 		}
 
@@ -109,35 +140,35 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			if (fieldAltered != null) fieldAltered("health", _health, timestep);
 		}
 		[ForgeGeneratedField]
-		private bool _alive;
-		public event FieldEvent<bool> aliveChanged;
-		public Interpolated<bool> aliveInterpolation = new Interpolated<bool>() { LerpT = 0f, Enabled = false };
-		public bool alive
+		private int _weaponIndex;
+		public event FieldEvent<int> weaponIndexChanged;
+		public Interpolated<int> weaponIndexInterpolation = new Interpolated<int>() { LerpT = 0f, Enabled = false };
+		public int weaponIndex
 		{
-			get { return _alive; }
+			get { return _weaponIndex; }
 			set
 			{
 				// Don't do anything if the value is the same
-				if (_alive == value)
+				if (_weaponIndex == value)
 					return;
 
 				// Mark the field as dirty for the network to transmit
-				_dirtyFields[0] |= 0x8;
-				_alive = value;
+				_dirtyFields[0] |= 0x10;
+				_weaponIndex = value;
 				hasDirtyFields = true;
 			}
 		}
 
-		public void SetaliveDirty()
+		public void SetweaponIndexDirty()
 		{
-			_dirtyFields[0] |= 0x8;
+			_dirtyFields[0] |= 0x10;
 			hasDirtyFields = true;
 		}
 
-		private void RunChange_alive(ulong timestep)
+		private void RunChange_weaponIndex(ulong timestep)
 		{
-			if (aliveChanged != null) aliveChanged(_alive, timestep);
-			if (fieldAltered != null) fieldAltered("alive", _alive, timestep);
+			if (weaponIndexChanged != null) weaponIndexChanged(_weaponIndex, timestep);
+			if (fieldAltered != null) fieldAltered("weaponIndex", _weaponIndex, timestep);
 		}
 
 		protected override void OwnershipChanged()
@@ -148,26 +179,32 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		
 		public void SnapInterpolations()
 		{
+			aliveInterpolation.current = aliveInterpolation.target;
 			positionInterpolation.current = positionInterpolation.target;
 			aimingPositionInterpolation.current = aimingPositionInterpolation.target;
 			healthInterpolation.current = healthInterpolation.target;
-			aliveInterpolation.current = aliveInterpolation.target;
+			weaponIndexInterpolation.current = weaponIndexInterpolation.target;
 		}
 
 		public override int UniqueIdentity { get { return IDENTITY; } }
 
 		protected override BMSByte WritePayload(BMSByte data)
 		{
+			UnityObjectMapper.Instance.MapBytes(data, _alive);
 			UnityObjectMapper.Instance.MapBytes(data, _position);
 			UnityObjectMapper.Instance.MapBytes(data, _aimingPosition);
 			UnityObjectMapper.Instance.MapBytes(data, _health);
-			UnityObjectMapper.Instance.MapBytes(data, _alive);
+			UnityObjectMapper.Instance.MapBytes(data, _weaponIndex);
 
 			return data;
 		}
 
 		protected override void ReadPayload(BMSByte payload, ulong timestep)
 		{
+			_alive = UnityObjectMapper.Instance.Map<bool>(payload);
+			aliveInterpolation.current = _alive;
+			aliveInterpolation.target = _alive;
+			RunChange_alive(timestep);
 			_position = UnityObjectMapper.Instance.Map<Vector2>(payload);
 			positionInterpolation.current = _position;
 			positionInterpolation.target = _position;
@@ -180,10 +217,10 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			healthInterpolation.current = _health;
 			healthInterpolation.target = _health;
 			RunChange_health(timestep);
-			_alive = UnityObjectMapper.Instance.Map<bool>(payload);
-			aliveInterpolation.current = _alive;
-			aliveInterpolation.target = _alive;
-			RunChange_alive(timestep);
+			_weaponIndex = UnityObjectMapper.Instance.Map<int>(payload);
+			weaponIndexInterpolation.current = _weaponIndex;
+			weaponIndexInterpolation.target = _weaponIndex;
+			RunChange_weaponIndex(timestep);
 		}
 
 		protected override BMSByte SerializeDirtyFields()
@@ -192,13 +229,15 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			dirtyFieldsData.Append(_dirtyFields);
 
 			if ((0x1 & _dirtyFields[0]) != 0)
-				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _position);
-			if ((0x2 & _dirtyFields[0]) != 0)
-				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _aimingPosition);
-			if ((0x4 & _dirtyFields[0]) != 0)
-				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _health);
-			if ((0x8 & _dirtyFields[0]) != 0)
 				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _alive);
+			if ((0x2 & _dirtyFields[0]) != 0)
+				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _position);
+			if ((0x4 & _dirtyFields[0]) != 0)
+				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _aimingPosition);
+			if ((0x8 & _dirtyFields[0]) != 0)
+				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _health);
+			if ((0x10 & _dirtyFields[0]) != 0)
+				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _weaponIndex);
 
 			// Reset all the dirty fields
 			for (int i = 0; i < _dirtyFields.Length; i++)
@@ -217,6 +256,19 @@ namespace BeardedManStudios.Forge.Networking.Generated
 
 			if ((0x1 & readDirtyFlags[0]) != 0)
 			{
+				if (aliveInterpolation.Enabled)
+				{
+					aliveInterpolation.target = UnityObjectMapper.Instance.Map<bool>(data);
+					aliveInterpolation.Timestep = timestep;
+				}
+				else
+				{
+					_alive = UnityObjectMapper.Instance.Map<bool>(data);
+					RunChange_alive(timestep);
+				}
+			}
+			if ((0x2 & readDirtyFlags[0]) != 0)
+			{
 				if (positionInterpolation.Enabled)
 				{
 					positionInterpolation.target = UnityObjectMapper.Instance.Map<Vector2>(data);
@@ -228,7 +280,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 					RunChange_position(timestep);
 				}
 			}
-			if ((0x2 & readDirtyFlags[0]) != 0)
+			if ((0x4 & readDirtyFlags[0]) != 0)
 			{
 				if (aimingPositionInterpolation.Enabled)
 				{
@@ -241,7 +293,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 					RunChange_aimingPosition(timestep);
 				}
 			}
-			if ((0x4 & readDirtyFlags[0]) != 0)
+			if ((0x8 & readDirtyFlags[0]) != 0)
 			{
 				if (healthInterpolation.Enabled)
 				{
@@ -254,17 +306,17 @@ namespace BeardedManStudios.Forge.Networking.Generated
 					RunChange_health(timestep);
 				}
 			}
-			if ((0x8 & readDirtyFlags[0]) != 0)
+			if ((0x10 & readDirtyFlags[0]) != 0)
 			{
-				if (aliveInterpolation.Enabled)
+				if (weaponIndexInterpolation.Enabled)
 				{
-					aliveInterpolation.target = UnityObjectMapper.Instance.Map<bool>(data);
-					aliveInterpolation.Timestep = timestep;
+					weaponIndexInterpolation.target = UnityObjectMapper.Instance.Map<int>(data);
+					weaponIndexInterpolation.Timestep = timestep;
 				}
 				else
 				{
-					_alive = UnityObjectMapper.Instance.Map<bool>(data);
-					RunChange_alive(timestep);
+					_weaponIndex = UnityObjectMapper.Instance.Map<int>(data);
+					RunChange_weaponIndex(timestep);
 				}
 			}
 		}
@@ -274,6 +326,11 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			if (IsOwner)
 				return;
 
+			if (aliveInterpolation.Enabled && !aliveInterpolation.current.UnityNear(aliveInterpolation.target, 0.0015f))
+			{
+				_alive = (bool)aliveInterpolation.Interpolate();
+				//RunChange_alive(aliveInterpolation.Timestep);
+			}
 			if (positionInterpolation.Enabled && !positionInterpolation.current.UnityNear(positionInterpolation.target, 0.0015f))
 			{
 				_position = (Vector2)positionInterpolation.Interpolate();
@@ -289,10 +346,10 @@ namespace BeardedManStudios.Forge.Networking.Generated
 				_health = (int)healthInterpolation.Interpolate();
 				//RunChange_health(healthInterpolation.Timestep);
 			}
-			if (aliveInterpolation.Enabled && !aliveInterpolation.current.UnityNear(aliveInterpolation.target, 0.0015f))
+			if (weaponIndexInterpolation.Enabled && !weaponIndexInterpolation.current.UnityNear(weaponIndexInterpolation.target, 0.0015f))
 			{
-				_alive = (bool)aliveInterpolation.Interpolate();
-				//RunChange_alive(aliveInterpolation.Timestep);
+				_weaponIndex = (int)weaponIndexInterpolation.Interpolate();
+				//RunChange_weaponIndex(weaponIndexInterpolation.Timestep);
 			}
 		}
 

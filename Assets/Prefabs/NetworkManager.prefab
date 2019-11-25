@@ -45,6 +45,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayerNetworkObject:
   - {fileID: 1952331854964043736, guid: d52837f4c0d2be249b2e38110bafc0aa, type: 3}
-  BulletNetworkObject:
-  - {fileID: 4659933145509123644, guid: 51939188a94f42844b8273b356622f1c, type: 3}
+  WeaponPickupNetworkObject:
+  - {fileID: 3254682474375942883, guid: f63b176b44f12fd459c5a65124304f12, type: 3}
   automaticScenes: 1

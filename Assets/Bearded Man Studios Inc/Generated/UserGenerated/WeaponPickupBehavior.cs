@@ -4,19 +4,12 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedRPC("{\"types\":[[][\"int\"][\"uint\", \"Vector2\", \"Vector2\"][\"uint\"][][][\"int\"]]")]
-	[GeneratedRPCVariableNames("{\"types\":[[][\"damage\"][\"bulletId\", \"position\", \"direction\"][\"bulletId\"][][][\"weaponIndex\"]]")]
-	public abstract partial class PlayerBehavior : NetworkBehavior
+	[GeneratedRPC("{\"types\":[]")]
+	[GeneratedRPCVariableNames("{\"types\":[]")]
+	public abstract partial class WeaponPickupBehavior : NetworkBehavior
 	{
-		public const byte RPC_LOCAL_PLAYER_SPAWNED = 0 + 5;
-		public const byte RPC_DAMAGE = 1 + 5;
-		public const byte RPC_SHOOT = 2 + 5;
-		public const byte RPC_DESTROY_BULLET = 3 + 5;
-		public const byte RPC_ON_DEATH = 4 + 5;
-		public const byte RPC_ON_RESPAWN = 5 + 5;
-		public const byte RPC_SET_WEAPON_INDEX = 6 + 5;
 		
-		public PlayerNetworkObject networkObject = null;
+		public WeaponPickupNetworkObject networkObject = null;
 
 		public override void Initialize(NetworkObject obj)
 		{
@@ -24,17 +17,10 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			if (networkObject != null && networkObject.AttachedBehavior != null)
 				return;
 			
-			networkObject = (PlayerNetworkObject)obj;
+			networkObject = (WeaponPickupNetworkObject)obj;
 			networkObject.AttachedBehavior = this;
 
 			base.SetupHelperRpcs(networkObject);
-			networkObject.RegisterRpc("LocalPlayerSpawned", LocalPlayerSpawned);
-			networkObject.RegisterRpc("Damage", Damage, typeof(int));
-			networkObject.RegisterRpc("Shoot", Shoot, typeof(uint), typeof(Vector2), typeof(Vector2));
-			networkObject.RegisterRpc("DestroyBullet", DestroyBullet, typeof(uint));
-			networkObject.RegisterRpc("OnDeath", OnDeath);
-			networkObject.RegisterRpc("OnRespawn", OnRespawn);
-			networkObject.RegisterRpc("SetWeaponIndex", SetWeaponIndex, typeof(int));
 
 			networkObject.onDestroy += DestroyGameObject;
 
@@ -92,7 +78,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 
 		public override void Initialize(NetWorker networker, byte[] metadata = null)
 		{
-			Initialize(new PlayerNetworkObject(networker, createCode: TempAttachCode, metadata: metadata));
+			Initialize(new WeaponPickupNetworkObject(networker, createCode: TempAttachCode, metadata: metadata));
 		}
 
 		private void DestroyGameObject(NetWorker sender)
@@ -103,7 +89,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 
 		public override NetworkObject CreateNetworkObject(NetWorker networker, int createCode, byte[] metadata = null)
 		{
-			return new PlayerNetworkObject(networker, this, createCode, metadata);
+			return new WeaponPickupNetworkObject(networker, this, createCode, metadata);
 		}
 
 		protected override void InitializedTransform()
@@ -111,34 +97,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			networkObject.SnapInterpolations();
 		}
 
-		/// <summary>
-		/// Arguments:
-		/// </summary>
-		public abstract void LocalPlayerSpawned(RpcArgs args);
-		/// <summary>
-		/// Arguments:
-		/// </summary>
-		public abstract void Damage(RpcArgs args);
-		/// <summary>
-		/// Arguments:
-		/// </summary>
-		public abstract void Shoot(RpcArgs args);
-		/// <summary>
-		/// Arguments:
-		/// </summary>
-		public abstract void DestroyBullet(RpcArgs args);
-		/// <summary>
-		/// Arguments:
-		/// </summary>
-		public abstract void OnDeath(RpcArgs args);
-		/// <summary>
-		/// Arguments:
-		/// </summary>
-		public abstract void OnRespawn(RpcArgs args);
-		/// <summary>
-		/// Arguments:
-		/// </summary>
-		public abstract void SetWeaponIndex(RpcArgs args);
 
 		// DO NOT TOUCH, THIS GETS GENERATED PLEASE EXTEND THIS CLASS IF YOU WISH TO HAVE CUSTOM CODE ADDITIONS
 	}
