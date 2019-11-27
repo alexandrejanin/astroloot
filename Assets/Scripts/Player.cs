@@ -73,17 +73,17 @@ public class Player : PlayerBehavior {
         );
     }
 
-    public void Shoot(uint bulletId, Vector2 position, Vector2 direction) {
-        networkObject.SendRpc(RPC_SHOOT, Receivers.All, bulletId, position, direction);
+    public void Shoot(uint bulletId, Vector2 originPosition, Vector2 targetPosition) {
+        networkObject.SendRpc(RPC_SHOOT, Receivers.All, bulletId, originPosition, targetPosition);
     }
 
     public override void Shoot(RpcArgs args) {
         var bulletId = args.GetNext<uint>();
-        var position = args.GetNext<Vector2>();
-        var direction = args.GetNext<Vector2>();
+        var originPosition = args.GetNext<Vector2>();
+        var targetPosition = args.GetNext<Vector2>();
 
         MainThreadManager.Run(() =>
-            PlayerCombat.Shoot(bulletId, position, direction)
+            PlayerCombat.Shoot(bulletId, originPosition, targetPosition)
         );
     }
 
@@ -115,12 +115,13 @@ public class Player : PlayerBehavior {
         MainThreadManager.Run(() => onRespawn?.Invoke());
     }
 
-    public void SetWeaponIndex(int index) {
-        networkObject.SendRpc(networkObject.Owner, RPC_SET_WEAPON_INDEX, index);
+    public void SetWeapon(int index) {
+        networkObject.SendRpc(RPC_SET_WEAPON, Receivers.All, index);
     }
 
-    public override void SetWeaponIndex(RpcArgs args) {
+    public override void SetWeapon(RpcArgs args) {
         var index = args.GetNext<int>();
         networkObject.weaponIndex = index;
+        PlayerCombat.SetWeapon(index);
     }
 }

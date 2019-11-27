@@ -5,11 +5,13 @@ public class WeaponPickup : WeaponPickupBehavior {
     [SerializeField]
     private SpriteRenderer spriteRenderer;
 
+    [SerializeField]
+    private new BoxCollider2D collider;
+
     private WeaponManager weaponManager;
 
-    private int weaponIndex;
-
-    private Weapon Weapon => weaponManager.GetWeapon(weaponIndex);
+    private int weaponIndex = -1;
+    private Weapon weapon;
 
     private void Awake() {
         weaponManager = FindObjectOfType<WeaponManager>();
@@ -24,7 +26,15 @@ public class WeaponPickup : WeaponPickupBehavior {
     }
 
     private void Update() {
-        spriteRenderer.sprite = Weapon.Sprite;
+        if (networkObject.weaponIndex != weaponIndex) {
+            weaponIndex = networkObject.weaponIndex;
+            weapon = weaponManager.GetWeapon(weaponIndex);
+
+            spriteRenderer.sprite = weapon.Sprite;
+            var bounds = spriteRenderer.sprite.bounds;
+            collider.offset = bounds.center;
+            collider.size = bounds.size;
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
@@ -35,7 +45,7 @@ public class WeaponPickup : WeaponPickupBehavior {
         if (player == null)
             return;
 
-        player.SetWeaponIndex(weaponIndex);
+        player.SetWeapon(networkObject.weaponIndex);
         networkObject.Destroy();
     }
 }

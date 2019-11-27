@@ -1,11 +1,9 @@
 ﻿using UnityEngine;
 
 public class Bullet : MonoBehaviour {
-    [SerializeField]
-    private float speed = 20;
 
     [SerializeField]
-    private float rayLength = 0.3f;
+    private float speed = 20;
 
     public int Damage { set; private get; }
 
@@ -17,21 +15,24 @@ public class Bullet : MonoBehaviour {
 
     private void Update() {
         transform.position += Time.deltaTime * speed * transform.right;
+    }
 
-        if (active && Player.IsLocalPlayer) {
-            var hit = Physics2D.Raycast(transform.position, transform.right, rayLength);
-            if (hit) {
-                var player = hit.transform.GetComponent<Player>();
-                if (player) {
-                    if (!player.IsLocalPlayer) {
-                        player.Damage(Damage);
-                        SendDestroyRequest();
-                    }
-                } else {
-                    SendDestroyRequest();
-                }
-            }
+    private void OnTriggerEnter2D(Collider2D other) {
+        if (!active || !Player.IsLocalPlayer)
+            return;
+
+        var player = other.gameObject.GetComponent<Player>();
+
+        if (!player) {
+            SendDestroyRequest();
+            return;
         }
+
+        if (player.IsLocalPlayer)
+            return;
+
+        player.Damage(Damage);
+        SendDestroyRequest();
     }
 
     private void SendDestroyRequest() {
@@ -41,9 +42,5 @@ public class Bullet : MonoBehaviour {
 
     public void Destroy() {
         Destroy(gameObject);
-    }
-
-    private void OnDrawGizmosSelected() {
-        Gizmos.DrawRay(transform.position, transform.right * rayLength);
     }
 }

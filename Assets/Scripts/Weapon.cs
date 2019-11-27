@@ -1,25 +1,16 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu]
-public class Weapon : ScriptableObject {
+public abstract class Weapon : MonoBehaviour {
     [SerializeField]
-    private Sprite sprite;
+    protected int damage;
 
     [SerializeField]
-    private int damage;
+    protected float rateOfFire;
 
-    [SerializeField]
-    private float rateOfFire;
+    public abstract Transform OriginPosition { get; }
+    public abstract Sprite Sprite { get; }
 
-    [SerializeField]
-    private bool fullAuto;
+    public abstract bool CanShoot();
 
-    [SerializeField]
-    private Bullet bullet;
-
-    public Sprite Sprite => sprite;
-    public int Damage => damage;
-    public float RateOfFire => rateOfFire;
-    public bool FullAuto => fullAuto;
-    public Bullet Bullet => bullet;
+    public abstract Bullet Fire(uint bulletId, Vector2 originPosition, Vector2 targetPosition, Player player);
 }

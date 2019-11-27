@@ -5,7 +5,7 @@ using UnityEngine;
 namespace BeardedManStudios.Forge.Networking.Generated
 {
 	[GeneratedRPC("{\"types\":[[][\"int\"][\"uint\", \"Vector2\", \"Vector2\"][\"uint\"][][][\"int\"]]")]
-	[GeneratedRPCVariableNames("{\"types\":[[][\"damage\"][\"bulletId\", \"position\", \"direction\"][\"bulletId\"][][][\"weaponIndex\"]]")]
+	[GeneratedRPCVariableNames("{\"types\":[[][\"damage\"][\"bulletId\", \"originPosition\", \"targetPosition\"][\"bulletId\"][][][\"index\"]]")]
 	public abstract partial class PlayerBehavior : NetworkBehavior
 	{
 		public const byte RPC_LOCAL_PLAYER_SPAWNED = 0 + 5;
@@ -14,7 +14,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		public const byte RPC_DESTROY_BULLET = 3 + 5;
 		public const byte RPC_ON_DEATH = 4 + 5;
 		public const byte RPC_ON_RESPAWN = 5 + 5;
-		public const byte RPC_SET_WEAPON_INDEX = 6 + 5;
+		public const byte RPC_SET_WEAPON = 6 + 5;
 		
 		public PlayerNetworkObject networkObject = null;
 
@@ -34,7 +34,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			networkObject.RegisterRpc("DestroyBullet", DestroyBullet, typeof(uint));
 			networkObject.RegisterRpc("OnDeath", OnDeath);
 			networkObject.RegisterRpc("OnRespawn", OnRespawn);
-			networkObject.RegisterRpc("SetWeaponIndex", SetWeaponIndex, typeof(int));
+			networkObject.RegisterRpc("SetWeapon", SetWeapon, typeof(int));
 
 			networkObject.onDestroy += DestroyGameObject;
 
@@ -138,7 +138,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		/// <summary>
 		/// Arguments:
 		/// </summary>
-		public abstract void SetWeaponIndex(RpcArgs args);
+		public abstract void SetWeapon(RpcArgs args);
 
 		// DO NOT TOUCH, THIS GETS GENERATED PLEASE EXTEND THIS CLASS IF YOU WISH TO HAVE CUSTOM CODE ADDITIONS
 	}
