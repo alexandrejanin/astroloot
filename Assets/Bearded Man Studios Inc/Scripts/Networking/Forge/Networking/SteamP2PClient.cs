@@ -88,7 +88,8 @@ namespace BeardedManStudios.Forge.Networking
 		/// <param name="messageGroupId">The Binary.GroupId of the massage, use MessageGroupIds.START_OF_GENERIC_IDS + desired_id</param>
 		/// <param name="reliable">True if message must be delivered</param>
 		/// <param name="objectsToSend">Array of vars to be sent, read them with Binary.StreamData.GetBasicType<typeOfObject>()</param>
-		public virtual void Send(Receivers receivers = Receivers.Server, int messageGroupId = MessageGroupIds.START_OF_GENERIC_IDS, bool reliable = false , params object[] objectsToSend)
+		public virtual void Send(Receivers receivers = Receivers.Server, int messageGroupId =
+ MessageGroupIds.START_OF_GENERIC_IDS, bool reliable = false , params object[] objectsToSend)
 		{
 			BMSByte data = ObjectMapper.BMSByte(objectsToSend);
 			Binary sendFrame = new Binary(Time.Timestep, false, data, receivers, messageGroupId, false);
@@ -176,7 +177,8 @@ namespace BeardedManStudios.Forge.Networking
 					}
 				});
 
-                m_CallbackP2PSessionConnectFail = Callback<P2PSessionConnectFail_t>.Create((P2PSessionConnectFail_t data) =>
+                m_CallbackP2PSessionConnectFail =
+ Callback<P2PSessionConnectFail_t>.Create((P2PSessionConnectFail_t data) =>
                 {
                     if(data.m_eP2PSessionError > 0)
                     {
@@ -227,7 +229,8 @@ namespace BeardedManStudios.Forge.Networking
 					CloseConnection();
 				else
 				{
-					var frame = new ConnectionClose(Time.Timestep, false, Receivers.Server, MessageGroupIds.DISCONNECT, false);
+					var frame =
+ new ConnectionClose(Time.Timestep, false, Receivers.Server, MessageGroupIds.DISCONNECT, false);
 					Send(frame, true);
 					Task.Queue(CloseConnection, 1000);
 				}

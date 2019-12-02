@@ -2,11 +2,9 @@
 using UnityEngine;
 
 public class WeaponPickupSpawner : MonoBehaviour {
-    [SerializeField]
-    private Transform spawnPointsParent;
+    [SerializeField] private Transform spawnPointsParent;
 
-    [SerializeField]
-    private float delay = 5f;
+    [SerializeField] private float delay = 5f;
 
     private float timeSinceLastSpawn;
 

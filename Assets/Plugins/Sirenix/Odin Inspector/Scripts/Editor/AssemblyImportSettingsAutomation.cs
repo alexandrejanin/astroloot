@@ -6,16 +6,15 @@
 
 #if UNITY_EDITOR && UNITY_5_6_OR_NEWER
 
-namespace Sirenix.OdinInspector.Editor
-{
+namespace Sirenix.OdinInspector.Editor {
     using System.Collections.Generic;
     using Sirenix.Serialization.Utilities.Editor;
     using Sirenix.Utilities;
     using UnityEditor;
     using UnityEditor.Build;
-
 #if UNITY_2018_1_OR_NEWER
     using UnityEditor.Build.Reporting;
+
 #endif
 
     public class AssemblyImportSettingsAutomation :
@@ -25,13 +24,13 @@ namespace Sirenix.OdinInspector.Editor
         IPreprocessBuild
 #endif
     {
+        public int callbackOrder {
+            get { return -1500; }
+        }
 
-        public int callbackOrder { get { return -1500; } }
-
-        private static void ConfigureImportSettings()
-        {
-            if (EditorOnlyModeConfig.Instance.IsEditorOnlyModeEnabled() || ImportSettingsConfig.Instance.AutomateBeforeBuild == false)
-            {
+        private static void ConfigureImportSettings() {
+            if (EditorOnlyModeConfig.Instance.IsEditorOnlyModeEnabled() ||
+                ImportSettingsConfig.Instance.AutomateBeforeBuild == false) {
                 return;
             }
 
@@ -41,65 +40,53 @@ namespace Sirenix.OdinInspector.Editor
             var aotAssemblies = new List<string>();
             var jitAssemblies = new List<string>();
             var paths = AssetDatabase.GetAllAssetPaths();
-            for (int i = 0; i < paths.Length; i++)
-            {
+            for (int i = 0; i < paths.Length; i++) {
                 var p = paths[i];
-                if (p.StartsWith(assemblyDir))
-                {
+                if (p.StartsWith(assemblyDir)) {
                     if (!p.EndsWith(".dll", System.StringComparison.InvariantCultureIgnoreCase)) continue;
-                    if (p.StartsWith(aotDir))
-                    {
+                    if (p.StartsWith(aotDir)) {
                         aotAssemblies.Add(p);
-                    }
-                    else if (p.StartsWith(jitDir))
-                    {
+                    } else if (p.StartsWith(jitDir)) {
                         jitAssemblies.Add(p);
                     }
                 }
             }
 
             AssetDatabase.StartAssetEditing();
-            try
-            {
+            try {
                 var platform = EditorUserBuildSettings.activeBuildTarget;
 
                 if (AssemblyImportSettingsUtilities.IsJITSupported(
                     platform,
                     AssemblyImportSettingsUtilities.GetCurrentScriptingBackend(),
-                    AssemblyImportSettingsUtilities.GetCurrentApiCompatibilityLevel()))
-                {
+                    AssemblyImportSettingsUtilities.GetCurrentApiCompatibilityLevel())) {
                     ApplyImportSettings(platform, aotAssemblies.ToArray(), OdinAssemblyImportSettings.ExcludeFromAll);
-                    ApplyImportSettings(platform, jitAssemblies.ToArray(), OdinAssemblyImportSettings.IncludeInBuildOnly);
-                }
-                else
-                {
-                    ApplyImportSettings(platform, aotAssemblies.ToArray(), OdinAssemblyImportSettings.IncludeInBuildOnly);
+                    ApplyImportSettings(platform, jitAssemblies.ToArray(),
+                        OdinAssemblyImportSettings.IncludeInBuildOnly);
+                } else {
+                    ApplyImportSettings(platform, aotAssemblies.ToArray(),
+                        OdinAssemblyImportSettings.IncludeInBuildOnly);
                     ApplyImportSettings(platform, jitAssemblies.ToArray(), OdinAssemblyImportSettings.ExcludeFromAll);
                 }
-            }
-            finally
-            {
+            } finally {
                 AssetDatabase.StopAssetEditing();
             }
         }
 
-        private static void ApplyImportSettings(BuildTarget platform, string[] assemblyPaths, OdinAssemblyImportSettings importSettings)
-        {
-            for (int i = 0; i < assemblyPaths.Length; i++)
-            {
+        private static void ApplyImportSettings(BuildTarget platform, string[] assemblyPaths,
+            OdinAssemblyImportSettings importSettings) {
+            for (int i = 0; i < assemblyPaths.Length; i++) {
                 AssemblyImportSettingsUtilities.SetAssemblyImportSettings(platform, assemblyPaths[i], importSettings);
             }
         }
 
 #if UNITY_2018_1_OR_NEWER
 
-        void IPreprocessBuildWithReport.OnPreprocessBuild(BuildReport report)
-        {
+        void IPreprocessBuildWithReport.OnPreprocessBuild(BuildReport report) {
             ConfigureImportSettings();
         }
 
 #else
-
         void IPreprocessBuild.OnPreprocessBuild(BuildTarget target, string path)
         {
             ConfigureImportSettings();

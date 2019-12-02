@@ -2,17 +2,13 @@
 using UnityEngine;
 
 public class PlatformController : RaycastController {
-    [SerializeField]
-    private LayerMask collisionMask;
+    [SerializeField] private LayerMask collisionMask;
 
-    [SerializeField]
-    private float speed = 1f;
+    [SerializeField] private float speed = 1f;
 
-    [SerializeField]
-    private bool loop;
+    [SerializeField] private bool loop;
 
-    [SerializeField]
-    private Vector3[] waypoints;
+    [SerializeField] private Vector3[] waypoints;
 
     private Vector3 startPosition;
     private int lastWaypointIndex;
@@ -20,7 +16,9 @@ public class PlatformController : RaycastController {
 
     private readonly HashSet<Transform> movedTransforms = new HashSet<Transform>();
     private readonly List<PassengerMovement> passengerMovement = new List<PassengerMovement>();
-    private readonly Dictionary<Transform, CharacterController2D> passengerControllers = new Dictionary<Transform, CharacterController2D>();
+
+    private readonly Dictionary<Transform, CharacterController2D> passengerControllers =
+        new Dictionary<Transform, CharacterController2D>();
 
     protected override void Awake() {
         base.Awake();
@@ -46,7 +44,8 @@ public class PlatformController : RaycastController {
         var waypointLength = Vector3.Distance(waypoints[lastWaypointIndex], waypoints[nextWaypointIndex]);
         waypointProgress += Time.deltaTime * speed / waypointLength;
 
-        var nextPos = Vector3.Lerp(waypoints[lastWaypointIndex] + startPosition, waypoints[nextWaypointIndex] + startPosition, waypointProgress);
+        var nextPos = Vector3.Lerp(waypoints[lastWaypointIndex] + startPosition,
+            waypoints[nextWaypointIndex] + startPosition, waypointProgress);
 
         if (waypointProgress >= 1) {
             lastWaypointIndex = nextWaypointIndex;
@@ -63,7 +62,8 @@ public class PlatformController : RaycastController {
     private void MovePassengers(bool beforePlatformMoved) {
         foreach (var passenger in passengerMovement) {
             if (!passengerControllers.ContainsKey(passenger.transform))
-                passengerControllers.Add(passenger.transform, passenger.transform.GetComponent<CharacterController2D>());
+                passengerControllers.Add(passenger.transform,
+                    passenger.transform.GetComponent<CharacterController2D>());
 
             if (passenger.moveBeforePlatform == beforePlatformMoved) {
                 passengerControllers[passenger.transform].Move(passenger.velocity, passenger.standingOnPlatform);
@@ -197,7 +197,8 @@ public class PlatformController : RaycastController {
         public readonly bool standingOnPlatform;
         public readonly bool moveBeforePlatform;
 
-        public PassengerMovement(Transform transform, Vector3 velocity, bool standingOnPlatform, bool moveBeforePlatform) {
+        public PassengerMovement(Transform transform, Vector3 velocity, bool standingOnPlatform,
+            bool moveBeforePlatform) {
             this.transform = transform;
             this.velocity = velocity;
             this.standingOnPlatform = standingOnPlatform;

@@ -22,220 +22,198 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
-namespace BeardedManStudios.Templating
-{
-	public sealed class TemplateSystem
-	{
-		private string targetTemplate = string.Empty;
-		private Dictionary<string, object> replaces = new Dictionary<string, object>();
-		private enum State
-		{
-			None = 0x0,
-			ForEach = 0x1,
-			ForEvery = 0x2
-		}
-		private State state = State.None;
-		private object[] iteratee;
-		private int currentIterateeIndex = 0;
-		private int loopStart = -1;
-		private bool emptyArray = false;
+namespace BeardedManStudios.Templating {
+    public sealed class TemplateSystem {
+        private string targetTemplate = string.Empty;
+        private Dictionary<string, object> replaces = new Dictionary<string, object>();
 
-		public TemplateSystem(string text)
-		{
-			targetTemplate = text;
-		}
+        private enum State {
+            None = 0x0,
+            ForEach = 0x1,
+            ForEvery = 0x2
+        }
 
-		public void AddVariable(string key, object val)
-		{
-			replaces.Add(key, val);
-		}
+        private State state = State.None;
+        private object[] iteratee;
+        private int currentIterateeIndex = 0;
+        private int loopStart = -1;
+        private bool emptyArray = false;
 
-		public string Parse()
-		{
-			List<string> lines = new List<string>(targetTemplate.Replace("\r\n", "\n").Split('\n'));
+        public TemplateSystem(string text) {
+            targetTemplate = text;
+        }
 
-			List<string> finalLines = new List<string>(lines.Count);
+        public void AddVariable(string key, object val) {
+            replaces.Add(key, val);
+        }
 
-			int offset = 0;
-			bool parsed = false;
-			bool skipLine = false;
-			State foundState = State.None;
-			StringBuilder sb;
-			for (int i = 0; i < lines.Count; i++)
-			{
-				parsed = false;
-				skipLine = false;
-				sb = new StringBuilder(lines[i]);
+        public string Parse() {
+            List<string> lines = new List<string>(targetTemplate.Replace("\r\n", "\n").Split('\n'));
 
-				while (true)
-				{
-					string current = sb.ToString();
-					int parseStart = current.IndexOf(">:", offset);
-					if (parseStart < 0)
-						break;
+            List<string> finalLines = new List<string>(lines.Count);
 
-					parseStart += 2;
-					int parseEnd = current.IndexOf(":<", offset + parseStart);
+            int offset = 0;
+            bool parsed = false;
+            bool skipLine = false;
+            State foundState = State.None;
+            StringBuilder sb;
+            for (int i = 0; i < lines.Count; i++) {
+                parsed = false;
+                skipLine = false;
+                sb = new StringBuilder(lines[i]);
 
-					if (parseEnd < 0)
-						throw new Exception("There was a parse start but no end on line " + (i + 1));
+                while (true) {
+                    string current = sb.ToString();
+                    int parseStart = current.IndexOf(">:", offset);
+                    if (parseStart < 0)
+                        break;
 
-					string contents = current.Substring(parseStart, parseEnd - parseStart);
+                    parseStart += 2;
+                    int parseEnd = current.IndexOf(":<", offset + parseStart);
 
-					sb.Remove(parseStart - 2, parseEnd - parseStart + 4);
+                    if (parseEnd < 0)
+                        throw new Exception("There was a parse start but no end on line " + (i + 1));
 
-					if (CheckState(contents, ref foundState))
-					{
-						skipLine = true;
+                    string contents = current.Substring(parseStart, parseEnd - parseStart);
 
-						// If we have left the loop
-						if (foundState == State.None)
-						{
-							if (loopStart == -1)
-								continue;
+                    sb.Remove(parseStart - 2, parseEnd - parseStart + 4);
 
-							if (++currentIterateeIndex >= iteratee.Length)
-							{
-								state &= ~(State.ForEach | State.ForEvery);
-								iteratee = null;
-								loopStart = -1;
-								emptyArray = false;
-							}
-							else
-							{
-								i = loopStart - 1;
-								break;
-							}
-						}
-						else if (foundState == State.ForEach || foundState == State.ForEvery)
-							loopStart = i + 1;
+                    if (CheckState(contents, ref foundState)) {
+                        skipLine = true;
 
-						continue;
-					}
+                        // If we have left the loop
+                        if (foundState == State.None) {
+                            if (loopStart == -1)
+                                continue;
 
-					if (!emptyArray)
-						sb.Insert(parseStart - 2, ParseLine(contents));
+                            if (++currentIterateeIndex >= iteratee.Length) {
+                                state &= ~(State.ForEach | State.ForEvery);
+                                iteratee = null;
+                                loopStart = -1;
+                                emptyArray = false;
+                            } else {
+                                i = loopStart - 1;
+                                break;
+                            }
+                        } else if (foundState == State.ForEach || foundState == State.ForEvery)
+                            loopStart = i + 1;
 
-					parsed = true;
-				}
+                        continue;
+                    }
 
-				string built = sb.ToString();
+                    if (!emptyArray)
+                        sb.Insert(parseStart - 2, ParseLine(contents));
 
-				if (parsed && built.Trim().Length == 0)
-					lines.RemoveAt(i--);
-				else if (!skipLine && !emptyArray)
-					finalLines.Add(built);
-			}
+                    parsed = true;
+                }
 
-			return string.Join(Environment.NewLine, finalLines.ToArray());
-		}
+                string built = sb.ToString();
 
-		private bool CheckState(string contents, ref State foundState)
-		{
-			if (contents.StartsWith("ENDFOREACH"))
-			{
-				if ((state & State.ForEach) == 0)
-					throw new Exception("A foreach has ended before the start of the loop");
+                if (parsed && built.Trim().Length == 0)
+                    lines.RemoveAt(i--);
+                else if (!skipLine && !emptyArray)
+                    finalLines.Add(built);
+            }
 
-				foundState = State.None;
-				return true;
-			}
-			if (contents.StartsWith("ENDFOREVERY"))
-			{
-				if ((state & State.ForEvery) == 0)
-					throw new Exception("A foreach has ended before the start of the loop");
+            return string.Join(Environment.NewLine, finalLines.ToArray());
+        }
 
-				foundState = State.None;
-				return true;
-			}
-			else if (contents.StartsWith("FOREACH"))
-			{
-				if ((state & State.ForEach) != 0 || (state & State.ForEvery) != 0)
-					throw new Exception("A loop is already in execution and in this version nested foreach loops are not allowed");
+        private bool CheckState(string contents, ref State foundState) {
+            if (contents.StartsWith("ENDFOREACH")) {
+                if ((state & State.ForEach) == 0)
+                    throw new Exception("A foreach has ended before the start of the loop");
 
-				state |= State.ForEach;
+                foundState = State.None;
+                return true;
+            }
 
-				string iterateeName = contents.TrimStart("FOREACH ".ToCharArray());
+            if (contents.StartsWith("ENDFOREVERY")) {
+                if ((state & State.ForEvery) == 0)
+                    throw new Exception("A foreach has ended before the start of the loop");
 
-				if (!replaces.ContainsKey(iterateeName))
-					throw new Exception("No variable with the name " + iterateeName + " could be located");
+                foundState = State.None;
+                return true;
+            } else if (contents.StartsWith("FOREACH")) {
+                if ((state & State.ForEach) != 0 || (state & State.ForEvery) != 0)
+                    throw new Exception(
+                        "A loop is already in execution and in this version nested foreach loops are not allowed");
 
-				iteratee = (object[])replaces[iterateeName];
+                state |= State.ForEach;
 
-				if (iteratee.Length == 0)
-					emptyArray = true;
+                string iterateeName = contents.TrimStart("FOREACH ".ToCharArray());
 
-				currentIterateeIndex = 0;
-				foundState = State.ForEach;
-				return true;
-			}
-			else if (contents.StartsWith("FOREVERY"))
-			{
-				if ((state & State.ForEach) != 0 || (state & State.ForEvery) != 0)
-					throw new Exception("A loop is already in execution and in this version nested foreach loops are not allowed");
+                if (!replaces.ContainsKey(iterateeName))
+                    throw new Exception("No variable with the name " + iterateeName + " could be located");
 
-				state |= State.ForEvery;
+                iteratee = (object[]) replaces[iterateeName];
 
-				string iterateeName = contents.TrimStart("FOREVERY ".ToCharArray());
+                if (iteratee.Length == 0)
+                    emptyArray = true;
 
-				if (!replaces.ContainsKey(iterateeName))
-					throw new Exception("No variable with the name " + iterateeName + " could be located");
+                currentIterateeIndex = 0;
+                foundState = State.ForEach;
+                return true;
+            } else if (contents.StartsWith("FOREVERY")) {
+                if ((state & State.ForEach) != 0 || (state & State.ForEvery) != 0)
+                    throw new Exception(
+                        "A loop is already in execution and in this version nested foreach loops are not allowed");
 
-				iteratee = (object[])replaces[iterateeName];
+                state |= State.ForEvery;
 
-				if (iteratee.Length == 0 || ((object[])iteratee[0]).Length == 0)
-					emptyArray = true;
+                string iterateeName = contents.TrimStart("FOREVERY ".ToCharArray());
 
-				currentIterateeIndex = 0;
-				foundState = State.ForEvery;
-				return true;
-			}
+                if (!replaces.ContainsKey(iterateeName))
+                    throw new Exception("No variable with the name " + iterateeName + " could be located");
 
-			return false;
-		}
+                iteratee = (object[]) replaces[iterateeName];
 
-		private string ParseLine(string contents)
-		{
-			if (contents.StartsWith("[") && contents.EndsWith("]"))
-			{
-				if (contents == "[i]" && iteratee != null)
-					return FormatReturn(iteratee[currentIterateeIndex]);
-				else if (contents == "[idx]" && iteratee != null)
-					return FormatReturn(currentIterateeIndex);
-				else
-				{
-					var idxStr = contents.TrimStart('[').TrimEnd(']');
-					int idx = -1;
-					if (int.TryParse(idxStr, out idx))
-						return FormatReturn(((object[])iteratee[currentIterateeIndex])[idx]);
-					else
-						throw new Exception("The index " + idxStr + " is not an integer");
-				}
-			}
-			else if (contents == "ELSEIF")
-			{
-				if (currentIterateeIndex == 0)
-					return "if";
-				else
-					return "else if";
-			}
+                if (iteratee.Length == 0 || ((object[]) iteratee[0]).Length == 0)
+                    emptyArray = true;
 
-			if (replaces.ContainsKey(contents))
-				return FormatReturn(replaces[contents]);
+                currentIterateeIndex = 0;
+                foundState = State.ForEvery;
+                return true;
+            }
 
-			return string.Empty;
-		}
+            return false;
+        }
 
-		private string FormatReturn(object data)
-		{
-			if (data is bool)
-				return data.ToString().ToLower();
-			else if (data is float)
-			{
-				float fData = (float) data;
-				return fData.ToString(CultureInfo.InvariantCulture) + "f";
-			}
-			return data.ToString();
-		}
-	}
+        private string ParseLine(string contents) {
+            if (contents.StartsWith("[") && contents.EndsWith("]")) {
+                if (contents == "[i]" && iteratee != null)
+                    return FormatReturn(iteratee[currentIterateeIndex]);
+                else if (contents == "[idx]" && iteratee != null)
+                    return FormatReturn(currentIterateeIndex);
+                else {
+                    var idxStr = contents.TrimStart('[').TrimEnd(']');
+                    int idx = -1;
+                    if (int.TryParse(idxStr, out idx))
+                        return FormatReturn(((object[]) iteratee[currentIterateeIndex])[idx]);
+                    else
+                        throw new Exception("The index " + idxStr + " is not an integer");
+                }
+            } else if (contents == "ELSEIF") {
+                if (currentIterateeIndex == 0)
+                    return "if";
+                else
+                    return "else if";
+            }
+
+            if (replaces.ContainsKey(contents))
+                return FormatReturn(replaces[contents]);
+
+            return string.Empty;
+        }
+
+        private string FormatReturn(object data) {
+            if (data is bool)
+                return data.ToString().ToLower();
+            else if (data is float) {
+                float fData = (float) data;
+                return fData.ToString(CultureInfo.InvariantCulture) + "f";
+            }
+
+            return data.ToString();
+        }
+    }
 }

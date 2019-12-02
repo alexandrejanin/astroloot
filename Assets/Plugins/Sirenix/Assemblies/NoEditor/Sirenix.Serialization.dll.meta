@@ -12,27 +12,27 @@ PluginImporter:
   validateReferences: 1
   platformData:
   - first:
-      '': Linux
+      : Linux
     second:
       enabled: 1
       settings: {}
   - first:
-      '': LinuxUniversal
+      : LinuxUniversal
     second:
       enabled: 1
       settings: {}
   - first:
-      '': OSXIntel
+      : OSXIntel
     second:
       enabled: 1
       settings: {}
   - first:
-      '': OSXIntel64
+      : OSXIntel64
     second:
       enabled: 1
       settings: {}
   - first:
-      '': PSM
+      : PSM
     second:
       enabled: 0
       settings: {}
@@ -105,7 +105,7 @@ PluginImporter:
   - first:
       Standalone: Win64
     second:
-      enabled: 1
+      enabled: 0
       settings:
         CPU: 
   - first:

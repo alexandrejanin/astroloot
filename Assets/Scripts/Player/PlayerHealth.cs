@@ -3,8 +3,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(Player))]
 public class PlayerHealth : MonoBehaviour {
-    [SerializeField]
-    private int maxHealth;
+    [SerializeField] private int maxHealth;
 
     public int MaxHealth => maxHealth;
     public int Health => player.networkObject.health;

@@ -1,11 +1,9 @@
 ﻿using UnityEngine;
 
 public class Bullet : MonoBehaviour {
+    [SerializeField] private float speed = 20;
 
-    [SerializeField]
-    private float speed = 20;
-
-    public int Damage { set; private get; }
+    public int Damage { set; get; }
 
     public Player Player { set; private get; }
 
@@ -21,17 +19,18 @@ public class Bullet : MonoBehaviour {
         if (!active || !Player.IsLocalPlayer)
             return;
 
-        var player = other.gameObject.GetComponent<Player>();
-
-        if (!player) {
+        if (other.gameObject.isStatic) {
             SendDestroyRequest();
             return;
         }
 
-        if (player.IsLocalPlayer)
+        var hurtBox = other.gameObject.GetComponent<HurtBox>();
+
+        if (!hurtBox || hurtBox.Player == Player)
             return;
 
-        player.Damage(Damage);
+        hurtBox.Hit(this);
+
         SendDestroyRequest();
     }
 

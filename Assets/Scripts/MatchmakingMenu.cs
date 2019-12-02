@@ -5,14 +5,11 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MatchmakingMenu : MonoBehaviour {
-    [SerializeField]
-    private InputField ipAdressInput, portInput;
+    [SerializeField] private InputField ipAdressInput, portInput;
 
-    [SerializeField]
-    private NetworkManager networkManagerPrefab;
+    [SerializeField] private NetworkManager networkManagerPrefab;
 
-    [SerializeField]
-    private string gameScene;
+    [SerializeField] private string gameScene;
 
     private NetworkManager networkManager;
 

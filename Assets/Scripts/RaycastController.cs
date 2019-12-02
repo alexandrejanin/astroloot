@@ -3,11 +3,9 @@ using UnityEngine;
 
 [RequireComponent(typeof(BoxCollider2D))]
 public abstract class RaycastController : MonoBehaviour {
-    [SerializeField, MinValue(0)]
-    private float raySpacing = .1f;
+    [SerializeField, MinValue(0)] private float raySpacing = .1f;
 
-    [SerializeField, MinValue(0)]
-    protected float skinWidth = .015f;
+    [SerializeField, MinValue(0)] protected float skinWidth = .015f;
 
     protected int horizontalRayCount;
     protected int verticalRayCount;
@@ -15,8 +13,7 @@ public abstract class RaycastController : MonoBehaviour {
     protected float horizontalRaySpacing;
     protected float verticalRaySpacing;
 
-    protected BoxCollider2D collider;
-    public BoxCollider2D Collider => collider;
+    private BoxCollider2D collider;
 
     protected RaycastOrigins raycastOrigins;
 

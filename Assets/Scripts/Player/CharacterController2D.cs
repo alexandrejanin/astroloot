@@ -2,11 +2,9 @@
 
 [RequireComponent(typeof(BoxCollider2D))]
 public class CharacterController2D : RaycastController {
-    [SerializeField]
-    protected LayerMask collisionMask;
+    [SerializeField] protected LayerMask collisionMask;
 
-    [SerializeField]
-    private float maxSlopeAngle = 50;
+    [SerializeField] private float maxSlopeAngle = 50;
 
     private Vector2 moveAmountOld;
 
@@ -123,7 +121,8 @@ public class CharacterController2D : RaycastController {
                 rayLength = hit.distance;
 
                 if (collisions.climbingSlope) {
-                    moveAmount.x = moveAmount.y / Mathf.Tan(collisions.slopeAngle * Mathf.Deg2Rad) * Mathf.Sign(moveAmount.x);
+                    moveAmount.x = moveAmount.y / Mathf.Tan(collisions.slopeAngle * Mathf.Deg2Rad) *
+                                   Mathf.Sign(moveAmount.x);
                 }
 
                 collisions.above = yDirection == 1;
@@ -164,8 +163,10 @@ public class CharacterController2D : RaycastController {
     }
 
     private void DescendSlope(ref Vector2 moveAmount) {
-        var maxSlopeHitLeft = Physics2D.Raycast(raycastOrigins.bottomLeft, Vector2.down, Mathf.Abs(moveAmount.y) + skinWidth, collisionMask);
-        var maxSlopeHitRight = Physics2D.Raycast(raycastOrigins.bottomRight, Vector2.down, Mathf.Abs(moveAmount.y) + skinWidth, collisionMask);
+        var maxSlopeHitLeft = Physics2D.Raycast(raycastOrigins.bottomLeft, Vector2.down,
+            Mathf.Abs(moveAmount.y) + skinWidth, collisionMask);
+        var maxSlopeHitRight = Physics2D.Raycast(raycastOrigins.bottomRight, Vector2.down,
+            Mathf.Abs(moveAmount.y) + skinWidth, collisionMask);
         if (maxSlopeHitLeft ^ maxSlopeHitRight) {
             SlideDownSlope(maxSlopeHitLeft, ref moveAmount);
             SlideDownSlope(maxSlopeHitRight, ref moveAmount);
@@ -201,7 +202,8 @@ public class CharacterController2D : RaycastController {
             var slopeAngle = Vector2.Angle(hit.normal, Vector2.up);
 
             if (slopeAngle > maxSlopeAngle) {
-                moveAmount.x = hit.normal.x * (Mathf.Abs(moveAmount.y) - hit.distance) / Mathf.Tan(slopeAngle * Mathf.Deg2Rad);
+                moveAmount.x = hit.normal.x * (Mathf.Abs(moveAmount.y) - hit.distance) /
+                               Mathf.Tan(slopeAngle * Mathf.Deg2Rad);
                 collisions.slidingDownSlope = true;
                 collisions.slopeAngle = slopeAngle;
                 collisions.slopeNormal = hit.normal;

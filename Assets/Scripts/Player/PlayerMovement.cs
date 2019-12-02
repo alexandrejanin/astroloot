@@ -5,20 +5,15 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerInput))]
 [RequireComponent(typeof(CharacterController2D))]
 public class PlayerMovement : MonoBehaviour {
-    [SerializeField, MinValue(0)]
-    private float runSpeed = 5f, wallSlideSpeed = 2f;
+    [SerializeField, MinValue(0)] private float runSpeed = 5f, wallSlideSpeed = 2f;
 
-    [SerializeField, MinValue(0)]
-    private float accelerationTimeGrounded = .1f, accelerationTimeAirborne = .2f;
+    [SerializeField, MinValue(0)] private float accelerationTimeGrounded = .1f, accelerationTimeAirborne = .2f;
 
-    [SerializeField, MinValue(0)]
-    private float minJumpHeight = 1f, maxJumpHeight = 5f, timeToApex = .4f;
+    [SerializeField, MinValue(0)] private float minJumpHeight = 1f, maxJumpHeight = 5f, timeToApex = .4f;
 
-    [SerializeField]
-    private Vector2 wallJumpTowards, wallJumpNeutral, wallJumpAway;
+    [SerializeField] private Vector2 wallJumpTowards, wallJumpNeutral, wallJumpAway;
 
-    [SerializeField, MinValue(0)]
-    private float wallStickTime = .25f;
+    [SerializeField, MinValue(0)] private float wallStickTime = .25f;
 
     private float timeToWallUnstick;
 
@@ -112,7 +107,8 @@ public class PlayerMovement : MonoBehaviour {
         wallDirX = Controller.Collisions.left ? -1 : 1;
         wallSliding = false;
 
-        if ((Controller.Collisions.left || Controller.Collisions.right) && !Controller.Collisions.below && velocity.y < 0) {
+        if ((Controller.Collisions.left || Controller.Collisions.right) && !Controller.Collisions.below &&
+            velocity.y < 0) {
             wallSliding = true;
 
             if (input.MovementInput.x == wallDirX || timeToWallUnstick > 0) {

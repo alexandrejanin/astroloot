@@ -3,13 +3,14 @@ using UnityEngine;
 
 [RequireComponent(typeof(PlayerInput))]
 public class PlayerCombat : MonoBehaviour {
-    [SerializeField]
-    private Transform weaponParent;
+    [SerializeField] private Transform weaponParent;
 
     // The position the player is aiming at, in world space.
     public Vector2 TargetPosition { get; private set; }
 
     private Weapon weapon;
+
+    public Weapon Weapon => weapon;
 
     private new Camera camera;
     private WeaponManager weaponManager;
@@ -60,21 +61,25 @@ public class PlayerCombat : MonoBehaviour {
             Destroy(weapon.gameObject);
 
         weapon = Instantiate(weaponManager.GetWeapon(index), weaponParent);
+        weapon.Player = player;
     }
 
 
     public void OnPrimaryFireHeld() {
-        if (weapon && player.IsAlive)
-            if (weapon.CanShoot()) {
-                player.Shoot(nextBulletId, weapon.OriginPosition.position, TargetPosition);
-                nextBulletId++;
-            }
+        if (!weapon || !player.IsAlive)
+            return;
+
+        if (weapon.CanShoot()) {
+            player.Shoot(nextBulletId, weapon.OriginPosition.position, TargetPosition);
+            nextBulletId++;
+        }
     }
 
     // Runs on all clients when this player shoots
     public void Shoot(uint bulletId, Vector2 originPosition, Vector2 targetPosition) {
-        var bullet = weapon.Fire(bulletId, originPosition, targetPosition, player);
-        bullets.Add(bulletId, bullet);
+        var bullet = weapon.Fire(bulletId, originPosition, targetPosition);
+        if (bullet != null)
+            bullets.Add(bulletId, bullet);
     }
 
     public void DestroyBullet(uint bulletId) {

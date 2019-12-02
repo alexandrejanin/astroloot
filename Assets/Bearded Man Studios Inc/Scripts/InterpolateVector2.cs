@@ -18,25 +18,21 @@
 \------------------------------+-----------------------------*/
 
 
-
 using UnityEngine;
 
-namespace BeardedManStudios.Forge.Networking.Unity
-{
-	public struct InterpolateVector2 : IInterpolator<Vector2>
-	{
-		public Vector2 current;
-		public Vector2 target;
-		public float LerpT { get; set; }
-		public bool Enabled { get; set; }
-		public ulong Timestep { get; set; }
+namespace BeardedManStudios.Forge.Networking.Unity {
+    public struct InterpolateVector2 : IInterpolator<Vector2> {
+        public Vector2 current;
+        public Vector2 target;
+        public float LerpT { get; set; }
+        public bool Enabled { get; set; }
+        public ulong Timestep { get; set; }
 
-		public Vector2 Interpolate()
-		{
-			if (!Enabled) return target;
+        public Vector2 Interpolate() {
+            if (!Enabled) return target;
 
-			current = Vector2.Lerp(current, target, LerpT);
-			return current;
-		}
-	}
+            current = Vector2.Lerp(current, target, LerpT);
+            return current;
+        }
+    }
 }

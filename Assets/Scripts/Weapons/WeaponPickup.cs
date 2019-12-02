@@ -2,11 +2,9 @@
 using UnityEngine;
 
 public class WeaponPickup : WeaponPickupBehavior {
-    [SerializeField]
-    private SpriteRenderer spriteRenderer;
+    [SerializeField] private SpriteRenderer spriteRenderer;
 
-    [SerializeField]
-    private new BoxCollider2D collider;
+    [SerializeField] private new BoxCollider2D collider;
 
     private WeaponManager weaponManager;
 

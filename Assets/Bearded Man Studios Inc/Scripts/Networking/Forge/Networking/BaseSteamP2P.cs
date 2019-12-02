@@ -137,7 +137,8 @@ namespace BeardedManStudios.Forge.Networking
 			}
 
 			// Create an instance of a packet struct to be sent off to the packet manager
-			UDPPacket formattedPacket = new UDPPacket(reliable, endPacket, groupId, orderId, uniqueId, packet.CompressBytes(), confirmationPacket, receivers);
+			UDPPacket formattedPacket =
+ new UDPPacket(reliable, endPacket, groupId, orderId, uniqueId, packet.CompressBytes(), confirmationPacket, receivers);
 
 			return formattedPacket;
 		}

@@ -2,8 +2,7 @@
 using UnityEngine.UI;
 
 public class PlayerDebug : MonoBehaviour {
-    [SerializeField]
-    private Text text;
+    [SerializeField] private Text text;
 
     private PlayerMovement playerMovement;
 

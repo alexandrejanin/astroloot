@@ -33,7 +33,8 @@ namespace BeardedManStudios.Forge.Networking
 	{
 		private CommonServerLogic commonServerLogic;
 
-		public Dictionary<CSteamID, SteamNetworkingPlayer> steamPlayers = new Dictionary<CSteamID, SteamNetworkingPlayer>();
+		public Dictionary<CSteamID, SteamNetworkingPlayer> steamPlayers =
+ new Dictionary<CSteamID, SteamNetworkingPlayer>();
 
 		private SteamNetworkingPlayer currentReadingPlayer = null;
 
@@ -76,7 +77,8 @@ namespace BeardedManStudios.Forge.Networking
                     case 3:
                         e = "Target user isn't connected to Steam."; break;
                     case 4:
-                        e = "The connection timed out because the target user didn't respond, perhaps they aren't calling AcceptP2PSessionWithUser"; break;
+                        e =
+ "The connection timed out because the target user didn't respond, perhaps they aren't calling AcceptP2PSessionWithUser"; break;
                 }
 
                 if(e != null)
@@ -162,7 +164,8 @@ namespace BeardedManStudios.Forge.Networking
 		/// <param name="messageGroupId">The Binary.GroupId of the massage, use MessageGroupIds.START_OF_GENERIC_IDS + desired_id</param>
 		/// <param name="reliable">True if message must be delivered</param>
 		/// <param name="objectsToSend">Array of vars to be sent, read them with Binary.StreamData.GetBasicType<typeOfObject>()</param>
-		public virtual void Send(NetworkingPlayer player, int messageGroupId = MessageGroupIds.START_OF_GENERIC_IDS, bool reliable = false, params object[] objectsToSend)
+		public virtual void Send(NetworkingPlayer player, int messageGroupId =
+ MessageGroupIds.START_OF_GENERIC_IDS, bool reliable = false, params object[] objectsToSend)
 		{
 			BMSByte data = ObjectMapper.BMSByte(objectsToSend);
 			Binary sendFrame = new Binary(Time.Timestep, false, data, Receivers.Target, messageGroupId, false);
@@ -177,7 +180,8 @@ namespace BeardedManStudios.Forge.Networking
 		/// <param name="messageGroupId">The Binary.GroupId of the massage, use MessageGroupIds.START_OF_GENERIC_IDS + desired_id</param>
 		/// <param name="reliable">True if message must be delivered</param>
 		/// <param name="objectsToSend">Array of vars to be sent, read them with Binary.StreamData.GetBasicType<typeOfObject>()</param>
-		public virtual void Send(Receivers receivers = Receivers.Target, NetworkingPlayer playerToIgnore = null, int messageGroupId = MessageGroupIds.START_OF_GENERIC_IDS, bool reliable = false, params object[] objectsToSend)
+		public virtual void Send(Receivers receivers = Receivers.Target, NetworkingPlayer playerToIgnore =
+ null, int messageGroupId = MessageGroupIds.START_OF_GENERIC_IDS, bool reliable = false, params object[] objectsToSend)
 		{
 			BMSByte data = ObjectMapper.BMSByte(objectsToSend);
 			Binary sendFrame = new Binary(Time.Timestep, false, data, receivers, messageGroupId, false);
@@ -529,7 +533,8 @@ namespace BeardedManStudios.Forge.Networking
 		private void PacketSequenceComplete(BMSByte data, int groupId, byte receivers, bool isReliable)
 		{
 			// Pull the frame from the sent message
-			FrameStream frame = Factory.DecodeMessage(data.CompressBytes(), false, groupId, currentReadingPlayer, receivers);
+			FrameStream frame =
+ Factory.DecodeMessage(data.CompressBytes(), false, groupId, currentReadingPlayer, receivers);
 
 			if (isReliable)
 			{

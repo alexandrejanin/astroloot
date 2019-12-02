@@ -3,14 +3,11 @@ using UnityEngine;
 
 [RequireComponent(typeof(Camera))]
 public class CameraAim : MonoBehaviour {
-    [SerializeField]
-    private RectTransform cursor;
+    [SerializeField] private RectTransform cursor;
 
-    [SerializeField, MaxValue(0)]
-    private float zOffset = -10;
+    [SerializeField, MaxValue(0)] private float zOffset = -10;
 
-    [SerializeField, MinValue(0)]
-    private float maxOffset = 5;
+    [SerializeField, MinValue(0)] private float maxOffset = 5;
 
     private new Camera camera;
 

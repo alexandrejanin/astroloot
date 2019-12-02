@@ -4,8 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class SpawnController : MonoBehaviour {
-    [SerializeField]
-    private Transform spawnPointsParent;
+    [SerializeField] private Transform spawnPointsParent;
 
     private void Awake() {
         if (!NetworkManager.Instance) {

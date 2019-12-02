@@ -66,7 +66,8 @@ namespace BeardedManStudios.Forge.Networking
 
 		public SteamP2PPacketComposer() { }
 
-		public SteamP2PPacketComposer(BaseSteamP2P clientWorker, NetworkingPlayer player, FrameStream frame, bool reliable = false)
+		public SteamP2PPacketComposer(BaseSteamP2P clientWorker, NetworkingPlayer player, FrameStream frame, bool reliable
+ = false)
 		{
 #if DEEP_LOGGING
 			Logging.BMSLog.Log("---------------------------\n" + (new System.Diagnostics.StackTrace()).ToString() + "\nUNIQUE ID: " + frame.UniqueId.ToString() + "\n---------------------------");

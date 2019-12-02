@@ -3,11 +3,9 @@
 [RequireComponent(typeof(PlayerMovement))]
 [RequireComponent(typeof(PlayerCombat))]
 public class PlayerGraphics : MonoBehaviour {
-    [SerializeField]
-    private Transform body;
+    [SerializeField] private Transform body;
 
-    [SerializeField]
-    private Transform arm;
+    [SerializeField] private Transform arm;
 
     private Player player;
     private PlayerCombat playerCombat;
@@ -29,12 +27,18 @@ public class PlayerGraphics : MonoBehaviour {
             body.localEulerAngles.z
         );
 
-        var armAngle = Mathf.Rad2Deg * Mathf.Atan(-(arm.position.y - playerCombat.TargetPosition.y) / Mathf.Abs(arm.position.x - playerCombat.TargetPosition.x));
+        var armAngle = Mathf.Rad2Deg * Mathf.Atan(-(arm.position.y - playerCombat.TargetPosition.y) /
+                                                  Mathf.Abs(arm.position.x - playerCombat.TargetPosition.x));
 
-        arm.eulerAngles = new Vector3(
+        var armEulerAngles = new Vector3(
             arm.eulerAngles.x,
             arm.eulerAngles.y,
             armAngle
         );
+
+        if (playerCombat.Weapon)
+            armEulerAngles += playerCombat.Weapon.ArmAngle;
+
+        arm.eulerAngles = armEulerAngles;
     }
 }

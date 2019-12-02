@@ -18,25 +18,21 @@
 \------------------------------+-----------------------------*/
 
 
-
 using UnityEngine;
 
-namespace BeardedManStudios.Forge.Networking.Unity
-{
-	public struct InterpolateQuaternion : IInterpolator<Quaternion>
-	{
-		public Quaternion current;
-		public Quaternion target;
-		public float LerpT { get; set; }
-		public bool Enabled { get; set; }
-		public ulong Timestep { get; set; }
+namespace BeardedManStudios.Forge.Networking.Unity {
+    public struct InterpolateQuaternion : IInterpolator<Quaternion> {
+        public Quaternion current;
+        public Quaternion target;
+        public float LerpT { get; set; }
+        public bool Enabled { get; set; }
+        public ulong Timestep { get; set; }
 
-		public Quaternion Interpolate()
-		{
-			if (!Enabled) return target;
+        public Quaternion Interpolate() {
+            if (!Enabled) return target;
 
-			current = Quaternion.Slerp(current, target, LerpT);
-			return current;
-		}
-	}
+            current = Quaternion.Slerp(current, target, LerpT);
+            return current;
+        }
+    }
 }

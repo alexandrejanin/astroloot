@@ -3,22 +3,21 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace BeardedManStudios
-{
-    public class BufferManager
-    {
+namespace BeardedManStudios {
+    public class BufferManager {
         public readonly int bufferSize;
         public readonly int bufferPageSize;
         public readonly int maxBufferPages;
         private readonly object @lock = new object();
 
-        public long MaxBufferPoolSize { get { return bufferSize * (long)bufferPageSize * maxBufferPages; } }
+        public long MaxBufferPoolSize {
+            get { return bufferSize * (long) bufferPageSize * maxBufferPages; }
+        }
 
         private readonly ConcurrentQueue<ArraySegment<byte>> POOLED_BUFFERS = new ConcurrentQueue<ArraySegment<byte>>();
         private readonly byte[][] PAGES;
 
-        public BufferManager(int buffersSize = 4096, int bufferPageSize = 256, int maxBufferPages = 128)
-        {
+        public BufferManager(int buffersSize = 4096, int bufferPageSize = 256, int maxBufferPages = 128) {
             if (buffersSize < 1 || bufferPageSize < 1 || maxBufferPages < 1)
                 throw new ArgumentOutOfRangeException("Arguments must be positive.");
             this.bufferSize = buffersSize;
@@ -28,8 +27,7 @@ namespace BeardedManStudios
             AddPage();
         }
 
-        private int BinarySearchForFirstNull(Array array, int start, int end)
-        {
+        private int BinarySearchForFirstNull(Array array, int start, int end) {
             // No match
             if (start == end)
                 return -1;
@@ -48,15 +46,12 @@ namespace BeardedManStudios
             return BinarySearchForFirstNull(array, start, midpoint);
         }
 
-        private bool AddPage()
-        {
-
-            lock (@lock)
-            {
-                if (POOLED_BUFFERS.Count > 0)
-                {
+        private bool AddPage() {
+            lock (@lock) {
+                if (POOLED_BUFFERS.Count > 0) {
                     return true;
                 }
+
                 int index = BinarySearchForFirstNull(PAGES, 0, PAGES.Length);
                 if (index < 0)
                     return false; // PAGES is full
@@ -64,14 +59,12 @@ namespace BeardedManStudios
                 for (int i = 0; i < bufferPageSize; i++)
                     POOLED_BUFFERS.Enqueue(new ArraySegment<byte>(PAGES[index], i * bufferSize, bufferSize));
             }
-            
+
             return true;
         }
 
-        public bool TryTakeBuffer(out ArraySegment<byte> buffer)
-        {
-            do
-            {
+        public bool TryTakeBuffer(out ArraySegment<byte> buffer) {
+            do {
                 if (POOLED_BUFFERS.TryDequeue(out buffer))
                     return true;
             } while (AddPage());
@@ -79,8 +72,7 @@ namespace BeardedManStudios
             return false;
         }
 
-        public void ReturnBuffer(ArraySegment<byte> buffer)
-        {
+        public void ReturnBuffer(ArraySegment<byte> buffer) {
             POOLED_BUFFERS.Enqueue(buffer);
         }
     }

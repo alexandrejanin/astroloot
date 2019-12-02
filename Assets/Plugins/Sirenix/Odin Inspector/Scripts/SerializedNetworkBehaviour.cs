@@ -2,7 +2,8 @@
 // <copyright file="SerializedNetworkBehaviour.cs" company="Sirenix IVS">
 // Copyright (c) Sirenix IVS. All rights reserved.
 // </copyright>
-//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
+
 #if !UNITY_2019_1_OR_NEWER
 #pragma warning disable 0618
 
@@ -22,7 +23,8 @@ namespace Sirenix.OdinInspector
         [SerializeField, HideInInspector]
         private SerializationData serializationData;
 
-        SerializationData ISupportsPrefabSerialization.SerializationData { get { return this.serializationData; } set { this.serializationData = value; } }
+        SerializationData ISupportsPrefabSerialization.SerializationData { get { return this.serializationData; } set { this.serializationData
+ = value; } }
 
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {

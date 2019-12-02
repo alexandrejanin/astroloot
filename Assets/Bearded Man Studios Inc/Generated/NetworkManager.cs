@@ -2,227 +2,205 @@ using BeardedManStudios.Forge.Networking.Generated;
 using System;
 using UnityEngine;
 
-namespace BeardedManStudios.Forge.Networking.Unity
-{
-	public partial class NetworkManager : MonoBehaviour
-	{
-		public delegate void InstantiateEvent(INetworkBehavior unityGameObject, NetworkObject obj);
-		public event InstantiateEvent objectInitialized;
-		protected BMSByte metadata = new BMSByte();
+namespace BeardedManStudios.Forge.Networking.Unity {
+    public partial class NetworkManager : MonoBehaviour {
+        public delegate void InstantiateEvent(INetworkBehavior unityGameObject, NetworkObject obj);
 
-		public GameObject[] PlayerNetworkObject = null;
-		public GameObject[] WeaponPickupNetworkObject = null;
+        public event InstantiateEvent objectInitialized;
+        protected BMSByte metadata = new BMSByte();
 
-		protected virtual void SetupObjectCreatedEvent()
-		{
-			Networker.objectCreated += CaptureObjects;
-		}
+        public GameObject[] PlayerNetworkObject = null;
+        public GameObject[] WeaponPickupNetworkObject = null;
 
-		protected virtual void OnDestroy()
-		{
-		    if (Networker != null)
-				Networker.objectCreated -= CaptureObjects;
-		}
-		
-		private void CaptureObjects(NetworkObject obj)
-		{
-			if (obj.CreateCode < 0)
-				return;
-				
-			if (obj is PlayerNetworkObject)
-			{
-				MainThreadManager.Run(() =>
-				{
-					NetworkBehavior newObj = null;
-					if (!NetworkBehavior.skipAttachIds.TryGetValue(obj.NetworkId, out newObj))
-					{
-						if (PlayerNetworkObject.Length > 0 && PlayerNetworkObject[obj.CreateCode] != null)
-						{
-							var go = Instantiate(PlayerNetworkObject[obj.CreateCode]);
-							newObj = go.GetComponent<PlayerBehavior>();
-						}
-					}
+        protected virtual void SetupObjectCreatedEvent() {
+            Networker.objectCreated += CaptureObjects;
+        }
 
-					if (newObj == null)
-						return;
-						
-					newObj.Initialize(obj);
+        protected virtual void OnDestroy() {
+            if (Networker != null)
+                Networker.objectCreated -= CaptureObjects;
+        }
 
-					if (objectInitialized != null)
-						objectInitialized(newObj, obj);
-				});
-			}
-			else if (obj is WeaponPickupNetworkObject)
-			{
-				MainThreadManager.Run(() =>
-				{
-					NetworkBehavior newObj = null;
-					if (!NetworkBehavior.skipAttachIds.TryGetValue(obj.NetworkId, out newObj))
-					{
-						if (WeaponPickupNetworkObject.Length > 0 && WeaponPickupNetworkObject[obj.CreateCode] != null)
-						{
-							var go = Instantiate(WeaponPickupNetworkObject[obj.CreateCode]);
-							newObj = go.GetComponent<WeaponPickupBehavior>();
-						}
-					}
+        private void CaptureObjects(NetworkObject obj) {
+            if (obj.CreateCode < 0)
+                return;
 
-					if (newObj == null)
-						return;
-						
-					newObj.Initialize(obj);
+            if (obj is PlayerNetworkObject) {
+                MainThreadManager.Run(() => {
+                    NetworkBehavior newObj = null;
+                    if (!NetworkBehavior.skipAttachIds.TryGetValue(obj.NetworkId, out newObj)) {
+                        if (PlayerNetworkObject.Length > 0 && PlayerNetworkObject[obj.CreateCode] != null) {
+                            var go = Instantiate(PlayerNetworkObject[obj.CreateCode]);
+                            newObj = go.GetComponent<PlayerBehavior>();
+                        }
+                    }
 
-					if (objectInitialized != null)
-						objectInitialized(newObj, obj);
-				});
-			}
-		}
+                    if (newObj == null)
+                        return;
 
-		protected virtual void InitializedObject(INetworkBehavior behavior, NetworkObject obj)
-		{
-			if (objectInitialized != null)
-				objectInitialized(behavior, obj);
+                    newObj.Initialize(obj);
 
-			obj.pendingInitialized -= InitializedObject;
-		}
+                    if (objectInitialized != null)
+                        objectInitialized(newObj, obj);
+                });
+            } else if (obj is WeaponPickupNetworkObject) {
+                MainThreadManager.Run(() => {
+                    NetworkBehavior newObj = null;
+                    if (!NetworkBehavior.skipAttachIds.TryGetValue(obj.NetworkId, out newObj)) {
+                        if (WeaponPickupNetworkObject.Length > 0 && WeaponPickupNetworkObject[obj.CreateCode] != null) {
+                            var go = Instantiate(WeaponPickupNetworkObject[obj.CreateCode]);
+                            newObj = go.GetComponent<WeaponPickupBehavior>();
+                        }
+                    }
 
-		[Obsolete("Use InstantiatePlayer instead, its shorter and easier to type out ;)")]
-		public PlayerBehavior InstantiatePlayerNetworkObject(int index = 0, Vector3? position = null, Quaternion? rotation = null, bool sendTransform = true)
-		{
-			var go = Instantiate(PlayerNetworkObject[index]);
-			var netBehavior = go.GetComponent<PlayerBehavior>();
-			var obj = netBehavior.CreateNetworkObject(Networker, index);
-			go.GetComponent<PlayerBehavior>().networkObject = (PlayerNetworkObject)obj;
+                    if (newObj == null)
+                        return;
 
-			FinalizeInitialization(go, netBehavior, obj, position, rotation, sendTransform);
-			
-			return netBehavior;
-		}
-		[Obsolete("Use InstantiateWeaponPickup instead, its shorter and easier to type out ;)")]
-		public WeaponPickupBehavior InstantiateWeaponPickupNetworkObject(int index = 0, Vector3? position = null, Quaternion? rotation = null, bool sendTransform = true)
-		{
-			var go = Instantiate(WeaponPickupNetworkObject[index]);
-			var netBehavior = go.GetComponent<WeaponPickupBehavior>();
-			var obj = netBehavior.CreateNetworkObject(Networker, index);
-			go.GetComponent<WeaponPickupBehavior>().networkObject = (WeaponPickupNetworkObject)obj;
+                    newObj.Initialize(obj);
 
-			FinalizeInitialization(go, netBehavior, obj, position, rotation, sendTransform);
-			
-			return netBehavior;
-		}
+                    if (objectInitialized != null)
+                        objectInitialized(newObj, obj);
+                });
+            }
+        }
 
-		/// <summary>
-		/// Instantiate an instance of Player
-		/// </summary>
-		/// <returns>
-		/// A local instance of PlayerBehavior
-		/// </returns>
-		/// <param name="index">The index of the Player prefab in the NetworkManager to Instantiate</param>
-		/// <param name="position">Optional parameter which defines the position of the created GameObject</param>
-		/// <param name="rotation">Optional parameter which defines the rotation of the created GameObject</param>
-		/// <param name="sendTransform">Optional Parameter to send transform data to other connected clients on Instantiation</param>
-		public PlayerBehavior InstantiatePlayer(int index = 0, Vector3? position = null, Quaternion? rotation = null, bool sendTransform = true)
-		{
-			if (PlayerNetworkObject.Length <= index)
-			{
-				Debug.Log("Prefab(s) missing for: Player. Add them at the NetworkManager prefab.");
-				return null;
-			}
-			
-			var go = Instantiate(PlayerNetworkObject[index]);
-			var netBehavior = go.GetComponent<PlayerBehavior>();
+        protected virtual void InitializedObject(INetworkBehavior behavior, NetworkObject obj) {
+            if (objectInitialized != null)
+                objectInitialized(behavior, obj);
 
-			NetworkObject obj = null;
-			if (!sendTransform && position == null && rotation == null)
-				obj = netBehavior.CreateNetworkObject(Networker, index);
-			else
-			{
-				metadata.Clear();
+            obj.pendingInitialized -= InitializedObject;
+        }
 
-				if (position == null && rotation == null)
-				{
-					byte transformFlags = 0x1 | 0x2;
-					ObjectMapper.Instance.MapBytes(metadata, transformFlags);
-					ObjectMapper.Instance.MapBytes(metadata, go.transform.position, go.transform.rotation);
-				}
-				else
-				{
-					byte transformFlags = 0x0;
-					transformFlags |= (byte)(position != null ? 0x1 : 0x0);
-					transformFlags |= (byte)(rotation != null ? 0x2 : 0x0);
-					ObjectMapper.Instance.MapBytes(metadata, transformFlags);
+        [Obsolete("Use InstantiatePlayer instead, its shorter and easier to type out ;)")]
+        public PlayerBehavior InstantiatePlayerNetworkObject(int index = 0, Vector3? position = null,
+            Quaternion? rotation = null, bool sendTransform = true) {
+            var go = Instantiate(PlayerNetworkObject[index]);
+            var netBehavior = go.GetComponent<PlayerBehavior>();
+            var obj = netBehavior.CreateNetworkObject(Networker, index);
+            go.GetComponent<PlayerBehavior>().networkObject = (PlayerNetworkObject) obj;
 
-					if (position != null)
-						ObjectMapper.Instance.MapBytes(metadata, position.Value);
+            FinalizeInitialization(go, netBehavior, obj, position, rotation, sendTransform);
 
-					if (rotation != null)
-						ObjectMapper.Instance.MapBytes(metadata, rotation.Value);
-				}
+            return netBehavior;
+        }
 
-				obj = netBehavior.CreateNetworkObject(Networker, index, metadata.CompressBytes());
-			}
+        [Obsolete("Use InstantiateWeaponPickup instead, its shorter and easier to type out ;)")]
+        public WeaponPickupBehavior InstantiateWeaponPickupNetworkObject(int index = 0, Vector3? position = null,
+            Quaternion? rotation = null, bool sendTransform = true) {
+            var go = Instantiate(WeaponPickupNetworkObject[index]);
+            var netBehavior = go.GetComponent<WeaponPickupBehavior>();
+            var obj = netBehavior.CreateNetworkObject(Networker, index);
+            go.GetComponent<WeaponPickupBehavior>().networkObject = (WeaponPickupNetworkObject) obj;
 
-			go.GetComponent<PlayerBehavior>().networkObject = (PlayerNetworkObject)obj;
+            FinalizeInitialization(go, netBehavior, obj, position, rotation, sendTransform);
 
-			FinalizeInitialization(go, netBehavior, obj, position, rotation, sendTransform);
-			
-			return netBehavior;
-		}
-		/// <summary>
-		/// Instantiate an instance of WeaponPickup
-		/// </summary>
-		/// <returns>
-		/// A local instance of WeaponPickupBehavior
-		/// </returns>
-		/// <param name="index">The index of the WeaponPickup prefab in the NetworkManager to Instantiate</param>
-		/// <param name="position">Optional parameter which defines the position of the created GameObject</param>
-		/// <param name="rotation">Optional parameter which defines the rotation of the created GameObject</param>
-		/// <param name="sendTransform">Optional Parameter to send transform data to other connected clients on Instantiation</param>
-		public WeaponPickupBehavior InstantiateWeaponPickup(int index = 0, Vector3? position = null, Quaternion? rotation = null, bool sendTransform = true)
-		{
-			if (WeaponPickupNetworkObject.Length <= index)
-			{
-				Debug.Log("Prefab(s) missing for: WeaponPickup. Add them at the NetworkManager prefab.");
-				return null;
-			}
-			
-			var go = Instantiate(WeaponPickupNetworkObject[index]);
-			var netBehavior = go.GetComponent<WeaponPickupBehavior>();
+            return netBehavior;
+        }
 
-			NetworkObject obj = null;
-			if (!sendTransform && position == null && rotation == null)
-				obj = netBehavior.CreateNetworkObject(Networker, index);
-			else
-			{
-				metadata.Clear();
+        /// <summary>
+        /// Instantiate an instance of Player
+        /// </summary>
+        /// <returns>
+        /// A local instance of PlayerBehavior
+        /// </returns>
+        /// <param name="index">The index of the Player prefab in the NetworkManager to Instantiate</param>
+        /// <param name="position">Optional parameter which defines the position of the created GameObject</param>
+        /// <param name="rotation">Optional parameter which defines the rotation of the created GameObject</param>
+        /// <param name="sendTransform">Optional Parameter to send transform data to other connected clients on Instantiation</param>
+        public PlayerBehavior InstantiatePlayer(int index = 0, Vector3? position = null, Quaternion? rotation = null,
+            bool sendTransform = true) {
+            if (PlayerNetworkObject.Length <= index) {
+                Debug.Log("Prefab(s) missing for: Player. Add them at the NetworkManager prefab.");
+                return null;
+            }
 
-				if (position == null && rotation == null)
-				{
-					byte transformFlags = 0x1 | 0x2;
-					ObjectMapper.Instance.MapBytes(metadata, transformFlags);
-					ObjectMapper.Instance.MapBytes(metadata, go.transform.position, go.transform.rotation);
-				}
-				else
-				{
-					byte transformFlags = 0x0;
-					transformFlags |= (byte)(position != null ? 0x1 : 0x0);
-					transformFlags |= (byte)(rotation != null ? 0x2 : 0x0);
-					ObjectMapper.Instance.MapBytes(metadata, transformFlags);
+            var go = Instantiate(PlayerNetworkObject[index]);
+            var netBehavior = go.GetComponent<PlayerBehavior>();
 
-					if (position != null)
-						ObjectMapper.Instance.MapBytes(metadata, position.Value);
+            NetworkObject obj = null;
+            if (!sendTransform && position == null && rotation == null)
+                obj = netBehavior.CreateNetworkObject(Networker, index);
+            else {
+                metadata.Clear();
 
-					if (rotation != null)
-						ObjectMapper.Instance.MapBytes(metadata, rotation.Value);
-				}
+                if (position == null && rotation == null) {
+                    byte transformFlags = 0x1 | 0x2;
+                    ObjectMapper.Instance.MapBytes(metadata, transformFlags);
+                    ObjectMapper.Instance.MapBytes(metadata, go.transform.position, go.transform.rotation);
+                } else {
+                    byte transformFlags = 0x0;
+                    transformFlags |= (byte) (position != null ? 0x1 : 0x0);
+                    transformFlags |= (byte) (rotation != null ? 0x2 : 0x0);
+                    ObjectMapper.Instance.MapBytes(metadata, transformFlags);
 
-				obj = netBehavior.CreateNetworkObject(Networker, index, metadata.CompressBytes());
-			}
+                    if (position != null)
+                        ObjectMapper.Instance.MapBytes(metadata, position.Value);
 
-			go.GetComponent<WeaponPickupBehavior>().networkObject = (WeaponPickupNetworkObject)obj;
+                    if (rotation != null)
+                        ObjectMapper.Instance.MapBytes(metadata, rotation.Value);
+                }
 
-			FinalizeInitialization(go, netBehavior, obj, position, rotation, sendTransform);
-			
-			return netBehavior;
-		}
-	}
+                obj = netBehavior.CreateNetworkObject(Networker, index, metadata.CompressBytes());
+            }
+
+            go.GetComponent<PlayerBehavior>().networkObject = (PlayerNetworkObject) obj;
+
+            FinalizeInitialization(go, netBehavior, obj, position, rotation, sendTransform);
+
+            return netBehavior;
+        }
+
+        /// <summary>
+        /// Instantiate an instance of WeaponPickup
+        /// </summary>
+        /// <returns>
+        /// A local instance of WeaponPickupBehavior
+        /// </returns>
+        /// <param name="index">The index of the WeaponPickup prefab in the NetworkManager to Instantiate</param>
+        /// <param name="position">Optional parameter which defines the position of the created GameObject</param>
+        /// <param name="rotation">Optional parameter which defines the rotation of the created GameObject</param>
+        /// <param name="sendTransform">Optional Parameter to send transform data to other connected clients on Instantiation</param>
+        public WeaponPickupBehavior InstantiateWeaponPickup(int index = 0, Vector3? position = null,
+            Quaternion? rotation = null, bool sendTransform = true) {
+            if (WeaponPickupNetworkObject.Length <= index) {
+                Debug.Log("Prefab(s) missing for: WeaponPickup. Add them at the NetworkManager prefab.");
+                return null;
+            }
+
+            var go = Instantiate(WeaponPickupNetworkObject[index]);
+            var netBehavior = go.GetComponent<WeaponPickupBehavior>();
+
+            NetworkObject obj = null;
+            if (!sendTransform && position == null && rotation == null)
+                obj = netBehavior.CreateNetworkObject(Networker, index);
+            else {
+                metadata.Clear();
+
+                if (position == null && rotation == null) {
+                    byte transformFlags = 0x1 | 0x2;
+                    ObjectMapper.Instance.MapBytes(metadata, transformFlags);
+                    ObjectMapper.Instance.MapBytes(metadata, go.transform.position, go.transform.rotation);
+                } else {
+                    byte transformFlags = 0x0;
+                    transformFlags |= (byte) (position != null ? 0x1 : 0x0);
+                    transformFlags |= (byte) (rotation != null ? 0x2 : 0x0);
+                    ObjectMapper.Instance.MapBytes(metadata, transformFlags);
+
+                    if (position != null)
+                        ObjectMapper.Instance.MapBytes(metadata, position.Value);
+
+                    if (rotation != null)
+                        ObjectMapper.Instance.MapBytes(metadata, rotation.Value);
+                }
+
+                obj = netBehavior.CreateNetworkObject(Networker, index, metadata.CompressBytes());
+            }
+
+            go.GetComponent<WeaponPickupBehavior>().networkObject = (WeaponPickupNetworkObject) obj;
+
+            FinalizeInitialization(go, netBehavior, obj, position, rotation, sendTransform);
+
+            return netBehavior;
+        }
+    }
 }

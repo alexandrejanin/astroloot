@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
 
 public class WeaponManager : MonoBehaviour {
-    [SerializeField]
-    private Weapon[] weapons;
+    [SerializeField] private Weapon[] weapons;
 
     public Weapon GetWeapon(int index) {
         return index < 0

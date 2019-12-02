@@ -37,7 +37,6 @@
 #if !UNITY_WEBGL
 #if !NetFX_CORE
 #if STEAMWORKS
-
 using Steamworks;
 using System;
 using System.Collections.Generic;

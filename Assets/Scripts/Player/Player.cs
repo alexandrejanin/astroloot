@@ -9,12 +9,9 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerMovement))]
 [RequireComponent(typeof(PlayerGraphics))]
 public class Player : PlayerBehavior {
-    [SerializeField]
-    private PlayerHealthBar healthBarPrefab;
+    [SerializeField] private PlayerHealthBar healthBarPrefab;
 
-    [SerializeField]
-    private Transform healthBarTransform;
-
+    [SerializeField] private Transform healthBarTransform;
 
     public PlayerInput PlayerInput { get; private set; }
     public PlayerCombat PlayerCombat { get; private set; }
@@ -38,7 +35,7 @@ public class Player : PlayerBehavior {
 
         var canvas = FindObjectOfType<Canvas>();
         var playerHealthBar = Instantiate(healthBarPrefab, canvas.transform);
-        playerHealthBar.PlayerHealth = PlayerHealth;
+        playerHealthBar.Player = this;
         playerHealthBar.TargetTransform = healthBarTransform;
     }
 
@@ -122,6 +119,6 @@ public class Player : PlayerBehavior {
     public override void SetWeapon(RpcArgs args) {
         var index = args.GetNext<int>();
         networkObject.weaponIndex = index;
-        PlayerCombat.SetWeapon(index);
+        MainThreadManager.Run(() => PlayerCombat.SetWeapon(index));
     }
 }
