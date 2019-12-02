@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MeleeWeapon : Weapon {
@@ -13,22 +14,24 @@ public class MeleeWeapon : Weapon {
 
     private SpriteRenderer spriteRenderer;
 
-    public WeaponState State {
-        get {
-            if (frame < startupFrames)
-                return WeaponState.Startup;
-
-            if (frame < startupFrames + activeFrames)
-                return WeaponState.Active;
-
-            if (frame < startupFrames + activeFrames + endingFrames)
-                return WeaponState.Ending;
-
-            return WeaponState.Idle;
-        }
-    }
+    private readonly HashSet<Player> playersHit = new HashSet<Player>();
 
     private int frame;
+
+    private WeaponState State {
+        get {
+            if (frame == 0)
+                return WeaponState.Idle;
+
+            if (frame <= startupFrames)
+                return WeaponState.Startup;
+
+            if (frame <= startupFrames + activeFrames)
+                return WeaponState.Active;
+
+            return WeaponState.Ending;
+        }
+    }
 
     public override Vector3 ArmAngle {
         get {
@@ -48,13 +51,18 @@ public class MeleeWeapon : Weapon {
     }
 
     private void FixedUpdate() {
-        frame++;
+        if (frame > 0)
+            frame++;
+
+        if (frame > startupFrames + activeFrames + endingFrames)
+            frame = 0;
     }
 
     public override bool CanShoot() => State == WeaponState.Idle;
 
     public override Bullet Fire(uint bulletId, Vector2 originPosition, Vector2 targetPosition) {
-        frame = 0;
+        playersHit.Clear();
+        frame = 1;
         return null;
     }
 
@@ -64,9 +72,11 @@ public class MeleeWeapon : Weapon {
 
         var hurtBox = other.gameObject.GetComponent<HurtBox>();
 
-        if (!hurtBox || hurtBox.Player == Player)
+        if (!hurtBox || hurtBox.Player == Player || playersHit.Contains(hurtBox.Player))
             return;
 
+        Debug.Log(hitbox.name);
+        playersHit.Add(hurtBox.Player);
         hurtBox.Hit(hitbox);
     }
 }

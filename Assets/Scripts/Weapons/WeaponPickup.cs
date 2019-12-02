@@ -6,13 +6,19 @@ public class WeaponPickup : WeaponPickupBehavior {
 
     [SerializeField] private new BoxCollider2D collider;
 
+    public int PickupIndex { set; private get; }
+
     private WeaponManager weaponManager;
+    private WeaponPickupSpawner weaponPickupSpawner;
 
     private int weaponIndex = -1;
     private Weapon weapon;
 
+    private bool active = true;
+
     private void Awake() {
         weaponManager = FindObjectOfType<WeaponManager>();
+        weaponPickupSpawner = FindObjectOfType<WeaponPickupSpawner>();
     }
 
     protected override void NetworkStart() {
@@ -36,14 +42,21 @@ public class WeaponPickup : WeaponPickupBehavior {
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
-        if (!networkObject.IsOwner)
+        if (!active || !networkObject.IsOwner)
             return;
 
         var player = other.GetComponent<Player>();
         if (player == null)
             return;
 
+        weaponPickupSpawner.OnPickedUp(PickupIndex);
+
         player.SetWeapon(networkObject.weaponIndex);
+        Destroy();
+    }
+
+    private void Destroy() {
+        active = false;
         networkObject.Destroy();
     }
 }
