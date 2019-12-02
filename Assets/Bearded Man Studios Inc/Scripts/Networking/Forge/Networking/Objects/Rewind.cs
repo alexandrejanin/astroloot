@@ -20,40 +20,30 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BeardedManStudios.Forge.Networking
-{
-    public class Rewind<T>
-    {
+namespace BeardedManStudios.Forge.Networking {
+    public class Rewind<T> {
         public ulong RewindTime { get; set; }
         private Dictionary<ulong, T> rewinds = null;
         private List<ulong> keys = new List<ulong>();
 
-        public Rewind(ulong length)
-        {
+        public Rewind(ulong length) {
             RewindTime = length;
             rewinds = new Dictionary<ulong, T>();
         }
 
-        public void Register(T value, ulong timestep = 0)
-        {
-            lock (rewinds)
-            {
-                if (keys.Contains(timestep))
-                {
+        public void Register(T value, ulong timestep = 0) {
+            lock (rewinds) {
+                if (keys.Contains(timestep)) {
                     rewinds[timestep] = value;
                     return;
                 }
 
-                if (rewinds.Count > 0)
-                {
-                    for (int i = 0; i < keys.Count; i++)
-                    {
-                        if (keys[i] < timestep - RewindTime && RewindTime < timestep)
-                        {
+                if (rewinds.Count > 0) {
+                    for (int i = 0; i < keys.Count; i++) {
+                        if (keys[i] < timestep - RewindTime && RewindTime < timestep) {
                             rewinds.Remove(keys[i]);
                             keys.RemoveAt(i--);
-                        }
-                        else
+                        } else
                             break;
                     }
                 }
@@ -68,10 +58,8 @@ namespace BeardedManStudios.Forge.Networking
         /// </summary>
         /// <param name="timestep">The time step that a value should be pulled for</param>
         /// <returns>The value of the tracked variable at the given time stamp or default() if no history is available</returns>
-        public T Get(ulong timestep)
-        {
-            lock (rewinds)
-            {
+        public T Get(ulong timestep) {
+            lock (rewinds) {
                 if (rewinds.Count == 0)
                     return default(T);
 
@@ -80,10 +68,8 @@ namespace BeardedManStudios.Forge.Networking
                     return result;
 
                 ulong key = 0;
-                foreach (ulong k in keys)
-                {
-                    if (timestep < k)
-                    {
+                foreach (ulong k in keys) {
+                    if (timestep < k) {
                         if (timestep - key > k - timestep)
                             key = k;
 
@@ -105,10 +91,8 @@ namespace BeardedManStudios.Forge.Networking
         /// <param name="lower">The lower value relative to the timestep</param>
         /// <param name="upper">The upper value relative to the timestep</param>
         /// <returns>The value of the tracked variable at the given time stamp or default() if no history is available</returns>
-        public T Get(ulong timestep, out T lower, out T upper)
-        {
-            lock (rewinds)
-            {
+        public T Get(ulong timestep, out T lower, out T upper) {
+            lock (rewinds) {
                 lower = default(T);
                 upper = lower;
 
@@ -120,16 +104,13 @@ namespace BeardedManStudios.Forge.Networking
 
                 ulong key = 0, lowerKey = 0, upperKey = 0;
 
-                if (keys.Last() < timestep)
-                {
+                if (keys.Last() < timestep) {
                     // TODO:  The supplied time does not exist, throw exception?
                     return default(T);
                 }
 
-                foreach (ulong k in keys)
-                {
-                    if (timestep < k)
-                    {
+                foreach (ulong k in keys) {
+                    if (timestep < k) {
                         lowerKey = key;
                         upperKey = k;
                         if (timestep - key > k - timestep)
@@ -153,10 +134,8 @@ namespace BeardedManStudios.Forge.Networking
         /// <param name="timestep">The time step that a value should be pulled for</param>
         /// <param name="count">The number of elements to get before the time step</param>
         /// <returns>The list of found elements leading up to the timestep (including time step value if found</returns>
-        public List<T> GetRange(ulong timestep, int count)
-        {
-            lock (rewinds)
-            {
+        public List<T> GetRange(ulong timestep, int count) {
+            lock (rewinds) {
                 List<T> found = new List<T>();
 
                 if (rewinds.Count == 0)
@@ -165,18 +144,14 @@ namespace BeardedManStudios.Forge.Networking
                 var keys = rewinds.Keys.ToArray().Reverse();
                 ulong lastKey = 0;
 
-                if (keys.First() < timestep)
-                {
+                if (keys.First() < timestep) {
                     // TODO:  The supplied time does not exist, throw exception?
                     return found;
                 }
 
-                foreach (ulong k in keys)
-                {
-                    if (timestep <= k)
-                    {
-                        if (timestep != k && lastKey != 0)
-                        {
+                foreach (ulong k in keys) {
+                    if (timestep <= k) {
+                        if (timestep != k && lastKey != 0) {
                             found.Add(rewinds[lastKey]);
                             lastKey = 0;
                         }
@@ -185,8 +160,7 @@ namespace BeardedManStudios.Forge.Networking
 
                         if (found.Count == count)
                             break;
-                    }
-                    else
+                    } else
                         lastKey = k;
                 }
 
@@ -200,10 +174,8 @@ namespace BeardedManStudios.Forge.Networking
         /// <param name="timestepMin">The minimum inclusive timestep that a value should be pulled for</param>
         /// <param name="timestepMax">The maximum inclusive timestep that a value should be pulled for</param>
         /// <returns>The list of found elements between the two timesteps inclusively </returns>
-        public List<T> GetRange(ulong timestepMin, ulong timestepMax)
-        {
-            lock (rewinds)
-            {
+        public List<T> GetRange(ulong timestepMin, ulong timestepMax) {
+            lock (rewinds) {
                 List<T> found = new List<T>();
 
                 if (rewinds.Count == 0)
@@ -211,14 +183,12 @@ namespace BeardedManStudios.Forge.Networking
 
                 var keys = rewinds.Keys.ToArray().Reverse();
 
-                if (keys.First() < timestepMin)
-                {
+                if (keys.First() < timestepMin) {
                     // TODO:  The supplied time does not exist, throw exception?
                     return found;
                 }
 
-                foreach (ulong k in keys)
-                {
+                foreach (ulong k in keys) {
                     if (timestepMin <= k && timestepMax >= k)
                         found.Insert(0, rewinds[k]);
                 }

@@ -17,10 +17,8 @@
 |                                                              |
 \------------------------------+------------------------------*/
 
-namespace BeardedManStudios.Forge.Networking.Filters
-{
-    interface IConnectionFilter
-    {
+namespace BeardedManStudios.Forge.Networking.Filters {
+    interface IConnectionFilter {
         bool CanConnect(string host, ushort port);
         bool CanAccept(NetworkingPlayer player);
     }

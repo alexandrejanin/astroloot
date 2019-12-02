@@ -6,8 +6,7 @@
 
 #if UNITY_EDITOR
 
-namespace Sirenix.Utilities
-{
+namespace Sirenix.Utilities {
     using System;
     using System.Linq;
     using UnityEditor;
@@ -15,27 +14,22 @@ namespace Sirenix.Utilities
     /// <summary>
     /// Defines the ODIN_INSPECTOR symbol.
     /// </summary>
-    internal static class EnsureOdinInspectorDefine
-    {
+    internal static class EnsureOdinInspectorDefine {
         private const string DEFINE = "ODIN_INSPECTOR";
 
         [InitializeOnLoadMethod]
-        private static void AssureScriptingDefineSymbol()
-        {
+        private static void AssureScriptingDefineSymbol() {
             var currentTarget = EditorUserBuildSettings.selectedBuildTargetGroup;
 
-            if (currentTarget == BuildTargetGroup.Unknown)
-            {
+            if (currentTarget == BuildTargetGroup.Unknown) {
                 return;
             }
 
             var definesString = PlayerSettings.GetScriptingDefineSymbolsForGroup(currentTarget).Trim();
             var defines = definesString.Split(';');
 
-            if (defines.Contains(DEFINE) == false)
-            {
-                if (definesString.EndsWith(";", StringComparison.InvariantCulture) == false)
-                {
+            if (defines.Contains(DEFINE) == false) {
+                if (definesString.EndsWith(";", StringComparison.InvariantCulture) == false) {
                     definesString += ";";
                 }
 
