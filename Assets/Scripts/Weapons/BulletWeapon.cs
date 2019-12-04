@@ -2,11 +2,10 @@
 
 public class BulletWeapon : Weapon {
     [SerializeField] private int damage;
+    [SerializeField] private float knockback;
     [SerializeField] protected float rateOfFire;
     [SerializeField] private bool fullAuto;
-
     [SerializeField] private Bullet bulletPrefab;
-
     [SerializeField] private Transform bulletOriginPosition;
 
     public override Transform OriginPosition => bulletOriginPosition;
@@ -36,6 +35,7 @@ public class BulletWeapon : Weapon {
         var bullet = Instantiate(bulletPrefab, originPosition, Quaternion.identity);
         bullet.transform.right = targetPosition - originPosition;
         bullet.Damage = damage;
+        bullet.Knockback = knockback;
         bullet.Player = Player;
         bullet.BulletId = bulletId;
 

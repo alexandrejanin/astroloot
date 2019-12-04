@@ -33,6 +33,10 @@ public class PlayerMovement : MonoBehaviour {
 
     public CharacterController2D Controller { get; private set; }
 
+    public void Knockback(Vector3 direction) {
+        velocity += direction;
+    }
+
     private void Awake() {
         player = GetComponent<Player>();
         input = GetComponent<PlayerInput>();
@@ -128,7 +132,7 @@ public class PlayerMovement : MonoBehaviour {
         }
     }
 
-    public void OnJumpDown() {
+    private void OnJumpDown() {
         if (wallSliding) {
             if (wallDirX == input.MovementInput.x) {
                 velocity.x = -wallDirX * wallJumpTowards.x;
@@ -146,7 +150,7 @@ public class PlayerMovement : MonoBehaviour {
             velocity.y = maxJumpVelocity;
     }
 
-    public void OnJumpUp() {
+    private void OnJumpUp() {
         if (velocity.y > minJumpVelocity)
             velocity.y = minJumpVelocity;
     }

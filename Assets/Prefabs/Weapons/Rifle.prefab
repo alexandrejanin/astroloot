@@ -126,6 +126,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 8
+  knockback: 0.5
   rateOfFire: 8
   fullAuto: 1
   bulletPrefab: {fileID: 4659933145509123645, guid: a365fa9b6e598cf4f8dec16cb77fb0ad,

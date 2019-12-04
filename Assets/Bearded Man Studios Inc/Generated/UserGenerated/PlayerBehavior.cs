@@ -3,17 +3,18 @@ using BeardedManStudios.Forge.Networking.Unity;
 using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated {
-    [GeneratedRPC("{\"types\":[[][\"int\"][\"uint\", \"Vector2\", \"Vector2\"][\"uint\"][][][\"int\"]]")]
+    [GeneratedRPC("{\"types\":[[][\"int\"][\"Vector2\"][\"uint\", \"Vector2\", \"Vector2\"][\"uint\"][][][\"int\"]]")]
     [GeneratedRPCVariableNames(
-        "{\"types\":[[][\"damage\"][\"bulletId\", \"originPosition\", \"targetPosition\"][\"bulletId\"][][][\"index\"]]")]
+        "{\"types\":[[][\"damage\"][\"direction\"][\"bulletId\", \"originPosition\", \"targetPosition\"][\"bulletId\"][][][\"index\"]]")]
     public abstract partial class PlayerBehavior : NetworkBehavior {
         public const byte RPC_LOCAL_PLAYER_SPAWNED = 0 + 5;
         public const byte RPC_DAMAGE = 1 + 5;
-        public const byte RPC_SHOOT = 2 + 5;
-        public const byte RPC_DESTROY_BULLET = 3 + 5;
-        public const byte RPC_ON_DEATH = 4 + 5;
-        public const byte RPC_ON_RESPAWN = 5 + 5;
-        public const byte RPC_SET_WEAPON = 6 + 5;
+        public const byte RPC_KNOCKBACK = 2 + 5;
+        public const byte RPC_SHOOT = 3 + 5;
+        public const byte RPC_DESTROY_BULLET = 4 + 5;
+        public const byte RPC_ON_DEATH = 5 + 5;
+        public const byte RPC_ON_RESPAWN = 6 + 5;
+        public const byte RPC_SET_WEAPON = 7 + 5;
 
         public PlayerNetworkObject networkObject = null;
 
@@ -28,6 +29,7 @@ namespace BeardedManStudios.Forge.Networking.Generated {
             base.SetupHelperRpcs(networkObject);
             networkObject.RegisterRpc("LocalPlayerSpawned", LocalPlayerSpawned);
             networkObject.RegisterRpc("Damage", Damage, typeof(int));
+            networkObject.RegisterRpc("Knockback", Knockback, typeof(Vector2));
             networkObject.RegisterRpc("Shoot", Shoot, typeof(uint), typeof(Vector2), typeof(Vector2));
             networkObject.RegisterRpc("DestroyBullet", DestroyBullet, typeof(uint));
             networkObject.RegisterRpc("OnDeath", OnDeath);
@@ -110,6 +112,11 @@ namespace BeardedManStudios.Forge.Networking.Generated {
         /// Arguments:
         /// </summary>
         public abstract void Damage(RpcArgs args);
+
+        /// <summary>
+        /// Arguments:
+        /// </summary>
+        public abstract void Knockback(RpcArgs args);
 
         /// <summary>
         /// Arguments:

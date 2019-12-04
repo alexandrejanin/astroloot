@@ -70,6 +70,18 @@ public class Player : PlayerBehavior {
         );
     }
 
+    public void Knockback(Vector2 direction) {
+        networkObject.SendRpc(networkObject.Owner, RPC_KNOCKBACK, direction);
+    }
+
+    public override void Knockback(RpcArgs args) {
+        var direction = args.GetNext<Vector2>();
+
+        MainThreadManager.Run(() =>
+            PlayerMovement.Knockback(direction)
+        );
+    }
+
     public void Shoot(uint bulletId, Vector2 originPosition, Vector2 targetPosition) {
         networkObject.SendRpc(RPC_SHOOT, Receivers.All, bulletId, originPosition, targetPosition);
     }

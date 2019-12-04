@@ -4,9 +4,8 @@ public class Bullet : MonoBehaviour {
     [SerializeField] private float speed = 20;
 
     public int Damage { set; get; }
-
+    public float Knockback { set; get; }
     public Player Player { set; private get; }
-
     public uint BulletId { set; private get; }
 
     private bool active = true;

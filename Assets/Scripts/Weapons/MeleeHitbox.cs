@@ -2,7 +2,11 @@
 
 public class MeleeHitbox : MonoBehaviour {
     [SerializeField] private int damage;
+    [SerializeField] private float knockback;
+
     public int Damage => damage;
+    public float Knockback => knockback;
+
     private MeleeWeapon weapon;
 
     private void Awake() {
