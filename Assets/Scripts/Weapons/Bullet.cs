@@ -1,21 +1,29 @@
 ﻿using UnityEngine;
 
 public class Bullet : MonoBehaviour {
+    [SerializeField] private int damage = 10;
+    [SerializeField] private float knockback = 1;
     [SerializeField] private float speed = 20;
 
-    public int Damage { set; get; }
-    public float Knockback { set; get; }
-    public Player Player { set; private get; }
-    public uint BulletId { set; private get; }
+    public int Damage => damage;
+    public float Knockback => knockback;
+
+    private Player player;
+    private uint bulletId;
 
     private bool active = true;
+
+    public void Init(Player player, uint bulletId) {
+        this.player = player;
+        this.bulletId = bulletId;
+    }
 
     private void Update() {
         transform.position += Time.deltaTime * speed * transform.right;
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
-        if (!active || !Player.IsLocalPlayer)
+        if (!active || !player.IsLocalPlayer)
             return;
 
         if (other.gameObject.isStatic) {
@@ -25,7 +33,7 @@ public class Bullet : MonoBehaviour {
 
         var hurtBox = other.gameObject.GetComponent<HurtBox>();
 
-        if (!hurtBox || hurtBox.Player == Player)
+        if (!hurtBox || hurtBox.Player == player)
             return;
 
         hurtBox.Hit(this);
@@ -35,7 +43,7 @@ public class Bullet : MonoBehaviour {
 
     private void SendDestroyRequest() {
         active = false;
-        Player.DestroyBullet(BulletId);
+        player.DestroyBullet(bulletId);
     }
 
     public void Destroy() {

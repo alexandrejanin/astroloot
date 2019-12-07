@@ -67,15 +67,14 @@ public class MeleeWeapon : Weapon {
     }
 
     public void OnHit(MeleeHitbox hitbox, Collider2D other) {
-        if (!Player.IsLocalPlayer || State != WeaponState.Active)
+        if (!player.IsLocalPlayer || State != WeaponState.Active)
             return;
 
         var hurtBox = other.gameObject.GetComponent<HurtBox>();
 
-        if (!hurtBox || hurtBox.Player == Player || playersHit.Contains(hurtBox.Player))
+        if (!hurtBox || hurtBox.Player == player || playersHit.Contains(hurtBox.Player))
             return;
 
-        Debug.Log(hitbox.name);
         playersHit.Add(hurtBox.Player);
         hurtBox.Hit(hitbox);
     }

@@ -46,6 +46,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cdc9774acf40b04fa48e373bcf937d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  damage: 8
+  knockback: 0.5
   speed: 20
 --- !u!212 &4659933145509123646
 SpriteRenderer:
@@ -61,6 +63,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

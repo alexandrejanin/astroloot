@@ -125,10 +125,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0484db45b3bd6044a1f038763b121d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 10
-  knockback: 1
   rateOfFire: 4
   fullAuto: 0
+  maxBullets: 10
+  reloadTime: 2
   bulletPrefab: {fileID: 4659933145509123645, guid: 51939188a94f42844b8273b356622f1c,
     type: 3}
   bulletOriginPosition: {fileID: 3858361187614723109}

@@ -4,7 +4,15 @@ public abstract class Weapon : MonoBehaviour {
     public abstract Transform OriginPosition { get; }
     public abstract Sprite Sprite { get; }
     public abstract Vector3 ArmAngle { get; }
-    public Player Player { set; get; }
+
+    protected Player player;
+
+    public void Init(Player player) {
+        this.player = player;
+        Init();
+    }
+
+    protected virtual void Init() { }
 
     public abstract bool CanShoot();
 

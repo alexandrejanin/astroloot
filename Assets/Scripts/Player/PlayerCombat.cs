@@ -61,7 +61,7 @@ public class PlayerCombat : MonoBehaviour {
             Destroy(weapon.gameObject);
 
         weapon = Instantiate(weaponManager.GetWeapon(index), weaponParent);
-        weapon.Player = player;
+        weapon.Init(player);
     }
 
 
