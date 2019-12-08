@@ -31,6 +31,12 @@ public class PlayerCombat : MonoBehaviour {
         player.onRespawn += Reset;
 
         playerInput.onPrimaryFireHeld += OnPrimaryFireHeld;
+
+        playerInput.AddKeybind(KeyCode.R, () => {
+            var bulletWeapon = weapon as BulletWeapon;
+            if (bulletWeapon)
+                bulletWeapon.Reload();
+        });
     }
 
     private void Update() {

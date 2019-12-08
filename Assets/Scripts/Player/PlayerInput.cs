@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Player))]
@@ -11,6 +12,8 @@ public class PlayerInput : MonoBehaviour {
     public Action onJumpDown, onJumpUp;
 
     private Player player;
+
+    private readonly Dictionary<KeyCode, Action> keybinds = new Dictionary<KeyCode, Action>();
 
     private void Awake() {
         player = GetComponent<Player>();
@@ -35,5 +38,16 @@ public class PlayerInput : MonoBehaviour {
 
         if (Input.GetKeyUp(KeyCode.Space))
             onJumpUp?.Invoke();
+
+        foreach (var keybind in keybinds)
+            if (Input.GetKeyDown(keybind.Key))
+                keybind.Value?.Invoke();
+    }
+
+    public void AddKeybind(KeyCode keyCode, Action action) {
+        if (keybinds.ContainsKey(keyCode))
+            keybinds[keyCode] += action;
+        else
+            keybinds.Add(keyCode, action);
     }
 }

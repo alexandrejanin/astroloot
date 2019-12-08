@@ -18,8 +18,9 @@ public class BulletWeapon : Weapon {
     public bool IsReloading => isReloading;
     public float ReloadProgress => reloadProgress / reloadTime;
 
-    private SpriteRenderer SpriteRenderer =>
-        spriteRenderer ? spriteRenderer : spriteRenderer = GetComponent<SpriteRenderer>();
+    private SpriteRenderer SpriteRenderer => spriteRenderer
+        ? spriteRenderer
+        : spriteRenderer = GetComponent<SpriteRenderer>();
 
     private SpriteRenderer spriteRenderer;
 
@@ -29,7 +30,6 @@ public class BulletWeapon : Weapon {
     private float reloadProgress;
 
     protected override void Init() {
-        base.Init();
         bullets = maxBullets;
     }
 
@@ -37,10 +37,12 @@ public class BulletWeapon : Weapon {
         timeSinceLastShot += Time.deltaTime;
     }
 
-    private IEnumerator Reload() {
-        if (isReloading)
-            yield break;
+    public void Reload() {
+        if (bullets < maxBullets && !isReloading)
+            StartCoroutine(ReloadCoroutine());
+    }
 
+    private IEnumerator ReloadCoroutine() {
         isReloading = true;
         reloadProgress = 0f;
 
@@ -54,11 +56,14 @@ public class BulletWeapon : Weapon {
     }
 
     public override bool CanShoot() {
+        if (isReloading)
+            return false;
+
         if (timeSinceLastShot < 1f / rateOfFire)
             return false;
 
         if (bullets <= 0) {
-            StartCoroutine(Reload());
+            Reload();
             return false;
         }
 
