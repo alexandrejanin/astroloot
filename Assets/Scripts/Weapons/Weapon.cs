@@ -5,6 +5,8 @@ public abstract class Weapon : MonoBehaviour {
     public abstract Sprite Sprite { get; }
     public abstract Vector3 ArmAngle { get; }
 
+    public abstract bool FullAuto { get; }
+
     protected Player player;
 
     public void Init(Player player) {

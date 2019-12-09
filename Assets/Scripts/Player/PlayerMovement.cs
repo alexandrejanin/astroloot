@@ -33,8 +33,12 @@ public class PlayerMovement : MonoBehaviour {
 
     public CharacterController2D Controller { get; private set; }
 
-    public void Knockback(Vector3 direction) {
+    public void AddForce(Vector3 direction) {
         velocity += direction;
+    }
+
+    public void SetForce(Vector3 direction) {
+        velocity = direction;
     }
 
     private void Awake() {

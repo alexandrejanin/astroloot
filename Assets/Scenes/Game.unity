@@ -1203,6 +1203,8 @@ MonoBehaviour:
   - {fileID: 3858361188443807851, guid: 0ba16850b5d5d3c4ca82434c2cb06c81, type: 3}
   - {fileID: 3858361188443807851, guid: c96eb822a158b2f4482397a3421e7e98, type: 3}
   - {fileID: 7838020169185458378, guid: 769ec02b513783e45a0cbf1c6e572eb5, type: 3}
+  gadgets:
+  - {fileID: 6819923134551996249, guid: 4dc0e9d020c6e1c4e832803c2ceb76bc, type: 3}
 --- !u!114 &1659895434
 MonoBehaviour:
   m_ObjectHideFlags: 0

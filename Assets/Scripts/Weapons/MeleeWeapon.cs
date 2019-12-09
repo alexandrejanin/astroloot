@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class MeleeWeapon : Weapon {
+    [SerializeField] private bool fullAuto;
     [SerializeField] private int startupFrames, activeFrames, endingFrames;
     [SerializeField] private float startupAngle, activeAngle, endingAngle;
 
@@ -49,6 +50,8 @@ public class MeleeWeapon : Weapon {
             }
         }
     }
+
+    public override bool FullAuto => fullAuto;
 
     private void FixedUpdate() {
         if (frame > 0)

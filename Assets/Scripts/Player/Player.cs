@@ -78,7 +78,7 @@ public class Player : PlayerBehavior {
         var direction = args.GetNext<Vector2>();
 
         MainThreadManager.Run(() =>
-            PlayerMovement.Knockback(direction)
+            PlayerMovement.AddForce(direction)
         );
     }
 

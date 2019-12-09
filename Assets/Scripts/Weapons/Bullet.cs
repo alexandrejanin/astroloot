@@ -19,7 +19,7 @@ public class Bullet : MonoBehaviour {
     }
 
     private void Update() {
-        transform.position += Time.deltaTime * speed * transform.right;
+        transform.Translate(speed * Time.deltaTime * Vector3.right, Space.Self);
     }
 
     private void OnTriggerEnter2D(Collider2D other) {

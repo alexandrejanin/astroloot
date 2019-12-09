@@ -7,8 +7,12 @@ public class PlayerInput : MonoBehaviour {
     public Vector2 MovementInput { get; private set; }
     public Vector2 MousePosition { get; private set; }
 
-    public Action onPrimaryFireDown;
-    public Action onPrimaryFireHeld;
+    public bool PrimaryFireDown { get; private set; }
+    public bool PrimaryFireHeld { get; private set; }
+
+    public bool SecondaryFireDown { get; private set; }
+    public bool SecondaryFireHeld { get; private set; }
+
     public Action onJumpDown, onJumpUp;
 
     private Player player;
@@ -27,11 +31,11 @@ public class PlayerInput : MonoBehaviour {
 
         MousePosition = Input.mousePosition;
 
-        if (Input.GetMouseButtonDown(0))
-            onPrimaryFireDown?.Invoke();
+        PrimaryFireDown = Input.GetMouseButtonDown(0);
+        PrimaryFireHeld = Input.GetMouseButton(0);
 
-        if (Input.GetMouseButton(0))
-            onPrimaryFireHeld?.Invoke();
+        SecondaryFireDown = Input.GetMouseButtonDown(1);
+        SecondaryFireHeld = Input.GetMouseButton(1);
 
         if (Input.GetKeyDown(KeyCode.Space))
             onJumpDown?.Invoke();

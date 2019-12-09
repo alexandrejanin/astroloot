@@ -167,6 +167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82cbc102755aa434db710cce7a940fdc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fullAuto: 1
   startupFrames: 12
   activeFrames: 4
   endingFrames: 20

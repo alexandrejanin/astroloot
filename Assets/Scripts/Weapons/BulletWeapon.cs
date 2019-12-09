@@ -13,6 +13,8 @@ public class BulletWeapon : Weapon {
     public override Sprite Sprite => SpriteRenderer.sprite;
     public override Vector3 ArmAngle => Vector3.zero;
 
+    public override bool FullAuto => fullAuto;
+
     public int MaxBullets => maxBullets;
     public int Bullets => bullets;
     public bool IsReloading => isReloading;
@@ -35,11 +37,16 @@ public class BulletWeapon : Weapon {
 
     private void Update() {
         timeSinceLastShot += Time.deltaTime;
+
+        if (!isReloading && bullets <= 0)
+            Reload();
     }
 
     public void Reload() {
-        if (bullets < maxBullets && !isReloading)
-            StartCoroutine(ReloadCoroutine());
+        if (bullets >= maxBullets || isReloading)
+            return;
+
+        StartCoroutine(ReloadCoroutine());
     }
 
     private IEnumerator ReloadCoroutine() {
@@ -61,11 +68,6 @@ public class BulletWeapon : Weapon {
 
         if (timeSinceLastShot < 1f / rateOfFire)
             return false;
-
-        if (bullets <= 0) {
-            Reload();
-            return false;
-        }
 
         bullets--;
         timeSinceLastShot = 0f;
